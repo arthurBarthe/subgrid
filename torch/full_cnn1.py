@@ -77,6 +77,7 @@ class Dataset_psi_s(Dataset):
         assert self.psi.shape[0] == self.sx.shape[0] == self.sy.shape[0], \
             'Error: the lengths of the arrays differ'
         self.indices = [0, ]
+        self.shift = 0
 
     def pre_process(self, train_index):
         """Operates some basic pre-processing on the data, such as
@@ -121,6 +122,7 @@ class Dataset_psi_s(Dataset):
 
     def __getitem__(self, index):
         """Returns the sample indexed by the passed index."""
+        index = np.int64(index)
         shift = self.shift
         indices = index + shift + self.indices
         features = np.concatenate([self.psi[j] for j in indices])
@@ -149,24 +151,25 @@ class Dataset_psi_s(Dataset):
         true_sx, true_sy = np.split(true, 2, axis=1)
         pred_sx, pred_sy = np.split(predicted, 2, axis=1)
         fig = plt.figure()
-        plt.subplot(321)
+        plt.subplot(231)
         self._imshow(self.flat_to_2d(true_sx))
         plt.title('true S_x')
-        plt.subplot(322)
+        plt.subplot(234)
         self._imshow(self.flat_to_2d(true_sy))
         plt.title('true S_y')
-        plt.subplot(323)
+        plt.subplot(232)
         self._imshow(self.flat_to_2d(pred_sx))
         plt.title('predicted S_x')
-        plt.subplot(324)
+        plt.subplot(235)
         self._imshow(self.flat_to_2d(pred_sy))
         plt.title('predicted S_y')
-        plt.subplot(325)
+        plt.subplot(233)
         self._imshow(self.flat_to_2d(pred_sx - true_sx))
         plt.title('relative difference')
-        plt.subplot(326)
+        plt.subplot(236)
         self._imshow(self.flat_to_2d(pred_sy - true_sy))
         plt.title('relative difference')
+        plt.subplots_adjust(wspace=0.4, hspace=0.4)
         return fig
 
     def plot_features(self, features: np.ndarray):
@@ -191,6 +194,8 @@ class Dataset_psi_s(Dataset):
         self._imshow(self.flat_to_2d(sy))
 
     def _imshow(self, data: np.ndarray, *args, **kargs):
+        """Wrapper function for the imshow function that normalizes the data
+        beforehand."""
         data = data / np.std(data)
         plt.imshow(data, origin='lower', cmap='jet',
                    vmin=-1.96, vmax=1.96, *args, **kargs)

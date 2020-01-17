@@ -37,13 +37,13 @@ class RunningAverage:
     def value(self):
         return self.average
 
-    def update(self, value, weight=1):
+    def update(self, value: float, weight: float = 1):
         """Adds some value to be used in the running average.
         Parameters
         ----------
         value: float
         Value to be added in the computation of the running average.
-        
+
         weight: int
         Weight to be given to the passed value. Can be useful if the function
         update is called with values that already are averages over some
