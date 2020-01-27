@@ -4,6 +4,14 @@ Created on Wed Dec 11 16:13:28 2019
 
 @author: Arthur
 Torch implementation of a similar form of NN as in Bolton et al
+
+TODO list
+- check that the divergence layer works as expected, i.e. check sum of 
+output layer is zero.
+- make a private github repo
+- analyze the importance of memory 
+- train on one scale (e.g. 30 km) and test on a range of different
+scales (e.g 10km, 20km, 40km, 50km, 60km)
 """
 
 import numpy as np
@@ -11,19 +19,26 @@ import mlflow
 import os.path
 from datetime import datetime
 
+# For pre-processing
+from sklearn.preprocessing import StandardScaler, RobustScaler
+
+# For neural networks
 import torch
 from torch.utils.data import DataLoader, Subset
 import torch.optim as optim
 import torch.nn
 
+# For plots
 import matplotlib.pyplot as plt
 
-
 # Import our Dataset class and neural network
-from full_cnn1 import Dataset_psi_s, FullyCNN, MLFlowDataset
+from full_cnn1 import RawData, DatasetTransformer, MultipleTimeIndices
+from full_cnn1 import FullyCNN
 
 # Import some utils functions
 from utils_nn import print_every, RunningAverage, DEVICE_TYPE
+
+# PARAMETERS ---------
 
 # Training parameters
 # Note that we use two indices for the train/test split. This is because we
@@ -32,11 +47,11 @@ batch_size = 8
 learning_rates = {0: 1e-3}
 n_epochs = 100
 train_split = 0.7
-test_split = 0.8
+test_split = 0.75
 
 # Parameters specific to the input data
 # past specifies the indices from the past that are used for prediction
-indices = [0, -1]
+indices = [0, -4, -6, -8, -10]
 
 # Other parameters
 print_loss_every = 20
@@ -53,35 +68,45 @@ print('Selected device type: ', device_type.value)
 mlflow.log_param('batch_size', batch_size)
 mlflow.log_param('learning_rate', learning_rates)
 mlflow.log_param('device', device)
-mlflow.log_param('time_indices', indices)
 mlflow.log_param('device', device_type.value)
 mlflow.log_param('train_split', train_split)
 mlflow.log_param('test_split', test_split)
 
+# FIN PARAMETERS -----
 
+# DATA----------------
 # Load data from disk
-dataset_ = Dataset_psi_s('/data/ag7531/processed_data',
-                        'psi_coarse.npy', 'sx_coarse.npy', 'sy_coarse.npy')
-# Specifies which time indices to use for the prediction
-dataset_.set_indices(indices)
-
-# Convert to MLFlow dataset
-dataset = MLFlowDataset(dataset_)
+dataset = RawData('/data/ag7531/processed_data',
+                  'psi_coarse.npy', 'sx_coarse.npy', 'sy_coarse.npy')
 
 # Split train/test
 n_indices = len(dataset)
-split_index = int(train_split * n_indices)
+train_index = int(train_split * n_indices)
 test_index = int(test_split * n_indices)
-dataset.pre_process(split_index)
-train_dataset = Subset(dataset, np.arange(split_index))
-test_dataset = Subset(dataset, np.arange(split_index, n_indices))
+train_dataset = Subset(dataset, np.arange(train_index))
+test_dataset = Subset(dataset, np.arange(test_index, n_indices))
+
+# Apply basic normalization transforms (using the training data only)
+#s = DatasetTransformer(RobustScaler)
+#s.fit(train_dataset)
+#train_dataset = s.transform(train_dataset)
+#test_dataset = s.transform(test_dataset)
+
+# Specifies which time indices to use for the prediction
+train_dataset = MultipleTimeIndices(train_dataset)
+train_dataset.time_indices = indices
+test_dataset = MultipleTimeIndices(test_dataset)
+test_dataset.time_indices = indices
 
 # Dataloaders are responsible for sending batches of data to the NN
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
                               shuffle=True)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                              shuffle=False)
-# Neural network
+# FIN DATA------------
+
+
+# NEURAL NETWORK------
 net = FullyCNN(len(indices), dataset.width, dataset.height,
                dataset.n_output_targets)
 print('--------------------')
@@ -98,11 +123,15 @@ mlflow.log_artifact('nn_architecture.txt')
 
 # MSE criterion + Adam optimizer
 criterion = torch.nn.MSELoss()
-optimizers = {i: optim.Adam(net.parameters(), lr=v) for (i,v) in
+optimizers = {i: optim.Adam(net.parameters(), lr=v) for (i, v) in
               learning_rates.items()}
 
-# Training
+# FIN NEURAL NETWORK - 
+
+# Training------------
 for i_epoch in range(n_epochs):
+    # Set to training mode
+    net.train()
     if i_epoch in optimizers:
         optimizer = optimizers[i_epoch]
     print('Epoch number {}.'.format(i_epoch))
@@ -127,6 +156,9 @@ for i_epoch in range(n_epochs):
     # Log the training loss
     print('Train loss for this epoch is ', running_loss)
     mlflow.log_metric('train mse', running_loss.value, i_epoch)
+    
+    # Eval mode
+    net.eval()
 
     # At the end of each epoch we compute the test loss and print it
     with torch.no_grad():
@@ -148,9 +180,12 @@ for i_epoch in range(n_epochs):
             data = test_dataset[id_data]
             X = torch.tensor(data[0][np.newaxis, ...]).to(device,
                                                           dtype=torch.float)
-            Y = data[1][np.newaxis, ...]
+            true = data[1][np.newaxis, ...]
             pred = net(X).cpu().numpy()
-            fig = dataset.plot_true_vs_pred(Y, pred)
+#            transformer = s.targets_transformer
+#            true = transformer.inverse_transform(true)
+#            pred = transformer.inverse_transform(pred)
+            fig = dataset.plot_true_vs_pred(true, pred)
             f_name = 'image{}-{}.png'.format(i_epoch, i)
             file_path = os.path.join(data_location, figures_directory, f_name)
             plt.savefig(file_path)
@@ -161,13 +196,16 @@ for i_epoch in range(n_epochs):
 
 # Save the trained model to disk
 print('Saving the neural network learnt parameters to disk...')
-model_name = str(datetime.now()).split('.')[0] + '.pth'
+#model_name = str(datetime.now()).split('.')[0] + '.pth'
+model_name = 'trained_model.pth'
 full_path = os.path.join(data_location, 'models', model_name)
 torch.save(net.state_dict(), full_path)
 mlflow.log_artifact(full_path)
 print('Neural network saved and logged in the artifacts.')
 
-# Post analysis (Correlation map)
+# FIN TRAINING -------
+
+# CORRELATION MAP ----
 pred = np.zeros((len(test_dataset), 2, dataset.width, dataset.height))
 truth = np.zeros((len(test_dataset), 2, dataset.width, dataset.height))
 
@@ -182,7 +220,12 @@ with torch.no_grad():
         Y = np.reshape(data[1], (-1, 2, dataset.width, dataset.height))
         truth[i * batch_size:(i+1) * batch_size] = Y
 
-# TODO log the predictions as artifacts?
+# log the predictions as artifacts
+np.save(os.path.join(data_location, 'models', 'predictions'), pred)
+np.save(os.path.join(data_location, 'models', 'truth'), truth)
+mlflow.log_artifact(os.path.join(data_location, 'models', 'predictions.npy'))
+mlflow.log_artifact(os.path.join(data_location, 'models', 'truth.npy'))
+
 
 # Correlation map, shape (2, dataset.width, dataset.height)
 correlation_map = np.mean(truth * pred, axis=0)
@@ -207,6 +250,8 @@ f_name = 'Correlation_maps.png'
 file_path = os.path.join(data_location, figures_directory, f_name)
 plt.savefig(file_path)
 plt.close(fig)
+
+# FIN CORRELATION MAP 
 
 # log the figures as artifacts
 mlflow.log_artifact(os.path.join(data_location, figures_directory))
