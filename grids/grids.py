@@ -3,7 +3,9 @@
 Created on Tue Nov 26 12:52:24 2019
 
 @author: Arthur
-In this file we provide a few classes to handle gridded data.
+In this file we provide a few classes to handle gridded data, and methods
+to implement coarse-graining etc. Additionally we store some information
+about the scale, in comparison to a simple ndarray.
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -43,6 +45,12 @@ class RectangularGrid:
             result.append(self.dims[i] * self.step_sizes[i])
         return tuple(result)
 
+    def __repr__(self):
+        rep = 'Rectangular Grid\n'
+        rep += f'    -dims: {self.dims}\n'
+        rep += f'    -step sizes: {self.step_sizes}'
+        return rep
+
     def check_data(self, data: np.ndarray):
         """Checks if the passed array corresponds in terms of its dimensions
         to the definition of the grid."""
@@ -51,7 +59,8 @@ class RectangularGrid:
 
 
 class RectangularData:
-    """Handles data on a rectangular grid"""
+    """Handles data on a rectangular grid and provides methods for
+    coarse-graining"""
     def __init__(self, grid: RectangularGrid = None, data: np.ndarray = None):
         if grid is not None:
             assert isinstance(grid, RectangularGrid), 'The passed grid is not \
@@ -103,6 +112,12 @@ class RectangularData:
         return RectangularData(result_grid, result_data)
 
     def plot(self):
+        """Plots the data using the imshow function, and using the grid
+        info for the axes limits"""
         plt.figure()
         lengths = self.grid.lengths
         plt.imshow(self.data, extent=[0, lengths[1], 0, lengths[0]])
+
+if __name__ == '__main__':
+    simple_grid = RectangularGrid((10, 10), (0.1, 0.2))
+    data = RectangularData(simple_grid, np.random.randint(0, 10, (10, 10)))

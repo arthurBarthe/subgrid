@@ -5,22 +5,17 @@ Created on Wed Jan  8 17:24:37 2020
 @author: Arthur
 
 TODOs:
--Create a git repo
 -Try some standard image classification network whose last layer you'll change
--See if adding more channels in the input improves things
--Add physical constraint (fixed convolutional layer at the end)
--consider other preprocessing approaches (put some epsilon)
-
-- need to allow for parameters of transformers and log these.
-- use a fixed convolutional layer as a final layer
-- time series of predicted and true sx at a specific point
 - change the color map of plots
 - study different values of time indices
-------BUGs-----
+------BUGS-----
 -when we run less than 100 epochs the figures from previous runs are
 logged.
-
 """
+# TODO Log the data run that is used to create the dataset. Log any
+# transformation applied to the data. Later we might want to allow from
+# stream datasets.
+
 from enum import Enum
 import torch
 from torch.utils.data import Dataset
@@ -623,9 +618,9 @@ class FullyCNN(MLFlowNN):
         self.add_conv2d_layer(64, 32, 5, padding=2)
         self.add_activation('relu')
         self.add_batch_norm_layer(32)
-#        self.add_conv2d_layer(32, 32, 5, padding=2)
-#        self.add_activation('relu')
-#        self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32, 32, 5, padding=2)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
 #        self.add_conv2d_layer(32, 64, 5, padding=2)
 #        self.add_activation('relu')
 #        self.add_batch_norm_layer(64)

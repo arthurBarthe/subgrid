@@ -11,7 +11,11 @@ output layer is zero.
 - make a private github repo
 - analyze the importance of memory 
 - train on one scale (e.g. 30 km) and test on a range of different
-scales (e.g 10km, 20km, 40km, 50km, 60km)
+scales (e.g 10km, 20km, 40km, 50km, 60km). For that I need to write 
+a new file in analysis/ that does testing on a specific dataset.
+Additionally any dataset should have some info about its scale. During the 
+training we need to log on which dataset / scale we train.
+- Maybe use the xarray library?
 """
 
 import numpy as np
@@ -32,11 +36,14 @@ import torch.nn
 import matplotlib.pyplot as plt
 
 # Import our Dataset class and neural network
-from full_cnn1 import RawData, DatasetTransformer, MultipleTimeIndices
+from full_cnn1 import RawData, MultipleTimeIndices
 from full_cnn1 import FullyCNN
 
 # Import some utils functions
 from utils_nn import print_every, RunningAverage, DEVICE_TYPE
+
+# Set the mlflow tracking uri
+mlflow.set_tracking_uri('file:///data/ag7531/mlruns')
 
 # PARAMETERS ---------
 
@@ -51,7 +58,7 @@ test_split = 0.75
 
 # Parameters specific to the input data
 # past specifies the indices from the past that are used for prediction
-indices = [0, -4, -6, -8, -10]
+indices = [0, -1]
 
 # Other parameters
 print_loss_every = 20
