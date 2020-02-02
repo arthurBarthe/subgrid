@@ -4,12 +4,12 @@
 {
     "distutils": {
         "depends": [],
-        "name": "BoltonEtAl._utils",
+        "name": "_utils",
         "sources": [
             "_utils.pyx"
         ]
     },
-    "module_name": "BoltonEtAl._utils"
+    "module_name": "_utils"
 }
 END: Cython Metadata */
 
@@ -603,8 +603,8 @@ static CYTHON_INLINE float __PYX_NAN() {
   #endif
 #endif
 
-#define __PYX_HAVE__BoltonEtAl___utils
-#define __PYX_HAVE_API__BoltonEtAl___utils
+#define __PYX_HAVE___utils
+#define __PYX_HAVE_API___utils
 /* Early includes */
 #include <string.h>
 #include <stdio.h>
@@ -957,7 +957,7 @@ typedef struct {
 } __Pyx_BufFmt_Context;
 
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":776
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":776
  * # in Cython to enable them only on the right systems.
  * 
  * ctypedef npy_int8       int8_t             # <<<<<<<<<<<<<<
@@ -966,7 +966,7 @@ typedef struct {
  */
 typedef npy_int8 __pyx_t_5numpy_int8_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":777
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":777
  * 
  * ctypedef npy_int8       int8_t
  * ctypedef npy_int16      int16_t             # <<<<<<<<<<<<<<
@@ -975,7 +975,7 @@ typedef npy_int8 __pyx_t_5numpy_int8_t;
  */
 typedef npy_int16 __pyx_t_5numpy_int16_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":778
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":778
  * ctypedef npy_int8       int8_t
  * ctypedef npy_int16      int16_t
  * ctypedef npy_int32      int32_t             # <<<<<<<<<<<<<<
@@ -984,7 +984,7 @@ typedef npy_int16 __pyx_t_5numpy_int16_t;
  */
 typedef npy_int32 __pyx_t_5numpy_int32_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":779
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":779
  * ctypedef npy_int16      int16_t
  * ctypedef npy_int32      int32_t
  * ctypedef npy_int64      int64_t             # <<<<<<<<<<<<<<
@@ -993,7 +993,7 @@ typedef npy_int32 __pyx_t_5numpy_int32_t;
  */
 typedef npy_int64 __pyx_t_5numpy_int64_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":783
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":783
  * #ctypedef npy_int128     int128_t
  * 
  * ctypedef npy_uint8      uint8_t             # <<<<<<<<<<<<<<
@@ -1002,7 +1002,7 @@ typedef npy_int64 __pyx_t_5numpy_int64_t;
  */
 typedef npy_uint8 __pyx_t_5numpy_uint8_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":784
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":784
  * 
  * ctypedef npy_uint8      uint8_t
  * ctypedef npy_uint16     uint16_t             # <<<<<<<<<<<<<<
@@ -1011,7 +1011,7 @@ typedef npy_uint8 __pyx_t_5numpy_uint8_t;
  */
 typedef npy_uint16 __pyx_t_5numpy_uint16_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":785
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":785
  * ctypedef npy_uint8      uint8_t
  * ctypedef npy_uint16     uint16_t
  * ctypedef npy_uint32     uint32_t             # <<<<<<<<<<<<<<
@@ -1020,7 +1020,7 @@ typedef npy_uint16 __pyx_t_5numpy_uint16_t;
  */
 typedef npy_uint32 __pyx_t_5numpy_uint32_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":786
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":786
  * ctypedef npy_uint16     uint16_t
  * ctypedef npy_uint32     uint32_t
  * ctypedef npy_uint64     uint64_t             # <<<<<<<<<<<<<<
@@ -1029,7 +1029,7 @@ typedef npy_uint32 __pyx_t_5numpy_uint32_t;
  */
 typedef npy_uint64 __pyx_t_5numpy_uint64_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":790
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":790
  * #ctypedef npy_uint128    uint128_t
  * 
  * ctypedef npy_float32    float32_t             # <<<<<<<<<<<<<<
@@ -1038,7 +1038,7 @@ typedef npy_uint64 __pyx_t_5numpy_uint64_t;
  */
 typedef npy_float32 __pyx_t_5numpy_float32_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":791
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":791
  * 
  * ctypedef npy_float32    float32_t
  * ctypedef npy_float64    float64_t             # <<<<<<<<<<<<<<
@@ -1047,7 +1047,7 @@ typedef npy_float32 __pyx_t_5numpy_float32_t;
  */
 typedef npy_float64 __pyx_t_5numpy_float64_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":800
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":800
  * # The int types are mapped a bit surprising --
  * # numpy.int corresponds to 'l' and numpy.long to 'q'
  * ctypedef npy_long       int_t             # <<<<<<<<<<<<<<
@@ -1056,7 +1056,7 @@ typedef npy_float64 __pyx_t_5numpy_float64_t;
  */
 typedef npy_long __pyx_t_5numpy_int_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":801
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":801
  * # numpy.int corresponds to 'l' and numpy.long to 'q'
  * ctypedef npy_long       int_t
  * ctypedef npy_longlong   long_t             # <<<<<<<<<<<<<<
@@ -1065,7 +1065,7 @@ typedef npy_long __pyx_t_5numpy_int_t;
  */
 typedef npy_longlong __pyx_t_5numpy_long_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":802
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":802
  * ctypedef npy_long       int_t
  * ctypedef npy_longlong   long_t
  * ctypedef npy_longlong   longlong_t             # <<<<<<<<<<<<<<
@@ -1074,7 +1074,7 @@ typedef npy_longlong __pyx_t_5numpy_long_t;
  */
 typedef npy_longlong __pyx_t_5numpy_longlong_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":804
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":804
  * ctypedef npy_longlong   longlong_t
  * 
  * ctypedef npy_ulong      uint_t             # <<<<<<<<<<<<<<
@@ -1083,7 +1083,7 @@ typedef npy_longlong __pyx_t_5numpy_longlong_t;
  */
 typedef npy_ulong __pyx_t_5numpy_uint_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":805
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":805
  * 
  * ctypedef npy_ulong      uint_t
  * ctypedef npy_ulonglong  ulong_t             # <<<<<<<<<<<<<<
@@ -1092,7 +1092,7 @@ typedef npy_ulong __pyx_t_5numpy_uint_t;
  */
 typedef npy_ulonglong __pyx_t_5numpy_ulong_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":806
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":806
  * ctypedef npy_ulong      uint_t
  * ctypedef npy_ulonglong  ulong_t
  * ctypedef npy_ulonglong  ulonglong_t             # <<<<<<<<<<<<<<
@@ -1101,7 +1101,7 @@ typedef npy_ulonglong __pyx_t_5numpy_ulong_t;
  */
 typedef npy_ulonglong __pyx_t_5numpy_ulonglong_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":808
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":808
  * ctypedef npy_ulonglong  ulonglong_t
  * 
  * ctypedef npy_intp       intp_t             # <<<<<<<<<<<<<<
@@ -1110,7 +1110,7 @@ typedef npy_ulonglong __pyx_t_5numpy_ulonglong_t;
  */
 typedef npy_intp __pyx_t_5numpy_intp_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":809
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":809
  * 
  * ctypedef npy_intp       intp_t
  * ctypedef npy_uintp      uintp_t             # <<<<<<<<<<<<<<
@@ -1119,7 +1119,7 @@ typedef npy_intp __pyx_t_5numpy_intp_t;
  */
 typedef npy_uintp __pyx_t_5numpy_uintp_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":811
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":811
  * ctypedef npy_uintp      uintp_t
  * 
  * ctypedef npy_double     float_t             # <<<<<<<<<<<<<<
@@ -1128,7 +1128,7 @@ typedef npy_uintp __pyx_t_5numpy_uintp_t;
  */
 typedef npy_double __pyx_t_5numpy_float_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":812
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":812
  * 
  * ctypedef npy_double     float_t
  * ctypedef npy_double     double_t             # <<<<<<<<<<<<<<
@@ -1137,7 +1137,7 @@ typedef npy_double __pyx_t_5numpy_float_t;
  */
 typedef npy_double __pyx_t_5numpy_double_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":813
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":813
  * ctypedef npy_double     float_t
  * ctypedef npy_double     double_t
  * ctypedef npy_longdouble longdouble_t             # <<<<<<<<<<<<<<
@@ -1146,14 +1146,14 @@ typedef npy_double __pyx_t_5numpy_double_t;
  */
 typedef npy_longdouble __pyx_t_5numpy_longdouble_t;
 
-/* "BoltonEtAl/_utils.pyx":17
+/* "_utils.pyx":17
  * 
  * dtype = np.double
  * ctypedef double dtype_t             # <<<<<<<<<<<<<<
  * 
  * 
  */
-typedef double __pyx_t_10BoltonEtAl_6_utils_dtype_t;
+typedef double __pyx_t_6_utils_dtype_t;
 /* Declarations.proto */
 #if CYTHON_CCOMPLEX
   #ifdef __cplusplus
@@ -1185,7 +1185,7 @@ struct __pyx_MemviewEnum_obj;
 struct __pyx_memoryview_obj;
 struct __pyx_memoryviewslice_obj;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":815
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":815
  * ctypedef npy_longdouble longdouble_t
  * 
  * ctypedef npy_cfloat      cfloat_t             # <<<<<<<<<<<<<<
@@ -1194,7 +1194,7 @@ struct __pyx_memoryviewslice_obj;
  */
 typedef npy_cfloat __pyx_t_5numpy_cfloat_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":816
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":816
  * 
  * ctypedef npy_cfloat      cfloat_t
  * ctypedef npy_cdouble     cdouble_t             # <<<<<<<<<<<<<<
@@ -1203,7 +1203,7 @@ typedef npy_cfloat __pyx_t_5numpy_cfloat_t;
  */
 typedef npy_cdouble __pyx_t_5numpy_cdouble_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":817
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":817
  * ctypedef npy_cfloat      cfloat_t
  * ctypedef npy_cdouble     cdouble_t
  * ctypedef npy_clongdouble clongdouble_t             # <<<<<<<<<<<<<<
@@ -1212,7 +1212,7 @@ typedef npy_cdouble __pyx_t_5numpy_cdouble_t;
  */
 typedef npy_clongdouble __pyx_t_5numpy_clongdouble_t;
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":819
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":819
  * ctypedef npy_clongdouble clongdouble_t
  * 
  * ctypedef npy_cdouble     complex_t             # <<<<<<<<<<<<<<
@@ -1220,16 +1220,16 @@ typedef npy_clongdouble __pyx_t_5numpy_clongdouble_t;
  * cdef inline object PyArray_MultiIterNew1(a):
  */
 typedef npy_cdouble __pyx_t_5numpy_complex_t;
-struct __pyx_opt_args_10BoltonEtAl_6_utils_filter_dataset;
+struct __pyx_opt_args_6_utils_filter_dataset;
 
-/* "BoltonEtAl/_utils.pyx":90
+/* "_utils.pyx":90
  * 
  * 
  * cdef filter_dataset(double[:,:,:] data, dx: float, dy: float,             # <<<<<<<<<<<<<<
  *           scale_x: float, scale_y: float = None):
  *     cdef int nb_samples = data.shape[0]
  */
-struct __pyx_opt_args_10BoltonEtAl_6_utils_filter_dataset {
+struct __pyx_opt_args_6_utils_filter_dataset {
   int __pyx_n;
   PyObject *scale_y;
 };
@@ -2025,8 +2025,8 @@ static CYTHON_INLINE int __pyx_memview_set_double(const char *itemp, PyObject *o
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
 /* MemviewDtypeToObject.proto */
-static CYTHON_INLINE PyObject *__pyx_memview_get_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(const char *itemp);
-static CYTHON_INLINE int __pyx_memview_set_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(const char *itemp, PyObject *obj);
+static CYTHON_INLINE PyObject *__pyx_memview_get_nn___pyx_t_6_utils_dtype_t(const char *itemp);
+static CYTHON_INLINE int __pyx_memview_set_nn___pyx_t_6_utils_dtype_t(const char *itemp, PyObject *obj);
 
 /* RealImag.proto */
 #if CYTHON_CCOMPLEX
@@ -2149,13 +2149,10 @@ static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
 static CYTHON_INLINE char __Pyx_PyInt_As_char(PyObject *);
 
 /* ObjectToMemviewSlice.proto */
-static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsdsds_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(PyObject *, int writable_flag);
+static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsdsds_nn___pyx_t_6_utils_dtype_t(PyObject *, int writable_flag);
 
 /* ObjectToMemviewSlice.proto */
-static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(PyObject *, int writable_flag);
-
-/* CStringEquals.proto */
-static CYTHON_INLINE int __Pyx_StrEq(const char *, const char *);
+static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn___pyx_t_6_utils_dtype_t(PyObject *, int writable_flag);
 
 /* CheckBinaryVersion.proto */
 static int __Pyx_check_binary_version(void);
@@ -2203,7 +2200,7 @@ static PyTypeObject *__pyx_ptype_5numpy_ndarray = 0;
 static PyTypeObject *__pyx_ptype_5numpy_ufunc = 0;
 static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *, char *, char *, int *); /*proto*/
 
-/* Module declarations from 'BoltonEtAl._utils' */
+/* Module declarations from '_utils' */
 static PyTypeObject *__pyx_array_type = 0;
 static PyTypeObject *__pyx_MemviewEnum_type = 0;
 static PyTypeObject *__pyx_memoryview_type = 0;
@@ -2215,8 +2212,8 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
-static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice, double, double, double, struct __pyx_opt_args_10BoltonEtAl_6_utils_filter_dataset *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviewslice, double, double, double, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_6_utils_filter_dataset(__Pyx_memviewslice, double, double, double, struct __pyx_opt_args_6_utils_filter_dataset *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_6_utils_build_training_data(__Pyx_memviewslice, double, double, double, int __pyx_skip_dispatch); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char *, char *); /*proto*/
 static void *__pyx_align_pointer(void *, size_t); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo *); /*proto*/
@@ -2251,12 +2248,12 @@ static void __pyx_memoryview_slice_assign_scalar(__Pyx_memviewslice *, int, size
 static void __pyx_memoryview__slice_assign_scalar(char *, Py_ssize_t *, Py_ssize_t *, int, size_t, void *); /*proto*/
 static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *, PyObject *); /*proto*/
 static __Pyx_TypeInfo __Pyx_TypeInfo_double = { "double", NULL, sizeof(double), { 0 }, 0, 'R', 0, 0 };
-static __Pyx_TypeInfo __Pyx_TypeInfo_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t = { "dtype_t", NULL, sizeof(__pyx_t_10BoltonEtAl_6_utils_dtype_t), { 0 }, 0, 'R', 0, 0 };
-#define __Pyx_MODULE_NAME "BoltonEtAl._utils"
-extern int __pyx_module_is_main_BoltonEtAl___utils;
-int __pyx_module_is_main_BoltonEtAl___utils = 0;
+static __Pyx_TypeInfo __Pyx_TypeInfo_nn___pyx_t_6_utils_dtype_t = { "dtype_t", NULL, sizeof(__pyx_t_6_utils_dtype_t), { 0 }, 0, 'R', 0, 0 };
+#define __Pyx_MODULE_NAME "_utils"
+extern int __pyx_module_is_main__utils;
+int __pyx_module_is_main__utils = 0;
 
-/* Implementation of 'BoltonEtAl._utils' */
+/* Implementation of '_utils' */
 static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_ValueError;
 static PyObject *__pyx_builtin_RuntimeError;
@@ -2338,6 +2335,7 @@ static const char __pyx_k_range[] = "range";
 static const char __pyx_k_scale[] = "scale";
 static const char __pyx_k_shape[] = "shape";
 static const char __pyx_k_start[] = "start";
+static const char __pyx_k_utils[] = "_utils";
 static const char __pyx_k_value[] = "value";
 static const char __pyx_k_zeros[] = "zeros";
 static const char __pyx_k_adv1_x[] = "adv1_x";
@@ -2419,7 +2417,6 @@ static const char __pyx_k_pyx_PickleError[] = "__pyx_PickleError";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_Iteration_number[] = "Iteration number {}/{}";
 static const char __pyx_k_n_times_per_loop[] = "n_times_per_loop";
-static const char __pyx_k_BoltonEtAl__utils[] = "BoltonEtAl._utils";
 static const char __pyx_k_matplotlib_pyplot[] = "matplotlib.pyplot";
 static const char __pyx_k_pyx_unpickle_Enum[] = "__pyx_unpickle_Enum";
 static const char __pyx_k_Size_of_data_2f_Gb[] = "Size of data: {:.2f} Gb";
@@ -2460,7 +2457,6 @@ static const char __pyx_k_numpy_core_umath_failed_to_impor[] = "numpy.core.umath
 static const char __pyx_k_unable_to_allocate_shape_and_str[] = "unable to allocate shape and strides.";
 static const char __pyx_k_Format_string_allocated_too_shor_2[] = "Format string allocated too short.";
 static PyObject *__pyx_n_s_ASCII;
-static PyObject *__pyx_n_s_BoltonEtAl__utils;
 static PyObject *__pyx_kp_s_Buffer_view_does_not_expose_stri;
 static PyObject *__pyx_kp_s_Can_only_create_a_buffer_that_is;
 static PyObject *__pyx_kp_s_Cannot_assign_to_read_only_memor;
@@ -2644,6 +2640,7 @@ static PyObject *__pyx_kp_s_unable_to_allocate_shape_and_str;
 static PyObject *__pyx_kp_u_unknown_dtype_code_in_numpy_pxd;
 static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_update;
+static PyObject *__pyx_n_s_utils;
 static PyObject *__pyx_kp_s_utils_pyx;
 static PyObject *__pyx_n_s_v;
 static PyObject *__pyx_n_s_v_t;
@@ -2652,10 +2649,10 @@ static PyObject *__pyx_n_s_v_y;
 static PyObject *__pyx_n_s_value;
 static PyObject *__pyx_n_s_zeros;
 static PyObject *__pyx_n_s_zeros_like;
-static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_filepath, PyObject *__pyx_v_filename); /* proto */
-static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_psiEddy, PyObject *__pyx_v_psiBar, PyObject *__pyx_v_scale_filter); /* proto */
-static PyObject *__pyx_pf_10BoltonEtAl_6_utils_4build_training_data(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_psi, double __pyx_v_dx, double __pyx_v_dy, double __pyx_v_scale); /* proto */
-static PyObject *__pyx_pf_10BoltonEtAl_6_utils_6block_loop(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_n_times, PyObject *__pyx_v_n_times_per_loop, PyObject *__pyx_v_data, PyObject *__pyx_v_function, PyObject *__pyx_v_shape_result); /* proto */
+static PyObject *__pyx_pf_6_utils_load_tom_data(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_filepath, PyObject *__pyx_v_filename); /* proto */
+static PyObject *__pyx_pf_6_utils_2calcEddyForcing(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_psiEddy, PyObject *__pyx_v_psiBar, PyObject *__pyx_v_scale_filter); /* proto */
+static PyObject *__pyx_pf_6_utils_4build_training_data(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_psi, double __pyx_v_dx, double __pyx_v_dy, double __pyx_v_scale); /* proto */
+static PyObject *__pyx_pf_6_utils_6block_loop(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_n_times, PyObject *__pyx_v_n_times_per_loop, PyObject *__pyx_v_data, PyObject *__pyx_v_function, PyObject *__pyx_v_shape_result); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
@@ -2753,7 +2750,7 @@ static PyObject *__pyx_codeobj__34;
 static PyObject *__pyx_codeobj__41;
 /* Late includes */
 
-/* "BoltonEtAl/_utils.pyx":20
+/* "_utils.pyx":20
  * 
  * 
  * def load_tom_data(filepath: str, filename: str):             # <<<<<<<<<<<<<<
@@ -2762,9 +2759,9 @@ static PyObject *__pyx_codeobj__41;
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BoltonEtAl_6_utils_1load_tom_data(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_10BoltonEtAl_6_utils_1load_tom_data = {"load_tom_data", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_10BoltonEtAl_6_utils_1load_tom_data, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10BoltonEtAl_6_utils_1load_tom_data(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6_utils_1load_tom_data(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_6_utils_1load_tom_data = {"load_tom_data", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_6_utils_1load_tom_data, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_6_utils_1load_tom_data(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_filepath = 0;
   PyObject *__pyx_v_filename = 0;
   PyObject *__pyx_r = 0;
@@ -2812,13 +2809,13 @@ static PyObject *__pyx_pw_10BoltonEtAl_6_utils_1load_tom_data(PyObject *__pyx_se
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("load_tom_data", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 20, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("BoltonEtAl._utils.load_tom_data", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("_utils.load_tom_data", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_filepath), (&PyString_Type), 1, "filepath", 1))) __PYX_ERR(0, 20, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_filename), (&PyString_Type), 1, "filename", 1))) __PYX_ERR(0, 20, __pyx_L1_error)
-  __pyx_r = __pyx_pf_10BoltonEtAl_6_utils_load_tom_data(__pyx_self, __pyx_v_filepath, __pyx_v_filename);
+  __pyx_r = __pyx_pf_6_utils_load_tom_data(__pyx_self, __pyx_v_filepath, __pyx_v_filename);
 
   /* function exit code */
   goto __pyx_L0;
@@ -2829,7 +2826,7 @@ static PyObject *__pyx_pw_10BoltonEtAl_6_utils_1load_tom_data(PyObject *__pyx_se
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_filepath, PyObject *__pyx_v_filename) {
+static PyObject *__pyx_pf_6_utils_load_tom_data(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_filepath, PyObject *__pyx_v_filename) {
   PyObject *__pyx_v_file = NULL;
   PyObject *__pyx_v_data = NULL;
   PyObject *__pyx_r = NULL;
@@ -2850,7 +2847,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
   int __pyx_t_14;
   __Pyx_RefNannySetupContext("load_tom_data", 0);
 
-  /* "BoltonEtAl/_utils.pyx":21
+  /* "_utils.pyx":21
  * 
  * def load_tom_data(filepath: str, filename: str):
  *     print('Loading data... This might take a minute or two...')             # <<<<<<<<<<<<<<
@@ -2859,7 +2856,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
  */
   if (__Pyx_PrintOne(0, __pyx_kp_s_Loading_data_This_might_take_a_m) < 0) __PYX_ERR(0, 21, __pyx_L1_error)
 
-  /* "BoltonEtAl/_utils.pyx":22
+  /* "_utils.pyx":22
  * def load_tom_data(filepath: str, filename: str):
  *     print('Loading data... This might take a minute or two...')
  *     with h5py.File(join(filepath, filename), 'r') as file:             # <<<<<<<<<<<<<<
@@ -3000,7 +2997,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
           __pyx_v_file = __pyx_t_7;
           __pyx_t_7 = 0;
 
-          /* "BoltonEtAl/_utils.pyx":23
+          /* "_utils.pyx":23
  *     print('Loading data... This might take a minute or two...')
  *     with h5py.File(join(filepath, filename), 'r') as file:
  *         data = file['psi1a'].value             # <<<<<<<<<<<<<<
@@ -3015,7 +3012,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
           __pyx_v_data = __pyx_t_1;
           __pyx_t_1 = 0;
 
-          /* "BoltonEtAl/_utils.pyx":24
+          /* "_utils.pyx":24
  *     with h5py.File(join(filepath, filename), 'r') as file:
  *         data = file['psi1a'].value
  *         print('Successfuly loaded the data!')             # <<<<<<<<<<<<<<
@@ -3024,7 +3021,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
  */
           if (__Pyx_PrintOne(0, __pyx_kp_s_Successfuly_loaded_the_data) < 0) __PYX_ERR(0, 24, __pyx_L7_error)
 
-          /* "BoltonEtAl/_utils.pyx":25
+          /* "_utils.pyx":25
  *         data = file['psi1a'].value
  *         print('Successfuly loaded the data!')
  *         print('Shape of data: %s' % str(data.shape))             # <<<<<<<<<<<<<<
@@ -3042,7 +3039,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
           if (__Pyx_PrintOne(0, __pyx_t_1) < 0) __PYX_ERR(0, 25, __pyx_L7_error)
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-          /* "BoltonEtAl/_utils.pyx":26
+          /* "_utils.pyx":26
  *         print('Successfuly loaded the data!')
  *         print('Shape of data: %s' % str(data.shape))
  *         print('Size of data: {:.2f} Gb'.format(data.nbytes / 1e9))             # <<<<<<<<<<<<<<
@@ -3075,7 +3072,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
           if (__Pyx_PrintOne(0, __pyx_t_1) < 0) __PYX_ERR(0, 26, __pyx_L7_error)
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-          /* "BoltonEtAl/_utils.pyx":27
+          /* "_utils.pyx":27
  *         print('Shape of data: %s' % str(data.shape))
  *         print('Size of data: {:.2f} Gb'.format(data.nbytes / 1e9))
  *         return data             # <<<<<<<<<<<<<<
@@ -3087,7 +3084,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
           __pyx_r = __pyx_v_data;
           goto __pyx_L11_try_return;
 
-          /* "BoltonEtAl/_utils.pyx":22
+          /* "_utils.pyx":22
  * def load_tom_data(filepath: str, filename: str):
  *     print('Loading data... This might take a minute or two...')
  *     with h5py.File(join(filepath, filename), 'r') as file:             # <<<<<<<<<<<<<<
@@ -3103,7 +3100,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
         __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
         __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
         /*except:*/ {
-          __Pyx_AddTraceback("BoltonEtAl._utils.load_tom_data", __pyx_clineno, __pyx_lineno, __pyx_filename);
+          __Pyx_AddTraceback("_utils.load_tom_data", __pyx_clineno, __pyx_lineno, __pyx_filename);
           if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_7, &__pyx_t_2) < 0) __PYX_ERR(0, 22, __pyx_L9_except_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_GOTREF(__pyx_t_7);
@@ -3185,7 +3182,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
     __pyx_L16:;
   }
 
-  /* "BoltonEtAl/_utils.pyx":20
+  /* "_utils.pyx":20
  * 
  * 
  * def load_tom_data(filepath: str, filename: str):             # <<<<<<<<<<<<<<
@@ -3203,7 +3200,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("BoltonEtAl._utils.load_tom_data", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("_utils.load_tom_data", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_file);
@@ -3213,7 +3210,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
   return __pyx_r;
 }
 
-/* "BoltonEtAl/_utils.pyx":30
+/* "_utils.pyx":30
  * 
  * #Taken from Tom Bolton
  * def calcEddyForcing( psiEddy, psiBar, scale_filter ) :             # <<<<<<<<<<<<<<
@@ -3222,10 +3219,10 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_load_tom_data(CYTHON_UNUSED PyObj
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BoltonEtAl_6_utils_3calcEddyForcing(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_10BoltonEtAl_6_utils_2calcEddyForcing[] = "\n    Copied from Tom Bolton's code.'\n    Given the filtered-streamfunction 'psiBar' and the sub-filter\n    streamfunction psiEddy = psi - psiBar, calculate the components\n    of the sub-filter eddy momentum forcing Sx and Sy\n\n    (Sx,Sy) = (U.grad)U - filter( (u.grad)u ),\n\n    where U is the velocity from the filtered-streamfunction, and\n    u is the full velocity (filtered + sub-filter).    The calculation\n    requires more spatial-filtering, which is why the length-scale\n    of the filter 'l' (in m) is required as an input variable.\n\n    ";
-static PyMethodDef __pyx_mdef_10BoltonEtAl_6_utils_3calcEddyForcing = {"calcEddyForcing", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_10BoltonEtAl_6_utils_3calcEddyForcing, METH_VARARGS|METH_KEYWORDS, __pyx_doc_10BoltonEtAl_6_utils_2calcEddyForcing};
-static PyObject *__pyx_pw_10BoltonEtAl_6_utils_3calcEddyForcing(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6_utils_3calcEddyForcing(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_6_utils_2calcEddyForcing[] = "\n    Copied from Tom Bolton's code.'\n    Given the filtered-streamfunction 'psiBar' and the sub-filter\n    streamfunction psiEddy = psi - psiBar, calculate the components\n    of the sub-filter eddy momentum forcing Sx and Sy\n\n    (Sx,Sy) = (U.grad)U - filter( (u.grad)u ),\n\n    where U is the velocity from the filtered-streamfunction, and\n    u is the full velocity (filtered + sub-filter).    The calculation\n    requires more spatial-filtering, which is why the length-scale\n    of the filter 'l' (in m) is required as an input variable.\n\n    ";
+static PyMethodDef __pyx_mdef_6_utils_3calcEddyForcing = {"calcEddyForcing", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_6_utils_3calcEddyForcing, METH_VARARGS|METH_KEYWORDS, __pyx_doc_6_utils_2calcEddyForcing};
+static PyObject *__pyx_pw_6_utils_3calcEddyForcing(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_psiEddy = 0;
   PyObject *__pyx_v_psiBar = 0;
   PyObject *__pyx_v_scale_filter = 0;
@@ -3284,18 +3281,18 @@ static PyObject *__pyx_pw_10BoltonEtAl_6_utils_3calcEddyForcing(PyObject *__pyx_
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("calcEddyForcing", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 30, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("BoltonEtAl._utils.calcEddyForcing", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("_utils.calcEddyForcing", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(__pyx_self, __pyx_v_psiEddy, __pyx_v_psiBar, __pyx_v_scale_filter);
+  __pyx_r = __pyx_pf_6_utils_2calcEddyForcing(__pyx_self, __pyx_v_psiEddy, __pyx_v_psiBar, __pyx_v_scale_filter);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_psiEddy, PyObject *__pyx_v_psiBar, PyObject *__pyx_v_scale_filter) {
+static PyObject *__pyx_pf_6_utils_2calcEddyForcing(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_psiEddy, PyObject *__pyx_v_psiBar, PyObject *__pyx_v_scale_filter) {
   double __pyx_v_dx;
   PyObject *__pyx_v_psi = NULL;
   CYTHON_UNUSED PyObject *__pyx_v_psi_t = NULL;
@@ -3342,16 +3339,16 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   PyObject *__pyx_t_11 = NULL;
   __Pyx_RefNannySetupContext("calcEddyForcing", 0);
 
-  /* "BoltonEtAl/_utils.pyx":47
+  /* "_utils.pyx":47
  * 
  *     # spatial-resolution of QG model (7.5km)
- *     dx = 7.5*1e3             # <<<<<<<<<<<<<<
+ *     dx = 7.5e3             # <<<<<<<<<<<<<<
  * 
  *     # streamfunction for calculating u and v
  */
-  __pyx_v_dx = (7.5 * 1e3);
+  __pyx_v_dx = 7.5e3;
 
-  /* "BoltonEtAl/_utils.pyx":50
+  /* "_utils.pyx":50
  * 
  *     # streamfunction for calculating u and v
  *     psi = psiBar + psiEddy             # <<<<<<<<<<<<<<
@@ -3363,7 +3360,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __pyx_v_psi = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":53
+  /* "_utils.pyx":53
  * 
  *     # calculate gradients
  *     [ psi_t, psi_y, psi_x] = np.gradient( psi, dx )             # <<<<<<<<<<<<<<
@@ -3484,7 +3481,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __pyx_v_psi_x = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":54
+  /* "_utils.pyx":54
  *     # calculate gradients
  *     [ psi_t, psi_y, psi_x] = np.gradient( psi, dx )
  *     [ psiBar_t, psiBar_y, psiBar_x] = np.gradient( psiBar, dx )             # <<<<<<<<<<<<<<
@@ -3605,7 +3602,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __pyx_v_psiBar_x = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":56
+  /* "_utils.pyx":56
  *     [ psiBar_t, psiBar_y, psiBar_x] = np.gradient( psiBar, dx )
  * 
  *     u, v = -psi_y, psi_x             # <<<<<<<<<<<<<<
@@ -3621,7 +3618,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __pyx_v_v = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":57
+  /* "_utils.pyx":57
  * 
  *     u, v = -psi_y, psi_x
  *     U, V = -psiBar_y, psiBar_x             # <<<<<<<<<<<<<<
@@ -3637,7 +3634,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __pyx_v_V = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":60
+  /* "_utils.pyx":60
  * 
  *     # Calcluate filtered-advection term
  *     [ U_t, U_y, U_x ] = np.gradient( U, dx );  del U_t             # <<<<<<<<<<<<<<
@@ -3760,7 +3757,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __Pyx_DECREF(__pyx_v_U_t);
   __pyx_v_U_t = NULL;
 
-  /* "BoltonEtAl/_utils.pyx":61
+  /* "_utils.pyx":61
  *     # Calcluate filtered-advection term
  *     [ U_t, U_y, U_x ] = np.gradient( U, dx );  del U_t
  *     [ V_t, V_y, V_x ] = np.gradient( V, dx );  del V_t             # <<<<<<<<<<<<<<
@@ -3883,7 +3880,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __Pyx_DECREF(__pyx_v_V_t);
   __pyx_v_V_t = NULL;
 
-  /* "BoltonEtAl/_utils.pyx":65
+  /* "_utils.pyx":65
  *     # ( Ud/dx + Vd/dy )U and ( Ud/dx + Vd/dy )V
  *     # arthur ok
  *     adv1_x = U * U_x + V * U_y             # <<<<<<<<<<<<<<
@@ -3901,7 +3898,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __pyx_v_adv1_x = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":66
+  /* "_utils.pyx":66
  *     # arthur ok
  *     adv1_x = U * U_x + V * U_y
  *     adv1_y = U * V_x + V * V_y             # <<<<<<<<<<<<<<
@@ -3919,7 +3916,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __pyx_v_adv1_y = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":68
+  /* "_utils.pyx":68
  *     adv1_y = U * V_x + V * V_y
  * 
  *     del U_x, U_y, V_x, V_y             # <<<<<<<<<<<<<<
@@ -3935,7 +3932,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __Pyx_DECREF(__pyx_v_V_y);
   __pyx_v_V_y = NULL;
 
-  /* "BoltonEtAl/_utils.pyx":71
+  /* "_utils.pyx":71
  * 
  *     # Calculate sub-filter advection term
  *     [u_t, u_y, u_x] = np.gradient(u, dx); del u_t             # <<<<<<<<<<<<<<
@@ -4058,7 +4055,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __Pyx_DECREF(__pyx_v_u_t);
   __pyx_v_u_t = NULL;
 
-  /* "BoltonEtAl/_utils.pyx":72
+  /* "_utils.pyx":72
  *     # Calculate sub-filter advection term
  *     [u_t, u_y, u_x] = np.gradient(u, dx); del u_t
  *     [v_t, v_y, v_x] = np.gradient(v, dx); del v_t             # <<<<<<<<<<<<<<
@@ -4181,7 +4178,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __Pyx_DECREF(__pyx_v_v_t);
   __pyx_v_v_t = NULL;
 
-  /* "BoltonEtAl/_utils.pyx":75
+  /* "_utils.pyx":75
  * 
  *     # ( ud/dx + vd/dy )u + ( ud/dx + vd/dy )v
  *     adv2_x = u * u_x + v * u_y             # <<<<<<<<<<<<<<
@@ -4199,7 +4196,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __pyx_v_adv2_x = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":76
+  /* "_utils.pyx":76
  *     # ( ud/dx + vd/dy )u + ( ud/dx + vd/dy )v
  *     adv2_x = u * u_x + v * u_y
  *     adv2_y = u * v_x + v * v_y             # <<<<<<<<<<<<<<
@@ -4217,7 +4214,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __pyx_v_adv2_y = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":78
+  /* "_utils.pyx":78
  *     adv2_y = u * v_x + v * v_y
  * 
  *     del u_x, u_y, v_x, v_y             # <<<<<<<<<<<<<<
@@ -4233,7 +4230,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __Pyx_DECREF(__pyx_v_v_y);
   __pyx_v_v_y = NULL;
 
-  /* "BoltonEtAl/_utils.pyx":80
+  /* "_utils.pyx":80
  *     del u_x, u_y, v_x, v_y
  * 
  *     for t in range( adv2_x.shape[0] ) :             # <<<<<<<<<<<<<<
@@ -4291,7 +4288,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
     __Pyx_XDECREF_SET(__pyx_v_t, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "BoltonEtAl/_utils.pyx":81
+    /* "_utils.pyx":81
  * 
  *     for t in range( adv2_x.shape[0] ) :
  *        adv2_x[t,:,:] = gaussian_filter( adv2_x[t,:,:], scale_filter/dx )             # <<<<<<<<<<<<<<
@@ -4383,7 +4380,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "BoltonEtAl/_utils.pyx":82
+    /* "_utils.pyx":82
  *     for t in range( adv2_x.shape[0] ) :
  *        adv2_x[t,:,:] = gaussian_filter( adv2_x[t,:,:], scale_filter/dx )
  *        adv2_y[t,:,:] = gaussian_filter( adv2_y[t,:,:], scale_filter/dx )             # <<<<<<<<<<<<<<
@@ -4475,7 +4472,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "BoltonEtAl/_utils.pyx":80
+    /* "_utils.pyx":80
  *     del u_x, u_y, v_x, v_y
  * 
  *     for t in range( adv2_x.shape[0] ) :             # <<<<<<<<<<<<<<
@@ -4485,7 +4482,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":85
+  /* "_utils.pyx":85
  * 
  *     # Calculate the eddy momentum forcing components
  *     Sx = adv1_x - adv2_x             # <<<<<<<<<<<<<<
@@ -4497,7 +4494,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __pyx_v_Sx = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":86
+  /* "_utils.pyx":86
  *     # Calculate the eddy momentum forcing components
  *     Sx = adv1_x - adv2_x
  *     Sy = adv1_y - adv2_y             # <<<<<<<<<<<<<<
@@ -4509,7 +4506,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __pyx_v_Sy = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":87
+  /* "_utils.pyx":87
  *     Sx = adv1_x - adv2_x
  *     Sy = adv1_y - adv2_y
  *     return Sx, Sy             # <<<<<<<<<<<<<<
@@ -4529,7 +4526,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "BoltonEtAl/_utils.pyx":30
+  /* "_utils.pyx":30
  * 
  * #Taken from Tom Bolton
  * def calcEddyForcing( psiEddy, psiBar, scale_filter ) :             # <<<<<<<<<<<<<<
@@ -4546,7 +4543,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_10);
   __Pyx_XDECREF(__pyx_t_11);
-  __Pyx_AddTraceback("BoltonEtAl._utils.calcEddyForcing", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("_utils.calcEddyForcing", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_psi);
@@ -4584,7 +4581,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
   return __pyx_r;
 }
 
-/* "BoltonEtAl/_utils.pyx":90
+/* "_utils.pyx":90
  * 
  * 
  * cdef filter_dataset(double[:,:,:] data, dx: float, dy: float,             # <<<<<<<<<<<<<<
@@ -4592,9 +4589,9 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_2calcEddyForcing(CYTHON_UNUSED Py
  *     cdef int nb_samples = data.shape[0]
  */
 
-static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice __pyx_v_data, double __pyx_v_dx, double __pyx_v_dy, double __pyx_v_scale_x, struct __pyx_opt_args_10BoltonEtAl_6_utils_filter_dataset *__pyx_optional_args) {
+static PyObject *__pyx_f_6_utils_filter_dataset(__Pyx_memviewslice __pyx_v_data, double __pyx_v_dx, double __pyx_v_dy, double __pyx_v_scale_x, struct __pyx_opt_args_6_utils_filter_dataset *__pyx_optional_args) {
 
-  /* "BoltonEtAl/_utils.pyx":91
+  /* "_utils.pyx":91
  * 
  * cdef filter_dataset(double[:,:,:] data, dx: float, dy: float,
  *           scale_x: float, scale_y: float = None):             # <<<<<<<<<<<<<<
@@ -4625,7 +4622,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
     }
   }
 
-  /* "BoltonEtAl/_utils.pyx":92
+  /* "_utils.pyx":92
  * cdef filter_dataset(double[:,:,:] data, dx: float, dy: float,
  *           scale_x: float, scale_y: float = None):
  *     cdef int nb_samples = data.shape[0]             # <<<<<<<<<<<<<<
@@ -4634,7 +4631,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
  */
   __pyx_v_nb_samples = (__pyx_v_data.shape[0]);
 
-  /* "BoltonEtAl/_utils.pyx":93
+  /* "_utils.pyx":93
  *           scale_x: float, scale_y: float = None):
  *     cdef int nb_samples = data.shape[0]
  *     filtered_data = np.zeros_like(data)             # <<<<<<<<<<<<<<
@@ -4667,7 +4664,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
   __pyx_v_filtered_data = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":95
+  /* "_utils.pyx":95
  *     filtered_data = np.zeros_like(data)
  *     cdef int i_sample
  *     sigma = (scale_x / dx, scale_y / dy)             # <<<<<<<<<<<<<<
@@ -4696,7 +4693,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
   __pyx_v_sigma = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":97
+  /* "_utils.pyx":97
  *     sigma = (scale_x / dx, scale_y / dy)
  *     #We just loop through the samples
  *     data_p = data             # <<<<<<<<<<<<<<
@@ -4708,7 +4705,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
   __pyx_v_data_p = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":98
+  /* "_utils.pyx":98
  *     #We just loop through the samples
  *     data_p = data
  *     for i_sample in range(nb_samples):             # <<<<<<<<<<<<<<
@@ -4720,7 +4717,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_i_sample = __pyx_t_7;
 
-    /* "BoltonEtAl/_utils.pyx":99
+    /* "_utils.pyx":99
  *     data_p = data
  *     for i_sample in range(nb_samples):
  *         filtered_data[i_sample, ...] = gaussian_filter(data_p[i_sample, ...],             # <<<<<<<<<<<<<<
@@ -4743,7 +4740,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "BoltonEtAl/_utils.pyx":100
+    /* "_utils.pyx":100
  *     for i_sample in range(nb_samples):
  *         filtered_data[i_sample, ...] = gaussian_filter(data_p[i_sample, ...],
  *                      sigma)             # <<<<<<<<<<<<<<
@@ -4798,7 +4795,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "BoltonEtAl/_utils.pyx":99
+    /* "_utils.pyx":99
  *     data_p = data
  *     for i_sample in range(nb_samples):
  *         filtered_data[i_sample, ...] = gaussian_filter(data_p[i_sample, ...],             # <<<<<<<<<<<<<<
@@ -4820,7 +4817,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   }
 
-  /* "BoltonEtAl/_utils.pyx":101
+  /* "_utils.pyx":101
  *         filtered_data[i_sample, ...] = gaussian_filter(data_p[i_sample, ...],
  *                      sigma)
  *     return filtered_data             # <<<<<<<<<<<<<<
@@ -4832,7 +4829,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
   __pyx_r = __pyx_v_filtered_data;
   goto __pyx_L0;
 
-  /* "BoltonEtAl/_utils.pyx":90
+  /* "_utils.pyx":90
  * 
  * 
  * cdef filter_dataset(double[:,:,:] data, dx: float, dy: float,             # <<<<<<<<<<<<<<
@@ -4847,7 +4844,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_9);
-  __Pyx_AddTraceback("BoltonEtAl._utils.filter_dataset", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("_utils.filter_dataset", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_filtered_data);
@@ -4858,7 +4855,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
   return __pyx_r;
 }
 
-/* "BoltonEtAl/_utils.pyx":103
+/* "_utils.pyx":103
  *     return filtered_data
  * 
  * cpdef build_training_data(double[:,:,:] psi, double dx, double dy,             # <<<<<<<<<<<<<<
@@ -4866,8 +4863,8 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_filter_dataset(__Pyx_memviewslice 
  *     psi_ = filter_dataset(psi, dx, dy, scale, scale)
  */
 
-static PyObject *__pyx_pw_10BoltonEtAl_6_utils_5build_training_data(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviewslice __pyx_v_psi, double __pyx_v_dx, double __pyx_v_dy, double __pyx_v_scale, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_pw_6_utils_5build_training_data(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_f_6_utils_build_training_data(__Pyx_memviewslice __pyx_v_psi, double __pyx_v_dx, double __pyx_v_dy, double __pyx_v_scale, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_psi_ = NULL;
   PyObject *__pyx_v_psi_eddy = NULL;
   PyObject *__pyx_v_sx = NULL;
@@ -4876,7 +4873,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  struct __pyx_opt_args_10BoltonEtAl_6_utils_filter_dataset __pyx_t_3;
+  struct __pyx_opt_args_6_utils_filter_dataset __pyx_t_3;
   PyObject *__pyx_t_4 = NULL;
   PyObject *__pyx_t_5 = NULL;
   int __pyx_t_6;
@@ -4884,7 +4881,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   PyObject *(*__pyx_t_8)(PyObject *);
   __Pyx_RefNannySetupContext("build_training_data", 0);
 
-  /* "BoltonEtAl/_utils.pyx":105
+  /* "_utils.pyx":105
  * cpdef build_training_data(double[:,:,:] psi, double dx, double dy,
  *                           double scale):
  *     psi_ = filter_dataset(psi, dx, dy, scale, scale)             # <<<<<<<<<<<<<<
@@ -4895,13 +4892,13 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_3.__pyx_n = 1;
   __pyx_t_3.scale_y = __pyx_t_1;
-  __pyx_t_2 = __pyx_f_10BoltonEtAl_6_utils_filter_dataset(__pyx_v_psi, __pyx_v_dx, __pyx_v_dy, __pyx_v_scale, &__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_6_utils_filter_dataset(__pyx_v_psi, __pyx_v_dx, __pyx_v_dy, __pyx_v_scale, &__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 105, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_psi_ = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":106
+  /* "_utils.pyx":106
  *                           double scale):
  *     psi_ = filter_dataset(psi, dx, dy, scale, scale)
  *     psi_eddy = psi - psi_             # <<<<<<<<<<<<<<
@@ -4916,7 +4913,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   __pyx_v_psi_eddy = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":107
+  /* "_utils.pyx":107
  *     psi_ = filter_dataset(psi, dx, dy, scale, scale)
  *     psi_eddy = psi - psi_
  *     sx, sy = calcEddyForcing(psi_eddy, psi_, scale)             # <<<<<<<<<<<<<<
@@ -5028,7 +5025,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   __pyx_v_sy = __pyx_t_7;
   __pyx_t_7 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":110
+  /* "_utils.pyx":110
  * 
  *     # Apply coarse-graining
  *     psi_ = RectangularData(data=psi_)             # <<<<<<<<<<<<<<
@@ -5047,7 +5044,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   __Pyx_DECREF_SET(__pyx_v_psi_, __pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":111
+  /* "_utils.pyx":111
  *     # Apply coarse-graining
  *     psi_ = RectangularData(data=psi_)
  *     sx = RectangularData(data=sx)             # <<<<<<<<<<<<<<
@@ -5066,7 +5063,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   __Pyx_DECREF_SET(__pyx_v_sx, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":112
+  /* "_utils.pyx":112
  *     psi_ = RectangularData(data=psi_)
  *     sx = RectangularData(data=sx)
  *     sy = RectangularData(data=sy)             # <<<<<<<<<<<<<<
@@ -5085,7 +5082,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   __Pyx_DECREF_SET(__pyx_v_sy, __pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":113
+  /* "_utils.pyx":113
  *     sx = RectangularData(data=sx)
  *     sy = RectangularData(data=sy)
  *     psi_ = psi_.coarse_grain(factor=4, dims=(1,2))             # <<<<<<<<<<<<<<
@@ -5105,7 +5102,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   __Pyx_DECREF_SET(__pyx_v_psi_, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":114
+  /* "_utils.pyx":114
  *     sy = RectangularData(data=sy)
  *     psi_ = psi_.coarse_grain(factor=4, dims=(1,2))
  *     sx = sx.coarse_grain(factor=4, dims=(1,2))             # <<<<<<<<<<<<<<
@@ -5125,7 +5122,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   __Pyx_DECREF_SET(__pyx_v_sx, __pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":115
+  /* "_utils.pyx":115
  *     psi_ = psi_.coarse_grain(factor=4, dims=(1,2))
  *     sx = sx.coarse_grain(factor=4, dims=(1,2))
  *     sy = sy.coarse_grain(factor=4, dims=(1,2))             # <<<<<<<<<<<<<<
@@ -5145,7 +5142,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   __Pyx_DECREF_SET(__pyx_v_sy, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":116
+  /* "_utils.pyx":116
  *     sx = sx.coarse_grain(factor=4, dims=(1,2))
  *     sy = sy.coarse_grain(factor=4, dims=(1,2))
  *     return (psi_.data, sx.data, sy.data)             # <<<<<<<<<<<<<<
@@ -5174,7 +5171,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "BoltonEtAl/_utils.pyx":103
+  /* "_utils.pyx":103
  *     return filtered_data
  * 
  * cpdef build_training_data(double[:,:,:] psi, double dx, double dy,             # <<<<<<<<<<<<<<
@@ -5189,7 +5186,7 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("BoltonEtAl._utils.build_training_data", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("_utils.build_training_data", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_psi_);
@@ -5202,8 +5199,8 @@ static PyObject *__pyx_f_10BoltonEtAl_6_utils_build_training_data(__Pyx_memviews
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BoltonEtAl_6_utils_5build_training_data(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_10BoltonEtAl_6_utils_5build_training_data(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6_utils_5build_training_data(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_6_utils_5build_training_data(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   __Pyx_memviewslice __pyx_v_psi = { 0, 0, { 0 }, { 0 }, { 0 } };
   double __pyx_v_dx;
   double __pyx_v_dy;
@@ -5273,25 +5270,25 @@ static PyObject *__pyx_pw_10BoltonEtAl_6_utils_5build_training_data(PyObject *__
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("build_training_data", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 103, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("BoltonEtAl._utils.build_training_data", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("_utils.build_training_data", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BoltonEtAl_6_utils_4build_training_data(__pyx_self, __pyx_v_psi, __pyx_v_dx, __pyx_v_dy, __pyx_v_scale);
+  __pyx_r = __pyx_pf_6_utils_4build_training_data(__pyx_self, __pyx_v_psi, __pyx_v_dx, __pyx_v_dy, __pyx_v_scale);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BoltonEtAl_6_utils_4build_training_data(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_psi, double __pyx_v_dx, double __pyx_v_dy, double __pyx_v_scale) {
+static PyObject *__pyx_pf_6_utils_4build_training_data(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_psi, double __pyx_v_dx, double __pyx_v_dy, double __pyx_v_scale) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("build_training_data", 0);
   __Pyx_XDECREF(__pyx_r);
   if (unlikely(!__pyx_v_psi.memview)) { __Pyx_RaiseUnboundLocalError("psi"); __PYX_ERR(0, 103, __pyx_L1_error) }
-  __pyx_t_1 = __pyx_f_10BoltonEtAl_6_utils_build_training_data(__pyx_v_psi, __pyx_v_dx, __pyx_v_dy, __pyx_v_scale, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 103, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_6_utils_build_training_data(__pyx_v_psi, __pyx_v_dx, __pyx_v_dy, __pyx_v_scale, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 103, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5300,7 +5297,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_4build_training_data(CYTHON_UNUSE
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("BoltonEtAl._utils.build_training_data", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("_utils.build_training_data", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_psi, 1);
@@ -5309,7 +5306,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_4build_training_data(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "BoltonEtAl/_utils.pyx":118
+/* "_utils.pyx":118
  *     return (psi_.data, sx.data, sy.data)
  * 
  * def block_loop(n_times, n_times_per_loop, data, function, shape_result):             # <<<<<<<<<<<<<<
@@ -5318,10 +5315,10 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_4build_training_data(CYTHON_UNUSE
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BoltonEtAl_6_utils_7block_loop(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_10BoltonEtAl_6_utils_6block_loop[] = "Block execution of  loop";
-static PyMethodDef __pyx_mdef_10BoltonEtAl_6_utils_7block_loop = {"block_loop", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_10BoltonEtAl_6_utils_7block_loop, METH_VARARGS|METH_KEYWORDS, __pyx_doc_10BoltonEtAl_6_utils_6block_loop};
-static PyObject *__pyx_pw_10BoltonEtAl_6_utils_7block_loop(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6_utils_7block_loop(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_6_utils_6block_loop[] = "Block execution of  loop";
+static PyMethodDef __pyx_mdef_6_utils_7block_loop = {"block_loop", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_6_utils_7block_loop, METH_VARARGS|METH_KEYWORDS, __pyx_doc_6_utils_6block_loop};
+static PyObject *__pyx_pw_6_utils_7block_loop(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_n_times = 0;
   PyObject *__pyx_v_n_times_per_loop = 0;
   PyObject *__pyx_v_data = 0;
@@ -5402,18 +5399,18 @@ static PyObject *__pyx_pw_10BoltonEtAl_6_utils_7block_loop(PyObject *__pyx_self,
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("block_loop", 1, 5, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 118, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("BoltonEtAl._utils.block_loop", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("_utils.block_loop", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BoltonEtAl_6_utils_6block_loop(__pyx_self, __pyx_v_n_times, __pyx_v_n_times_per_loop, __pyx_v_data, __pyx_v_function, __pyx_v_shape_result);
+  __pyx_r = __pyx_pf_6_utils_6block_loop(__pyx_self, __pyx_v_n_times, __pyx_v_n_times_per_loop, __pyx_v_data, __pyx_v_function, __pyx_v_shape_result);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BoltonEtAl_6_utils_6block_loop(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_n_times, PyObject *__pyx_v_n_times_per_loop, PyObject *__pyx_v_data, PyObject *__pyx_v_function, PyObject *__pyx_v_shape_result) {
+static PyObject *__pyx_pf_6_utils_6block_loop(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_n_times, PyObject *__pyx_v_n_times_per_loop, PyObject *__pyx_v_data, PyObject *__pyx_v_function, PyObject *__pyx_v_shape_result) {
   int __pyx_v_n_iterations;
   int __pyx_v_i;
   int __pyx_v_time_start;
@@ -5444,7 +5441,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_6block_loop(CYTHON_UNUSED PyObjec
   __Pyx_memviewslice __pyx_t_15 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_RefNannySetupContext("block_loop", 0);
 
-  /* "BoltonEtAl/_utils.pyx":120
+  /* "_utils.pyx":120
  * def block_loop(n_times, n_times_per_loop, data, function, shape_result):
  *     """Block execution of  loop"""
  *     cdef int n_iterations = n_times // n_times_per_loop             # <<<<<<<<<<<<<<
@@ -5457,7 +5454,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_6block_loop(CYTHON_UNUSED PyObjec
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_n_iterations = __pyx_t_2;
 
-  /* "BoltonEtAl/_utils.pyx":127
+  /* "_utils.pyx":127
  *     cdef dtype_t[:,:,:] res1
  *     cdef dtype_t[:,:,:] res2
  *     result = np.zeros(shape_result, dtype=dtype)             # <<<<<<<<<<<<<<
@@ -5488,31 +5485,31 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_6block_loop(CYTHON_UNUSED PyObjec
   __pyx_v_result = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":128
+  /* "_utils.pyx":128
  *     cdef dtype_t[:,:,:] res2
  *     result = np.zeros(shape_result, dtype=dtype)
  *     cdef dtype_t[:, :, :, :] result_view = result             # <<<<<<<<<<<<<<
  *     cdef dtype_t[:, :, :] data_view = data
  *     for i in range(n_iterations):
  */
-  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_dsdsdsds_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(__pyx_v_result, PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_dsdsdsds_nn___pyx_t_6_utils_dtype_t(__pyx_v_result, PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 128, __pyx_L1_error)
   __pyx_v_result_view = __pyx_t_6;
   __pyx_t_6.memview = NULL;
   __pyx_t_6.data = NULL;
 
-  /* "BoltonEtAl/_utils.pyx":129
+  /* "_utils.pyx":129
  *     result = np.zeros(shape_result, dtype=dtype)
  *     cdef dtype_t[:, :, :, :] result_view = result
  *     cdef dtype_t[:, :, :] data_view = data             # <<<<<<<<<<<<<<
  *     for i in range(n_iterations):
  *         print('Iteration number {}/{}'.format(i, n_iterations))
  */
-  __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(__pyx_v_data, PyBUF_WRITABLE); if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn___pyx_t_6_utils_dtype_t(__pyx_v_data, PyBUF_WRITABLE); if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(0, 129, __pyx_L1_error)
   __pyx_v_data_view = __pyx_t_7;
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "BoltonEtAl/_utils.pyx":130
+  /* "_utils.pyx":130
  *     cdef dtype_t[:, :, :, :] result_view = result
  *     cdef dtype_t[:, :, :] data_view = data
  *     for i in range(n_iterations):             # <<<<<<<<<<<<<<
@@ -5524,7 +5521,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_6block_loop(CYTHON_UNUSED PyObjec
   for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
     __pyx_v_i = __pyx_t_9;
 
-    /* "BoltonEtAl/_utils.pyx":131
+    /* "_utils.pyx":131
  *     cdef dtype_t[:, :, :] data_view = data
  *     for i in range(n_iterations):
  *         print('Iteration number {}/{}'.format(i, n_iterations))             # <<<<<<<<<<<<<<
@@ -5589,7 +5586,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_6block_loop(CYTHON_UNUSED PyObjec
     if (__Pyx_PrintOne(0, __pyx_t_5) < 0) __PYX_ERR(0, 131, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-    /* "BoltonEtAl/_utils.pyx":132
+    /* "_utils.pyx":132
  *     for i in range(n_iterations):
  *         print('Iteration number {}/{}'.format(i, n_iterations))
  *         time_start = n_times_per_loop * i             # <<<<<<<<<<<<<<
@@ -5605,7 +5602,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_6block_loop(CYTHON_UNUSED PyObjec
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_time_start = __pyx_t_11;
 
-    /* "BoltonEtAl/_utils.pyx":133
+    /* "_utils.pyx":133
  *         print('Iteration number {}/{}'.format(i, n_iterations))
  *         time_start = n_times_per_loop * i
  *         time_end = n_times_per_loop * (i+1)             # <<<<<<<<<<<<<<
@@ -5621,7 +5618,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_6block_loop(CYTHON_UNUSED PyObjec
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_time_end = __pyx_t_11;
 
-    /* "BoltonEtAl/_utils.pyx":134
+    /* "_utils.pyx":134
  *         time_start = n_times_per_loop * i
  *         time_end = n_times_per_loop * (i+1)
  *         if i == n_iterations - 1:             # <<<<<<<<<<<<<<
@@ -5631,7 +5628,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_6block_loop(CYTHON_UNUSED PyObjec
     __pyx_t_13 = ((__pyx_v_i == (__pyx_v_n_iterations - 1)) != 0);
     if (__pyx_t_13) {
 
-      /* "BoltonEtAl/_utils.pyx":135
+      /* "_utils.pyx":135
  *         time_end = n_times_per_loop * (i+1)
  *         if i == n_iterations - 1:
  *             time_end = n_times             # <<<<<<<<<<<<<<
@@ -5641,7 +5638,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_6block_loop(CYTHON_UNUSED PyObjec
       __pyx_t_11 = __Pyx_PyInt_As_int(__pyx_v_n_times); if (unlikely((__pyx_t_11 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 135, __pyx_L1_error)
       __pyx_v_time_end = __pyx_t_11;
 
-      /* "BoltonEtAl/_utils.pyx":134
+      /* "_utils.pyx":134
  *         time_start = n_times_per_loop * i
  *         time_end = n_times_per_loop * (i+1)
  *         if i == n_iterations - 1:             # <<<<<<<<<<<<<<
@@ -5650,7 +5647,7 @@ static PyObject *__pyx_pf_10BoltonEtAl_6_utils_6block_loop(CYTHON_UNUSED PyObjec
  */
     }
 
-    /* "BoltonEtAl/_utils.pyx":136
+    /* "_utils.pyx":136
  *         if i == n_iterations - 1:
  *             time_end = n_times
  *         f_result = function(data_view[time_start : time_end, :, :])             # <<<<<<<<<<<<<<
@@ -5686,7 +5683,7 @@ __pyx_t_7.shape[2] = __pyx_v_data_view.shape[2];
 __pyx_t_7.strides[2] = __pyx_v_data_view.strides[2];
     __pyx_t_7.suboffsets[2] = -1;
 
-__pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_7, 3, (PyObject *(*)(char *)) __pyx_memview_get_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t, (int (*)(char *, PyObject *)) __pyx_memview_set_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 136, __pyx_L1_error)
+__pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_7, 3, (PyObject *(*)(char *)) __pyx_memview_get_nn___pyx_t_6_utils_dtype_t, (int (*)(char *, PyObject *)) __pyx_memview_set_nn___pyx_t_6_utils_dtype_t, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 136, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __PYX_XDEC_MEMVIEW(&__pyx_t_7, 1);
     __pyx_t_7.memview = NULL;
@@ -5711,7 +5708,7 @@ __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_7, 3, (PyObject *(*)(char *)) __p
     __Pyx_XDECREF_SET(__pyx_v_f_result, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "BoltonEtAl/_utils.pyx":137
+    /* "_utils.pyx":137
  *             time_end = n_times
  *         f_result = function(data_view[time_start : time_end, :, :])
  *         res0 = f_result[0]             # <<<<<<<<<<<<<<
@@ -5720,14 +5717,14 @@ __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_7, 3, (PyObject *(*)(char *)) __p
  */
     __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_f_result, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 137, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(__pyx_t_5, PyBUF_WRITABLE); if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(0, 137, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn___pyx_t_6_utils_dtype_t(__pyx_t_5, PyBUF_WRITABLE); if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(0, 137, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __PYX_XDEC_MEMVIEW(&__pyx_v_res0, 1);
     __pyx_v_res0 = __pyx_t_7;
     __pyx_t_7.memview = NULL;
     __pyx_t_7.data = NULL;
 
-    /* "BoltonEtAl/_utils.pyx":138
+    /* "_utils.pyx":138
  *         f_result = function(data_view[time_start : time_end, :, :])
  *         res0 = f_result[0]
  *         res1 = f_result[1]             # <<<<<<<<<<<<<<
@@ -5736,14 +5733,14 @@ __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_7, 3, (PyObject *(*)(char *)) __p
  */
     __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_f_result, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 138, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(__pyx_t_5, PyBUF_WRITABLE); if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(0, 138, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn___pyx_t_6_utils_dtype_t(__pyx_t_5, PyBUF_WRITABLE); if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(0, 138, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __PYX_XDEC_MEMVIEW(&__pyx_v_res1, 1);
     __pyx_v_res1 = __pyx_t_7;
     __pyx_t_7.memview = NULL;
     __pyx_t_7.data = NULL;
 
-    /* "BoltonEtAl/_utils.pyx":139
+    /* "_utils.pyx":139
  *         res0 = f_result[0]
  *         res1 = f_result[1]
  *         res2 = f_result[2]             # <<<<<<<<<<<<<<
@@ -5752,14 +5749,14 @@ __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_7, 3, (PyObject *(*)(char *)) __p
  */
     __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_f_result, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 139, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(__pyx_t_5, PyBUF_WRITABLE); if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(0, 139, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn___pyx_t_6_utils_dtype_t(__pyx_t_5, PyBUF_WRITABLE); if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(0, 139, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __PYX_XDEC_MEMVIEW(&__pyx_v_res2, 1);
     __pyx_v_res2 = __pyx_t_7;
     __pyx_t_7.memview = NULL;
     __pyx_t_7.data = NULL;
 
-    /* "BoltonEtAl/_utils.pyx":141
+    /* "_utils.pyx":141
  *         res2 = f_result[2]
  * 
  *         result_view[time_start : time_end, 0, :, :] = res0             # <<<<<<<<<<<<<<
@@ -5814,7 +5811,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_v_res0, __pyx_t_7, 3, 3, 0) < 
     __pyx_t_7.memview = NULL;
     __pyx_t_7.data = NULL;
 
-    /* "BoltonEtAl/_utils.pyx":142
+    /* "_utils.pyx":142
  * 
  *         result_view[time_start : time_end, 0, :, :] = res0
  *         result_view[time_start : time_end, 1, :, :] = res1             # <<<<<<<<<<<<<<
@@ -5869,7 +5866,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_v_res1, __pyx_t_14, 3, 3, 0) <
     __pyx_t_14.memview = NULL;
     __pyx_t_14.data = NULL;
 
-    /* "BoltonEtAl/_utils.pyx":143
+    /* "_utils.pyx":143
  *         result_view[time_start : time_end, 0, :, :] = res0
  *         result_view[time_start : time_end, 1, :, :] = res1
  *         result_view[time_start : time_end, 2, :, :] = res2             # <<<<<<<<<<<<<<
@@ -5925,7 +5922,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_v_res2, __pyx_t_15, 3, 3, 0) <
     __pyx_t_15.data = NULL;
   }
 
-  /* "BoltonEtAl/_utils.pyx":144
+  /* "_utils.pyx":144
  *         result_view[time_start : time_end, 1, :, :] = res1
  *         result_view[time_start : time_end, 2, :, :] = res2
  *     return result             # <<<<<<<<<<<<<<
@@ -5936,7 +5933,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_v_res2, __pyx_t_15, 3, 3, 0) <
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "BoltonEtAl/_utils.pyx":118
+  /* "_utils.pyx":118
  *     return (psi_.data, sx.data, sy.data)
  * 
  * def block_loop(n_times, n_times_per_loop, data, function, shape_result):             # <<<<<<<<<<<<<<
@@ -5956,7 +5953,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_v_res2, __pyx_t_15, 3, 3, 0) <
   __Pyx_XDECREF(__pyx_t_12);
   __PYX_XDEC_MEMVIEW(&__pyx_t_14, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_t_15, 1);
-  __Pyx_AddTraceback("BoltonEtAl._utils.block_loop", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("_utils.block_loop", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_res0, 1);
@@ -5971,7 +5968,7 @@ if (unlikely(__pyx_memoryview_copy_contents(__pyx_v_res2, __pyx_t_15, 3, 3, 0) <
   return __pyx_r;
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":258
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":258
  *         # experimental exception made for __getbuffer__ and __releasebuffer__
  *         # -- the details of this may change.
  *         def __getbuffer__(ndarray self, Py_buffer* info, int flags):             # <<<<<<<<<<<<<<
@@ -6020,7 +6017,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
   __pyx_v_info->obj = Py_None; __Pyx_INCREF(Py_None);
   __Pyx_GIVEREF(__pyx_v_info->obj);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":265
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":265
  * 
  *             cdef int i, ndim
  *             cdef int endian_detector = 1             # <<<<<<<<<<<<<<
@@ -6029,7 +6026,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   __pyx_v_endian_detector = 1;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":266
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":266
  *             cdef int i, ndim
  *             cdef int endian_detector = 1
  *             cdef bint little_endian = ((<char*>&endian_detector)[0] != 0)             # <<<<<<<<<<<<<<
@@ -6038,7 +6035,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   __pyx_v_little_endian = ((((char *)(&__pyx_v_endian_detector))[0]) != 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":268
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":268
  *             cdef bint little_endian = ((<char*>&endian_detector)[0] != 0)
  * 
  *             ndim = PyArray_NDIM(self)             # <<<<<<<<<<<<<<
@@ -6047,7 +6044,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   __pyx_v_ndim = PyArray_NDIM(__pyx_v_self);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":270
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":270
  *             ndim = PyArray_NDIM(self)
  * 
  *             if ((flags & pybuf.PyBUF_C_CONTIGUOUS == pybuf.PyBUF_C_CONTIGUOUS)             # <<<<<<<<<<<<<<
@@ -6061,7 +6058,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
     goto __pyx_L4_bool_binop_done;
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":271
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":271
  * 
  *             if ((flags & pybuf.PyBUF_C_CONTIGUOUS == pybuf.PyBUF_C_CONTIGUOUS)
  *                 and not PyArray_CHKFLAGS(self, NPY_ARRAY_C_CONTIGUOUS)):             # <<<<<<<<<<<<<<
@@ -6072,7 +6069,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
   __pyx_t_1 = __pyx_t_2;
   __pyx_L4_bool_binop_done:;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":270
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":270
  *             ndim = PyArray_NDIM(self)
  * 
  *             if ((flags & pybuf.PyBUF_C_CONTIGUOUS == pybuf.PyBUF_C_CONTIGUOUS)             # <<<<<<<<<<<<<<
@@ -6081,7 +6078,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   if (unlikely(__pyx_t_1)) {
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":272
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":272
  *             if ((flags & pybuf.PyBUF_C_CONTIGUOUS == pybuf.PyBUF_C_CONTIGUOUS)
  *                 and not PyArray_CHKFLAGS(self, NPY_ARRAY_C_CONTIGUOUS)):
  *                 raise ValueError(u"ndarray is not C contiguous")             # <<<<<<<<<<<<<<
@@ -6094,7 +6091,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __PYX_ERR(1, 272, __pyx_L1_error)
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":270
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":270
  *             ndim = PyArray_NDIM(self)
  * 
  *             if ((flags & pybuf.PyBUF_C_CONTIGUOUS == pybuf.PyBUF_C_CONTIGUOUS)             # <<<<<<<<<<<<<<
@@ -6103,7 +6100,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":274
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":274
  *                 raise ValueError(u"ndarray is not C contiguous")
  * 
  *             if ((flags & pybuf.PyBUF_F_CONTIGUOUS == pybuf.PyBUF_F_CONTIGUOUS)             # <<<<<<<<<<<<<<
@@ -6117,7 +6114,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
     goto __pyx_L7_bool_binop_done;
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":275
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":275
  * 
  *             if ((flags & pybuf.PyBUF_F_CONTIGUOUS == pybuf.PyBUF_F_CONTIGUOUS)
  *                 and not PyArray_CHKFLAGS(self, NPY_ARRAY_F_CONTIGUOUS)):             # <<<<<<<<<<<<<<
@@ -6128,7 +6125,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
   __pyx_t_1 = __pyx_t_2;
   __pyx_L7_bool_binop_done:;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":274
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":274
  *                 raise ValueError(u"ndarray is not C contiguous")
  * 
  *             if ((flags & pybuf.PyBUF_F_CONTIGUOUS == pybuf.PyBUF_F_CONTIGUOUS)             # <<<<<<<<<<<<<<
@@ -6137,7 +6134,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   if (unlikely(__pyx_t_1)) {
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":276
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":276
  *             if ((flags & pybuf.PyBUF_F_CONTIGUOUS == pybuf.PyBUF_F_CONTIGUOUS)
  *                 and not PyArray_CHKFLAGS(self, NPY_ARRAY_F_CONTIGUOUS)):
  *                 raise ValueError(u"ndarray is not Fortran contiguous")             # <<<<<<<<<<<<<<
@@ -6150,7 +6147,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __PYX_ERR(1, 276, __pyx_L1_error)
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":274
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":274
  *                 raise ValueError(u"ndarray is not C contiguous")
  * 
  *             if ((flags & pybuf.PyBUF_F_CONTIGUOUS == pybuf.PyBUF_F_CONTIGUOUS)             # <<<<<<<<<<<<<<
@@ -6159,7 +6156,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":278
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":278
  *                 raise ValueError(u"ndarray is not Fortran contiguous")
  * 
  *             info.buf = PyArray_DATA(self)             # <<<<<<<<<<<<<<
@@ -6168,7 +6165,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   __pyx_v_info->buf = PyArray_DATA(__pyx_v_self);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":279
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":279
  * 
  *             info.buf = PyArray_DATA(self)
  *             info.ndim = ndim             # <<<<<<<<<<<<<<
@@ -6177,7 +6174,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   __pyx_v_info->ndim = __pyx_v_ndim;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":280
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":280
  *             info.buf = PyArray_DATA(self)
  *             info.ndim = ndim
  *             if sizeof(npy_intp) != sizeof(Py_ssize_t):             # <<<<<<<<<<<<<<
@@ -6187,7 +6184,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
   __pyx_t_1 = (((sizeof(npy_intp)) != (sizeof(Py_ssize_t))) != 0);
   if (__pyx_t_1) {
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":283
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":283
  *                 # Allocate new buffer for strides and shape info.
  *                 # This is allocated as one block, strides first.
  *                 info.strides = <Py_ssize_t*>PyObject_Malloc(sizeof(Py_ssize_t) * 2 * <size_t>ndim)             # <<<<<<<<<<<<<<
@@ -6196,7 +6193,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
     __pyx_v_info->strides = ((Py_ssize_t *)PyObject_Malloc((((sizeof(Py_ssize_t)) * 2) * ((size_t)__pyx_v_ndim))));
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":284
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":284
  *                 # This is allocated as one block, strides first.
  *                 info.strides = <Py_ssize_t*>PyObject_Malloc(sizeof(Py_ssize_t) * 2 * <size_t>ndim)
  *                 info.shape = info.strides + ndim             # <<<<<<<<<<<<<<
@@ -6205,7 +6202,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
     __pyx_v_info->shape = (__pyx_v_info->strides + __pyx_v_ndim);
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":285
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":285
  *                 info.strides = <Py_ssize_t*>PyObject_Malloc(sizeof(Py_ssize_t) * 2 * <size_t>ndim)
  *                 info.shape = info.strides + ndim
  *                 for i in range(ndim):             # <<<<<<<<<<<<<<
@@ -6217,7 +6214,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
     for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
       __pyx_v_i = __pyx_t_6;
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":286
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":286
  *                 info.shape = info.strides + ndim
  *                 for i in range(ndim):
  *                     info.strides[i] = PyArray_STRIDES(self)[i]             # <<<<<<<<<<<<<<
@@ -6226,7 +6223,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
       (__pyx_v_info->strides[__pyx_v_i]) = (PyArray_STRIDES(__pyx_v_self)[__pyx_v_i]);
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":287
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":287
  *                 for i in range(ndim):
  *                     info.strides[i] = PyArray_STRIDES(self)[i]
  *                     info.shape[i] = PyArray_DIMS(self)[i]             # <<<<<<<<<<<<<<
@@ -6236,7 +6233,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       (__pyx_v_info->shape[__pyx_v_i]) = (PyArray_DIMS(__pyx_v_self)[__pyx_v_i]);
     }
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":280
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":280
  *             info.buf = PyArray_DATA(self)
  *             info.ndim = ndim
  *             if sizeof(npy_intp) != sizeof(Py_ssize_t):             # <<<<<<<<<<<<<<
@@ -6246,7 +6243,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
     goto __pyx_L9;
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":289
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":289
  *                     info.shape[i] = PyArray_DIMS(self)[i]
  *             else:
  *                 info.strides = <Py_ssize_t*>PyArray_STRIDES(self)             # <<<<<<<<<<<<<<
@@ -6256,7 +6253,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
   /*else*/ {
     __pyx_v_info->strides = ((Py_ssize_t *)PyArray_STRIDES(__pyx_v_self));
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":290
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":290
  *             else:
  *                 info.strides = <Py_ssize_t*>PyArray_STRIDES(self)
  *                 info.shape = <Py_ssize_t*>PyArray_DIMS(self)             # <<<<<<<<<<<<<<
@@ -6267,7 +6264,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
   }
   __pyx_L9:;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":291
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":291
  *                 info.strides = <Py_ssize_t*>PyArray_STRIDES(self)
  *                 info.shape = <Py_ssize_t*>PyArray_DIMS(self)
  *             info.suboffsets = NULL             # <<<<<<<<<<<<<<
@@ -6276,7 +6273,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   __pyx_v_info->suboffsets = NULL;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":292
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":292
  *                 info.shape = <Py_ssize_t*>PyArray_DIMS(self)
  *             info.suboffsets = NULL
  *             info.itemsize = PyArray_ITEMSIZE(self)             # <<<<<<<<<<<<<<
@@ -6285,7 +6282,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   __pyx_v_info->itemsize = PyArray_ITEMSIZE(__pyx_v_self);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":293
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":293
  *             info.suboffsets = NULL
  *             info.itemsize = PyArray_ITEMSIZE(self)
  *             info.readonly = not PyArray_ISWRITEABLE(self)             # <<<<<<<<<<<<<<
@@ -6294,7 +6291,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   __pyx_v_info->readonly = (!(PyArray_ISWRITEABLE(__pyx_v_self) != 0));
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":296
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":296
  * 
  *             cdef int t
  *             cdef char* f = NULL             # <<<<<<<<<<<<<<
@@ -6303,7 +6300,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   __pyx_v_f = NULL;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":297
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":297
  *             cdef int t
  *             cdef char* f = NULL
  *             cdef dtype descr = <dtype>PyArray_DESCR(self)             # <<<<<<<<<<<<<<
@@ -6316,7 +6313,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
   __pyx_v_descr = ((PyArray_Descr *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":300
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":300
  *             cdef int offset
  * 
  *             info.obj = self             # <<<<<<<<<<<<<<
@@ -6329,7 +6326,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
   __Pyx_DECREF(__pyx_v_info->obj);
   __pyx_v_info->obj = ((PyObject *)__pyx_v_self);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":302
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":302
  *             info.obj = self
  * 
  *             if not PyDataType_HASFIELDS(descr):             # <<<<<<<<<<<<<<
@@ -6339,7 +6336,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
   __pyx_t_1 = ((!(PyDataType_HASFIELDS(__pyx_v_descr) != 0)) != 0);
   if (__pyx_t_1) {
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":303
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":303
  * 
  *             if not PyDataType_HASFIELDS(descr):
  *                 t = descr.type_num             # <<<<<<<<<<<<<<
@@ -6349,7 +6346,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
     __pyx_t_4 = __pyx_v_descr->type_num;
     __pyx_v_t = __pyx_t_4;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":304
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":304
  *             if not PyDataType_HASFIELDS(descr):
  *                 t = descr.type_num
  *                 if ((descr.byteorder == c'>' and little_endian) or             # <<<<<<<<<<<<<<
@@ -6369,7 +6366,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
     }
     __pyx_L15_next_or:;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":305
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":305
  *                 t = descr.type_num
  *                 if ((descr.byteorder == c'>' and little_endian) or
  *                     (descr.byteorder == c'<' and not little_endian)):             # <<<<<<<<<<<<<<
@@ -6386,7 +6383,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
     __pyx_t_1 = __pyx_t_2;
     __pyx_L14_bool_binop_done:;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":304
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":304
  *             if not PyDataType_HASFIELDS(descr):
  *                 t = descr.type_num
  *                 if ((descr.byteorder == c'>' and little_endian) or             # <<<<<<<<<<<<<<
@@ -6395,7 +6392,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
     if (unlikely(__pyx_t_1)) {
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":306
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":306
  *                 if ((descr.byteorder == c'>' and little_endian) or
  *                     (descr.byteorder == c'<' and not little_endian)):
  *                     raise ValueError(u"Non-native byte order not supported")             # <<<<<<<<<<<<<<
@@ -6408,7 +6405,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __PYX_ERR(1, 306, __pyx_L1_error)
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":304
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":304
  *             if not PyDataType_HASFIELDS(descr):
  *                 t = descr.type_num
  *                 if ((descr.byteorder == c'>' and little_endian) or             # <<<<<<<<<<<<<<
@@ -6417,7 +6414,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
     }
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":307
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":307
  *                     (descr.byteorder == c'<' and not little_endian)):
  *                     raise ValueError(u"Non-native byte order not supported")
  *                 if   t == NPY_BYTE:        f = "b"             # <<<<<<<<<<<<<<
@@ -6430,7 +6427,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_UBYTE:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":308
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":308
  *                     raise ValueError(u"Non-native byte order not supported")
  *                 if   t == NPY_BYTE:        f = "b"
  *                 elif t == NPY_UBYTE:       f = "B"             # <<<<<<<<<<<<<<
@@ -6441,7 +6438,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_SHORT:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":309
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":309
  *                 if   t == NPY_BYTE:        f = "b"
  *                 elif t == NPY_UBYTE:       f = "B"
  *                 elif t == NPY_SHORT:       f = "h"             # <<<<<<<<<<<<<<
@@ -6452,7 +6449,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_USHORT:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":310
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":310
  *                 elif t == NPY_UBYTE:       f = "B"
  *                 elif t == NPY_SHORT:       f = "h"
  *                 elif t == NPY_USHORT:      f = "H"             # <<<<<<<<<<<<<<
@@ -6463,7 +6460,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_INT:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":311
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":311
  *                 elif t == NPY_SHORT:       f = "h"
  *                 elif t == NPY_USHORT:      f = "H"
  *                 elif t == NPY_INT:         f = "i"             # <<<<<<<<<<<<<<
@@ -6474,7 +6471,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_UINT:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":312
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":312
  *                 elif t == NPY_USHORT:      f = "H"
  *                 elif t == NPY_INT:         f = "i"
  *                 elif t == NPY_UINT:        f = "I"             # <<<<<<<<<<<<<<
@@ -6485,7 +6482,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_LONG:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":313
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":313
  *                 elif t == NPY_INT:         f = "i"
  *                 elif t == NPY_UINT:        f = "I"
  *                 elif t == NPY_LONG:        f = "l"             # <<<<<<<<<<<<<<
@@ -6496,7 +6493,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_ULONG:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":314
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":314
  *                 elif t == NPY_UINT:        f = "I"
  *                 elif t == NPY_LONG:        f = "l"
  *                 elif t == NPY_ULONG:       f = "L"             # <<<<<<<<<<<<<<
@@ -6507,7 +6504,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_LONGLONG:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":315
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":315
  *                 elif t == NPY_LONG:        f = "l"
  *                 elif t == NPY_ULONG:       f = "L"
  *                 elif t == NPY_LONGLONG:    f = "q"             # <<<<<<<<<<<<<<
@@ -6518,7 +6515,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_ULONGLONG:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":316
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":316
  *                 elif t == NPY_ULONG:       f = "L"
  *                 elif t == NPY_LONGLONG:    f = "q"
  *                 elif t == NPY_ULONGLONG:   f = "Q"             # <<<<<<<<<<<<<<
@@ -6529,7 +6526,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_FLOAT:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":317
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":317
  *                 elif t == NPY_LONGLONG:    f = "q"
  *                 elif t == NPY_ULONGLONG:   f = "Q"
  *                 elif t == NPY_FLOAT:       f = "f"             # <<<<<<<<<<<<<<
@@ -6540,7 +6537,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_DOUBLE:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":318
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":318
  *                 elif t == NPY_ULONGLONG:   f = "Q"
  *                 elif t == NPY_FLOAT:       f = "f"
  *                 elif t == NPY_DOUBLE:      f = "d"             # <<<<<<<<<<<<<<
@@ -6551,7 +6548,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_LONGDOUBLE:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":319
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":319
  *                 elif t == NPY_FLOAT:       f = "f"
  *                 elif t == NPY_DOUBLE:      f = "d"
  *                 elif t == NPY_LONGDOUBLE:  f = "g"             # <<<<<<<<<<<<<<
@@ -6562,7 +6559,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_CFLOAT:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":320
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":320
  *                 elif t == NPY_DOUBLE:      f = "d"
  *                 elif t == NPY_LONGDOUBLE:  f = "g"
  *                 elif t == NPY_CFLOAT:      f = "Zf"             # <<<<<<<<<<<<<<
@@ -6573,7 +6570,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_CDOUBLE:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":321
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":321
  *                 elif t == NPY_LONGDOUBLE:  f = "g"
  *                 elif t == NPY_CFLOAT:      f = "Zf"
  *                 elif t == NPY_CDOUBLE:     f = "Zd"             # <<<<<<<<<<<<<<
@@ -6584,7 +6581,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_CLONGDOUBLE:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":322
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":322
  *                 elif t == NPY_CFLOAT:      f = "Zf"
  *                 elif t == NPY_CDOUBLE:     f = "Zd"
  *                 elif t == NPY_CLONGDOUBLE: f = "Zg"             # <<<<<<<<<<<<<<
@@ -6595,7 +6592,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       case NPY_OBJECT:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":323
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":323
  *                 elif t == NPY_CDOUBLE:     f = "Zd"
  *                 elif t == NPY_CLONGDOUBLE: f = "Zg"
  *                 elif t == NPY_OBJECT:      f = "O"             # <<<<<<<<<<<<<<
@@ -6606,7 +6603,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
       default:
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":325
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":325
  *                 elif t == NPY_OBJECT:      f = "O"
  *                 else:
  *                     raise ValueError(u"unknown dtype code in numpy.pxd (%d)" % t)             # <<<<<<<<<<<<<<
@@ -6627,7 +6624,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
       break;
     }
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":326
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":326
  *                 else:
  *                     raise ValueError(u"unknown dtype code in numpy.pxd (%d)" % t)
  *                 info.format = f             # <<<<<<<<<<<<<<
@@ -6636,7 +6633,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
     __pyx_v_info->format = __pyx_v_f;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":327
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":327
  *                     raise ValueError(u"unknown dtype code in numpy.pxd (%d)" % t)
  *                 info.format = f
  *                 return             # <<<<<<<<<<<<<<
@@ -6646,7 +6643,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
     __pyx_r = 0;
     goto __pyx_L0;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":302
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":302
  *             info.obj = self
  * 
  *             if not PyDataType_HASFIELDS(descr):             # <<<<<<<<<<<<<<
@@ -6655,7 +6652,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":329
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":329
  *                 return
  *             else:
  *                 info.format = <char*>PyObject_Malloc(_buffer_format_string_len)             # <<<<<<<<<<<<<<
@@ -6665,7 +6662,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
   /*else*/ {
     __pyx_v_info->format = ((char *)PyObject_Malloc(0xFF));
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":330
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":330
  *             else:
  *                 info.format = <char*>PyObject_Malloc(_buffer_format_string_len)
  *                 info.format[0] = c'^' # Native data types, manual alignment             # <<<<<<<<<<<<<<
@@ -6674,7 +6671,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
     (__pyx_v_info->format[0]) = '^';
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":331
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":331
  *                 info.format = <char*>PyObject_Malloc(_buffer_format_string_len)
  *                 info.format[0] = c'^' # Native data types, manual alignment
  *                 offset = 0             # <<<<<<<<<<<<<<
@@ -6683,7 +6680,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
     __pyx_v_offset = 0;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":332
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":332
  *                 info.format[0] = c'^' # Native data types, manual alignment
  *                 offset = 0
  *                 f = _util_dtypestring(descr, info.format + 1,             # <<<<<<<<<<<<<<
@@ -6693,7 +6690,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
     __pyx_t_9 = __pyx_f_5numpy__util_dtypestring(__pyx_v_descr, (__pyx_v_info->format + 1), (__pyx_v_info->format + 0xFF), (&__pyx_v_offset)); if (unlikely(__pyx_t_9 == ((char *)NULL))) __PYX_ERR(1, 332, __pyx_L1_error)
     __pyx_v_f = __pyx_t_9;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":335
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":335
  *                                       info.format + _buffer_format_string_len,
  *                                       &offset)
  *                 f[0] = c'\0' # Terminate format string             # <<<<<<<<<<<<<<
@@ -6703,7 +6700,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
     (__pyx_v_f[0]) = '\x00';
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":258
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":258
  *         # experimental exception made for __getbuffer__ and __releasebuffer__
  *         # -- the details of this may change.
  *         def __getbuffer__(ndarray self, Py_buffer* info, int flags):             # <<<<<<<<<<<<<<
@@ -6735,7 +6732,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
   return __pyx_r;
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":337
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":337
  *                 f[0] = c'\0' # Terminate format string
  * 
  *         def __releasebuffer__(ndarray self, Py_buffer* info):             # <<<<<<<<<<<<<<
@@ -6759,7 +6756,7 @@ static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_s
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("__releasebuffer__", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":338
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":338
  * 
  *         def __releasebuffer__(ndarray self, Py_buffer* info):
  *             if PyArray_HASFIELDS(self):             # <<<<<<<<<<<<<<
@@ -6769,7 +6766,7 @@ static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_s
   __pyx_t_1 = (PyArray_HASFIELDS(__pyx_v_self) != 0);
   if (__pyx_t_1) {
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":339
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":339
  *         def __releasebuffer__(ndarray self, Py_buffer* info):
  *             if PyArray_HASFIELDS(self):
  *                 PyObject_Free(info.format)             # <<<<<<<<<<<<<<
@@ -6778,7 +6775,7 @@ static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_s
  */
     PyObject_Free(__pyx_v_info->format);
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":338
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":338
  * 
  *         def __releasebuffer__(ndarray self, Py_buffer* info):
  *             if PyArray_HASFIELDS(self):             # <<<<<<<<<<<<<<
@@ -6787,7 +6784,7 @@ static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_s
  */
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":340
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":340
  *             if PyArray_HASFIELDS(self):
  *                 PyObject_Free(info.format)
  *             if sizeof(npy_intp) != sizeof(Py_ssize_t):             # <<<<<<<<<<<<<<
@@ -6797,7 +6794,7 @@ static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_s
   __pyx_t_1 = (((sizeof(npy_intp)) != (sizeof(Py_ssize_t))) != 0);
   if (__pyx_t_1) {
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":341
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":341
  *                 PyObject_Free(info.format)
  *             if sizeof(npy_intp) != sizeof(Py_ssize_t):
  *                 PyObject_Free(info.strides)             # <<<<<<<<<<<<<<
@@ -6806,7 +6803,7 @@ static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_s
  */
     PyObject_Free(__pyx_v_info->strides);
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":340
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":340
  *             if PyArray_HASFIELDS(self):
  *                 PyObject_Free(info.format)
  *             if sizeof(npy_intp) != sizeof(Py_ssize_t):             # <<<<<<<<<<<<<<
@@ -6815,7 +6812,7 @@ static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_s
  */
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":337
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":337
  *                 f[0] = c'\0' # Terminate format string
  * 
  *         def __releasebuffer__(ndarray self, Py_buffer* info):             # <<<<<<<<<<<<<<
@@ -6827,7 +6824,7 @@ static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_s
   __Pyx_RefNannyFinishContext();
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":821
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":821
  * ctypedef npy_cdouble     complex_t
  * 
  * cdef inline object PyArray_MultiIterNew1(a):             # <<<<<<<<<<<<<<
@@ -6841,7 +6838,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew1(PyObject *__
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("PyArray_MultiIterNew1", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":822
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":822
  * 
  * cdef inline object PyArray_MultiIterNew1(a):
  *     return PyArray_MultiIterNew(1, <void*>a)             # <<<<<<<<<<<<<<
@@ -6855,7 +6852,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew1(PyObject *__
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":821
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":821
  * ctypedef npy_cdouble     complex_t
  * 
  * cdef inline object PyArray_MultiIterNew1(a):             # <<<<<<<<<<<<<<
@@ -6874,7 +6871,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew1(PyObject *__
   return __pyx_r;
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":824
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":824
  *     return PyArray_MultiIterNew(1, <void*>a)
  * 
  * cdef inline object PyArray_MultiIterNew2(a, b):             # <<<<<<<<<<<<<<
@@ -6888,7 +6885,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew2(PyObject *__
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("PyArray_MultiIterNew2", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":825
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":825
  * 
  * cdef inline object PyArray_MultiIterNew2(a, b):
  *     return PyArray_MultiIterNew(2, <void*>a, <void*>b)             # <<<<<<<<<<<<<<
@@ -6902,7 +6899,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew2(PyObject *__
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":824
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":824
  *     return PyArray_MultiIterNew(1, <void*>a)
  * 
  * cdef inline object PyArray_MultiIterNew2(a, b):             # <<<<<<<<<<<<<<
@@ -6921,7 +6918,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew2(PyObject *__
   return __pyx_r;
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":827
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":827
  *     return PyArray_MultiIterNew(2, <void*>a, <void*>b)
  * 
  * cdef inline object PyArray_MultiIterNew3(a, b, c):             # <<<<<<<<<<<<<<
@@ -6935,7 +6932,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew3(PyObject *__
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("PyArray_MultiIterNew3", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":828
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":828
  * 
  * cdef inline object PyArray_MultiIterNew3(a, b, c):
  *     return PyArray_MultiIterNew(3, <void*>a, <void*>b, <void*> c)             # <<<<<<<<<<<<<<
@@ -6949,7 +6946,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew3(PyObject *__
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":827
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":827
  *     return PyArray_MultiIterNew(2, <void*>a, <void*>b)
  * 
  * cdef inline object PyArray_MultiIterNew3(a, b, c):             # <<<<<<<<<<<<<<
@@ -6968,7 +6965,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew3(PyObject *__
   return __pyx_r;
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":830
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":830
  *     return PyArray_MultiIterNew(3, <void*>a, <void*>b, <void*> c)
  * 
  * cdef inline object PyArray_MultiIterNew4(a, b, c, d):             # <<<<<<<<<<<<<<
@@ -6982,7 +6979,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew4(PyObject *__
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("PyArray_MultiIterNew4", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":831
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":831
  * 
  * cdef inline object PyArray_MultiIterNew4(a, b, c, d):
  *     return PyArray_MultiIterNew(4, <void*>a, <void*>b, <void*>c, <void*> d)             # <<<<<<<<<<<<<<
@@ -6996,7 +6993,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew4(PyObject *__
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":830
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":830
  *     return PyArray_MultiIterNew(3, <void*>a, <void*>b, <void*> c)
  * 
  * cdef inline object PyArray_MultiIterNew4(a, b, c, d):             # <<<<<<<<<<<<<<
@@ -7015,7 +7012,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew4(PyObject *__
   return __pyx_r;
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":833
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":833
  *     return PyArray_MultiIterNew(4, <void*>a, <void*>b, <void*>c, <void*> d)
  * 
  * cdef inline object PyArray_MultiIterNew5(a, b, c, d, e):             # <<<<<<<<<<<<<<
@@ -7029,7 +7026,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew5(PyObject *__
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("PyArray_MultiIterNew5", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":834
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":834
  * 
  * cdef inline object PyArray_MultiIterNew5(a, b, c, d, e):
  *     return PyArray_MultiIterNew(5, <void*>a, <void*>b, <void*>c, <void*> d, <void*> e)             # <<<<<<<<<<<<<<
@@ -7043,7 +7040,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew5(PyObject *__
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":833
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":833
  *     return PyArray_MultiIterNew(4, <void*>a, <void*>b, <void*>c, <void*> d)
  * 
  * cdef inline object PyArray_MultiIterNew5(a, b, c, d, e):             # <<<<<<<<<<<<<<
@@ -7062,7 +7059,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyArray_MultiIterNew5(PyObject *__
   return __pyx_r;
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":836
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":836
  *     return PyArray_MultiIterNew(5, <void*>a, <void*>b, <void*>c, <void*> d, <void*> e)
  * 
  * cdef inline tuple PyDataType_SHAPE(dtype d):             # <<<<<<<<<<<<<<
@@ -7076,7 +7073,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyDataType_SHAPE(PyArray_Descr *__
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("PyDataType_SHAPE", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":837
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":837
  * 
  * cdef inline tuple PyDataType_SHAPE(dtype d):
  *     if PyDataType_HASSUBARRAY(d):             # <<<<<<<<<<<<<<
@@ -7086,7 +7083,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyDataType_SHAPE(PyArray_Descr *__
   __pyx_t_1 = (PyDataType_HASSUBARRAY(__pyx_v_d) != 0);
   if (__pyx_t_1) {
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":838
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":838
  * cdef inline tuple PyDataType_SHAPE(dtype d):
  *     if PyDataType_HASSUBARRAY(d):
  *         return <tuple>d.subarray.shape             # <<<<<<<<<<<<<<
@@ -7098,7 +7095,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyDataType_SHAPE(PyArray_Descr *__
     __pyx_r = ((PyObject*)__pyx_v_d->subarray->shape);
     goto __pyx_L0;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":837
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":837
  * 
  * cdef inline tuple PyDataType_SHAPE(dtype d):
  *     if PyDataType_HASSUBARRAY(d):             # <<<<<<<<<<<<<<
@@ -7107,7 +7104,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyDataType_SHAPE(PyArray_Descr *__
  */
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":840
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":840
  *         return <tuple>d.subarray.shape
  *     else:
  *         return ()             # <<<<<<<<<<<<<<
@@ -7121,7 +7118,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyDataType_SHAPE(PyArray_Descr *__
     goto __pyx_L0;
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":836
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":836
  *     return PyArray_MultiIterNew(5, <void*>a, <void*>b, <void*>c, <void*> d, <void*> e)
  * 
  * cdef inline tuple PyDataType_SHAPE(dtype d):             # <<<<<<<<<<<<<<
@@ -7136,7 +7133,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_PyDataType_SHAPE(PyArray_Descr *__
   return __pyx_r;
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":842
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":842
  *         return ()
  * 
  * cdef inline char* _util_dtypestring(dtype descr, char* f, char* end, int* offset) except NULL:             # <<<<<<<<<<<<<<
@@ -7165,7 +7162,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
   char *__pyx_t_9;
   __Pyx_RefNannySetupContext("_util_dtypestring", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":847
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":847
  * 
  *     cdef dtype child
  *     cdef int endian_detector = 1             # <<<<<<<<<<<<<<
@@ -7174,7 +7171,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  */
   __pyx_v_endian_detector = 1;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":848
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":848
  *     cdef dtype child
  *     cdef int endian_detector = 1
  *     cdef bint little_endian = ((<char*>&endian_detector)[0] != 0)             # <<<<<<<<<<<<<<
@@ -7183,7 +7180,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  */
   __pyx_v_little_endian = ((((char *)(&__pyx_v_endian_detector))[0]) != 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":851
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":851
  *     cdef tuple fields
  * 
  *     for childname in descr.names:             # <<<<<<<<<<<<<<
@@ -7206,7 +7203,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
     __Pyx_XDECREF_SET(__pyx_v_childname, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":852
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":852
  * 
  *     for childname in descr.names:
  *         fields = descr.fields[childname]             # <<<<<<<<<<<<<<
@@ -7223,7 +7220,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
     __Pyx_XDECREF_SET(__pyx_v_fields, ((PyObject*)__pyx_t_3));
     __pyx_t_3 = 0;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":853
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":853
  *     for childname in descr.names:
  *         fields = descr.fields[childname]
  *         child, new_offset = fields             # <<<<<<<<<<<<<<
@@ -7258,7 +7255,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
     __Pyx_XDECREF_SET(__pyx_v_new_offset, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":855
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":855
  *         child, new_offset = fields
  * 
  *         if (end - f) - <int>(new_offset - offset[0]) < 15:             # <<<<<<<<<<<<<<
@@ -7275,7 +7272,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
     __pyx_t_6 = ((((__pyx_v_end - __pyx_v_f) - ((int)__pyx_t_5)) < 15) != 0);
     if (unlikely(__pyx_t_6)) {
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":856
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":856
  * 
  *         if (end - f) - <int>(new_offset - offset[0]) < 15:
  *             raise RuntimeError(u"Format string allocated too short, see comment in numpy.pxd")             # <<<<<<<<<<<<<<
@@ -7288,7 +7285,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __PYX_ERR(1, 856, __pyx_L1_error)
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":855
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":855
  *         child, new_offset = fields
  * 
  *         if (end - f) - <int>(new_offset - offset[0]) < 15:             # <<<<<<<<<<<<<<
@@ -7297,7 +7294,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  */
     }
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":858
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":858
  *             raise RuntimeError(u"Format string allocated too short, see comment in numpy.pxd")
  * 
  *         if ((child.byteorder == c'>' and little_endian) or             # <<<<<<<<<<<<<<
@@ -7317,7 +7314,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
     }
     __pyx_L8_next_or:;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":859
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":859
  * 
  *         if ((child.byteorder == c'>' and little_endian) or
  *             (child.byteorder == c'<' and not little_endian)):             # <<<<<<<<<<<<<<
@@ -7334,7 +7331,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
     __pyx_t_6 = __pyx_t_7;
     __pyx_L7_bool_binop_done:;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":858
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":858
  *             raise RuntimeError(u"Format string allocated too short, see comment in numpy.pxd")
  * 
  *         if ((child.byteorder == c'>' and little_endian) or             # <<<<<<<<<<<<<<
@@ -7343,7 +7340,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  */
     if (unlikely(__pyx_t_6)) {
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":860
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":860
  *         if ((child.byteorder == c'>' and little_endian) or
  *             (child.byteorder == c'<' and not little_endian)):
  *             raise ValueError(u"Non-native byte order not supported")             # <<<<<<<<<<<<<<
@@ -7356,7 +7353,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __PYX_ERR(1, 860, __pyx_L1_error)
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":858
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":858
  *             raise RuntimeError(u"Format string allocated too short, see comment in numpy.pxd")
  * 
  *         if ((child.byteorder == c'>' and little_endian) or             # <<<<<<<<<<<<<<
@@ -7365,7 +7362,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  */
     }
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":870
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":870
  * 
  *         # Output padding bytes
  *         while offset[0] < new_offset:             # <<<<<<<<<<<<<<
@@ -7381,7 +7378,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       if (!__pyx_t_6) break;
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":871
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":871
  *         # Output padding bytes
  *         while offset[0] < new_offset:
  *             f[0] = 120 # "x"; pad byte             # <<<<<<<<<<<<<<
@@ -7390,7 +7387,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  */
       (__pyx_v_f[0]) = 0x78;
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":872
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":872
  *         while offset[0] < new_offset:
  *             f[0] = 120 # "x"; pad byte
  *             f += 1             # <<<<<<<<<<<<<<
@@ -7399,7 +7396,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  */
       __pyx_v_f = (__pyx_v_f + 1);
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":873
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":873
  *             f[0] = 120 # "x"; pad byte
  *             f += 1
  *             offset[0] += 1             # <<<<<<<<<<<<<<
@@ -7410,7 +7407,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
       (__pyx_v_offset[__pyx_t_8]) = ((__pyx_v_offset[__pyx_t_8]) + 1);
     }
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":875
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":875
  *             offset[0] += 1
  * 
  *         offset[0] += child.itemsize             # <<<<<<<<<<<<<<
@@ -7420,7 +7417,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
     __pyx_t_8 = 0;
     (__pyx_v_offset[__pyx_t_8]) = ((__pyx_v_offset[__pyx_t_8]) + __pyx_v_child->elsize);
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":877
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":877
  *         offset[0] += child.itemsize
  * 
  *         if not PyDataType_HASFIELDS(child):             # <<<<<<<<<<<<<<
@@ -7430,7 +7427,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
     __pyx_t_6 = ((!(PyDataType_HASFIELDS(__pyx_v_child) != 0)) != 0);
     if (__pyx_t_6) {
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":878
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":878
  * 
  *         if not PyDataType_HASFIELDS(child):
  *             t = child.type_num             # <<<<<<<<<<<<<<
@@ -7442,7 +7439,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
       __Pyx_XDECREF_SET(__pyx_v_t, __pyx_t_4);
       __pyx_t_4 = 0;
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":879
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":879
  *         if not PyDataType_HASFIELDS(child):
  *             t = child.type_num
  *             if end - f < 5:             # <<<<<<<<<<<<<<
@@ -7452,7 +7449,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
       __pyx_t_6 = (((__pyx_v_end - __pyx_v_f) < 5) != 0);
       if (unlikely(__pyx_t_6)) {
 
-        /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":880
+        /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":880
  *             t = child.type_num
  *             if end - f < 5:
  *                 raise RuntimeError(u"Format string allocated too short.")             # <<<<<<<<<<<<<<
@@ -7465,7 +7462,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         __PYX_ERR(1, 880, __pyx_L1_error)
 
-        /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":879
+        /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":879
  *         if not PyDataType_HASFIELDS(child):
  *             t = child.type_num
  *             if end - f < 5:             # <<<<<<<<<<<<<<
@@ -7474,7 +7471,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  */
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":883
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":883
  * 
  *             # Until ticket #99 is fixed, use integers to avoid warnings
  *             if   t == NPY_BYTE:        f[0] =  98 #"b"             # <<<<<<<<<<<<<<
@@ -7492,7 +7489,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":884
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":884
  *             # Until ticket #99 is fixed, use integers to avoid warnings
  *             if   t == NPY_BYTE:        f[0] =  98 #"b"
  *             elif t == NPY_UBYTE:       f[0] =  66 #"B"             # <<<<<<<<<<<<<<
@@ -7510,7 +7507,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":885
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":885
  *             if   t == NPY_BYTE:        f[0] =  98 #"b"
  *             elif t == NPY_UBYTE:       f[0] =  66 #"B"
  *             elif t == NPY_SHORT:       f[0] = 104 #"h"             # <<<<<<<<<<<<<<
@@ -7528,7 +7525,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":886
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":886
  *             elif t == NPY_UBYTE:       f[0] =  66 #"B"
  *             elif t == NPY_SHORT:       f[0] = 104 #"h"
  *             elif t == NPY_USHORT:      f[0] =  72 #"H"             # <<<<<<<<<<<<<<
@@ -7546,7 +7543,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":887
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":887
  *             elif t == NPY_SHORT:       f[0] = 104 #"h"
  *             elif t == NPY_USHORT:      f[0] =  72 #"H"
  *             elif t == NPY_INT:         f[0] = 105 #"i"             # <<<<<<<<<<<<<<
@@ -7564,7 +7561,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":888
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":888
  *             elif t == NPY_USHORT:      f[0] =  72 #"H"
  *             elif t == NPY_INT:         f[0] = 105 #"i"
  *             elif t == NPY_UINT:        f[0] =  73 #"I"             # <<<<<<<<<<<<<<
@@ -7582,7 +7579,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":889
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":889
  *             elif t == NPY_INT:         f[0] = 105 #"i"
  *             elif t == NPY_UINT:        f[0] =  73 #"I"
  *             elif t == NPY_LONG:        f[0] = 108 #"l"             # <<<<<<<<<<<<<<
@@ -7600,7 +7597,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":890
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":890
  *             elif t == NPY_UINT:        f[0] =  73 #"I"
  *             elif t == NPY_LONG:        f[0] = 108 #"l"
  *             elif t == NPY_ULONG:       f[0] = 76  #"L"             # <<<<<<<<<<<<<<
@@ -7618,7 +7615,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":891
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":891
  *             elif t == NPY_LONG:        f[0] = 108 #"l"
  *             elif t == NPY_ULONG:       f[0] = 76  #"L"
  *             elif t == NPY_LONGLONG:    f[0] = 113 #"q"             # <<<<<<<<<<<<<<
@@ -7636,7 +7633,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":892
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":892
  *             elif t == NPY_ULONG:       f[0] = 76  #"L"
  *             elif t == NPY_LONGLONG:    f[0] = 113 #"q"
  *             elif t == NPY_ULONGLONG:   f[0] = 81  #"Q"             # <<<<<<<<<<<<<<
@@ -7654,7 +7651,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":893
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":893
  *             elif t == NPY_LONGLONG:    f[0] = 113 #"q"
  *             elif t == NPY_ULONGLONG:   f[0] = 81  #"Q"
  *             elif t == NPY_FLOAT:       f[0] = 102 #"f"             # <<<<<<<<<<<<<<
@@ -7672,7 +7669,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":894
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":894
  *             elif t == NPY_ULONGLONG:   f[0] = 81  #"Q"
  *             elif t == NPY_FLOAT:       f[0] = 102 #"f"
  *             elif t == NPY_DOUBLE:      f[0] = 100 #"d"             # <<<<<<<<<<<<<<
@@ -7690,7 +7687,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":895
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":895
  *             elif t == NPY_FLOAT:       f[0] = 102 #"f"
  *             elif t == NPY_DOUBLE:      f[0] = 100 #"d"
  *             elif t == NPY_LONGDOUBLE:  f[0] = 103 #"g"             # <<<<<<<<<<<<<<
@@ -7708,7 +7705,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":896
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":896
  *             elif t == NPY_DOUBLE:      f[0] = 100 #"d"
  *             elif t == NPY_LONGDOUBLE:  f[0] = 103 #"g"
  *             elif t == NPY_CFLOAT:      f[0] = 90; f[1] = 102; f += 1 # Zf             # <<<<<<<<<<<<<<
@@ -7728,7 +7725,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":897
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":897
  *             elif t == NPY_LONGDOUBLE:  f[0] = 103 #"g"
  *             elif t == NPY_CFLOAT:      f[0] = 90; f[1] = 102; f += 1 # Zf
  *             elif t == NPY_CDOUBLE:     f[0] = 90; f[1] = 100; f += 1 # Zd             # <<<<<<<<<<<<<<
@@ -7748,7 +7745,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":898
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":898
  *             elif t == NPY_CFLOAT:      f[0] = 90; f[1] = 102; f += 1 # Zf
  *             elif t == NPY_CDOUBLE:     f[0] = 90; f[1] = 100; f += 1 # Zd
  *             elif t == NPY_CLONGDOUBLE: f[0] = 90; f[1] = 103; f += 1 # Zg             # <<<<<<<<<<<<<<
@@ -7768,7 +7765,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":899
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":899
  *             elif t == NPY_CDOUBLE:     f[0] = 90; f[1] = 100; f += 1 # Zd
  *             elif t == NPY_CLONGDOUBLE: f[0] = 90; f[1] = 103; f += 1 # Zg
  *             elif t == NPY_OBJECT:      f[0] = 79 #"O"             # <<<<<<<<<<<<<<
@@ -7786,7 +7783,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
         goto __pyx_L15;
       }
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":901
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":901
  *             elif t == NPY_OBJECT:      f[0] = 79 #"O"
  *             else:
  *                 raise ValueError(u"unknown dtype code in numpy.pxd (%d)" % t)             # <<<<<<<<<<<<<<
@@ -7805,7 +7802,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
       }
       __pyx_L15:;
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":902
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":902
  *             else:
  *                 raise ValueError(u"unknown dtype code in numpy.pxd (%d)" % t)
  *             f += 1             # <<<<<<<<<<<<<<
@@ -7814,7 +7811,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  */
       __pyx_v_f = (__pyx_v_f + 1);
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":877
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":877
  *         offset[0] += child.itemsize
  * 
  *         if not PyDataType_HASFIELDS(child):             # <<<<<<<<<<<<<<
@@ -7824,7 +7821,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
       goto __pyx_L13;
     }
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":906
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":906
  *             # Cython ignores struct boundary information ("T{...}"),
  *             # so don't output it
  *             f = _util_dtypestring(child, f, end, offset)             # <<<<<<<<<<<<<<
@@ -7837,7 +7834,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
     }
     __pyx_L13:;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":851
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":851
  *     cdef tuple fields
  * 
  *     for childname in descr.names:             # <<<<<<<<<<<<<<
@@ -7847,7 +7844,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":907
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":907
  *             # so don't output it
  *             f = _util_dtypestring(child, f, end, offset)
  *     return f             # <<<<<<<<<<<<<<
@@ -7857,7 +7854,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
   __pyx_r = __pyx_v_f;
   goto __pyx_L0;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":842
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":842
  *         return ()
  * 
  * cdef inline char* _util_dtypestring(dtype descr, char* f, char* end, int* offset) except NULL:             # <<<<<<<<<<<<<<
@@ -7882,7 +7879,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
   return __pyx_r;
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1022
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1022
  *     int _import_umath() except -1
  * 
  * cdef inline void set_array_base(ndarray arr, object base):             # <<<<<<<<<<<<<<
@@ -7894,7 +7891,7 @@ static CYTHON_INLINE void __pyx_f_5numpy_set_array_base(PyArrayObject *__pyx_v_a
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("set_array_base", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1023
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1023
  * 
  * cdef inline void set_array_base(ndarray arr, object base):
  *     Py_INCREF(base) # important to do this before stealing the reference below!             # <<<<<<<<<<<<<<
@@ -7903,7 +7900,7 @@ static CYTHON_INLINE void __pyx_f_5numpy_set_array_base(PyArrayObject *__pyx_v_a
  */
   Py_INCREF(__pyx_v_base);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1024
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1024
  * cdef inline void set_array_base(ndarray arr, object base):
  *     Py_INCREF(base) # important to do this before stealing the reference below!
  *     PyArray_SetBaseObject(arr, base)             # <<<<<<<<<<<<<<
@@ -7912,7 +7909,7 @@ static CYTHON_INLINE void __pyx_f_5numpy_set_array_base(PyArrayObject *__pyx_v_a
  */
   (void)(PyArray_SetBaseObject(__pyx_v_arr, __pyx_v_base));
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1022
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1022
  *     int _import_umath() except -1
  * 
  * cdef inline void set_array_base(ndarray arr, object base):             # <<<<<<<<<<<<<<
@@ -7924,7 +7921,7 @@ static CYTHON_INLINE void __pyx_f_5numpy_set_array_base(PyArrayObject *__pyx_v_a
   __Pyx_RefNannyFinishContext();
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1026
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1026
  *     PyArray_SetBaseObject(arr, base)
  * 
  * cdef inline object get_array_base(ndarray arr):             # <<<<<<<<<<<<<<
@@ -7939,7 +7936,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_get_array_base(PyArrayObject *__py
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("get_array_base", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1027
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1027
  * 
  * cdef inline object get_array_base(ndarray arr):
  *     base = PyArray_BASE(arr)             # <<<<<<<<<<<<<<
@@ -7948,7 +7945,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_get_array_base(PyArrayObject *__py
  */
   __pyx_v_base = PyArray_BASE(__pyx_v_arr);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1028
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1028
  * cdef inline object get_array_base(ndarray arr):
  *     base = PyArray_BASE(arr)
  *     if base is NULL:             # <<<<<<<<<<<<<<
@@ -7958,7 +7955,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_get_array_base(PyArrayObject *__py
   __pyx_t_1 = ((__pyx_v_base == NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1029
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1029
  *     base = PyArray_BASE(arr)
  *     if base is NULL:
  *         return None             # <<<<<<<<<<<<<<
@@ -7969,7 +7966,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_get_array_base(PyArrayObject *__py
     __pyx_r = Py_None; __Pyx_INCREF(Py_None);
     goto __pyx_L0;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1028
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1028
  * cdef inline object get_array_base(ndarray arr):
  *     base = PyArray_BASE(arr)
  *     if base is NULL:             # <<<<<<<<<<<<<<
@@ -7978,7 +7975,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_get_array_base(PyArrayObject *__py
  */
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1030
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1030
  *     if base is NULL:
  *         return None
  *     return <object>base             # <<<<<<<<<<<<<<
@@ -7990,7 +7987,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_get_array_base(PyArrayObject *__py
   __pyx_r = ((PyObject *)__pyx_v_base);
   goto __pyx_L0;
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1026
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1026
  *     PyArray_SetBaseObject(arr, base)
  * 
  * cdef inline object get_array_base(ndarray arr):             # <<<<<<<<<<<<<<
@@ -8005,7 +8002,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_get_array_base(PyArrayObject *__py
   return __pyx_r;
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1034
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1034
  * # Versions of the import_* functions which are more suitable for
  * # Cython code.
  * cdef inline int import_array() except -1:             # <<<<<<<<<<<<<<
@@ -8026,7 +8023,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_array(void) {
   PyObject *__pyx_t_8 = NULL;
   __Pyx_RefNannySetupContext("import_array", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1035
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1035
  * # Cython code.
  * cdef inline int import_array() except -1:
  *     try:             # <<<<<<<<<<<<<<
@@ -8042,7 +8039,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_array(void) {
     __Pyx_XGOTREF(__pyx_t_3);
     /*try:*/ {
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1036
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1036
  * cdef inline int import_array() except -1:
  *     try:
  *         _import_array()             # <<<<<<<<<<<<<<
@@ -8051,7 +8048,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_array(void) {
  */
       __pyx_t_4 = _import_array(); if (unlikely(__pyx_t_4 == ((int)-1))) __PYX_ERR(1, 1036, __pyx_L3_error)
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1035
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1035
  * # Cython code.
  * cdef inline int import_array() except -1:
  *     try:             # <<<<<<<<<<<<<<
@@ -8065,7 +8062,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_array(void) {
     goto __pyx_L8_try_end;
     __pyx_L3_error:;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1037
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1037
  *     try:
  *         _import_array()
  *     except Exception:             # <<<<<<<<<<<<<<
@@ -8080,7 +8077,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_array(void) {
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_GOTREF(__pyx_t_7);
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1038
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1038
  *         _import_array()
  *     except Exception:
  *         raise ImportError("numpy.core.multiarray failed to import")             # <<<<<<<<<<<<<<
@@ -8096,7 +8093,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_array(void) {
     goto __pyx_L5_except_error;
     __pyx_L5_except_error:;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1035
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1035
  * # Cython code.
  * cdef inline int import_array() except -1:
  *     try:             # <<<<<<<<<<<<<<
@@ -8111,7 +8108,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_array(void) {
     __pyx_L8_try_end:;
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1034
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1034
  * # Versions of the import_* functions which are more suitable for
  * # Cython code.
  * cdef inline int import_array() except -1:             # <<<<<<<<<<<<<<
@@ -8134,7 +8131,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_array(void) {
   return __pyx_r;
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1040
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1040
  *         raise ImportError("numpy.core.multiarray failed to import")
  * 
  * cdef inline int import_umath() except -1:             # <<<<<<<<<<<<<<
@@ -8155,7 +8152,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_umath(void) {
   PyObject *__pyx_t_8 = NULL;
   __Pyx_RefNannySetupContext("import_umath", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1041
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1041
  * 
  * cdef inline int import_umath() except -1:
  *     try:             # <<<<<<<<<<<<<<
@@ -8171,7 +8168,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_umath(void) {
     __Pyx_XGOTREF(__pyx_t_3);
     /*try:*/ {
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1042
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1042
  * cdef inline int import_umath() except -1:
  *     try:
  *         _import_umath()             # <<<<<<<<<<<<<<
@@ -8180,7 +8177,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_umath(void) {
  */
       __pyx_t_4 = _import_umath(); if (unlikely(__pyx_t_4 == ((int)-1))) __PYX_ERR(1, 1042, __pyx_L3_error)
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1041
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1041
  * 
  * cdef inline int import_umath() except -1:
  *     try:             # <<<<<<<<<<<<<<
@@ -8194,7 +8191,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_umath(void) {
     goto __pyx_L8_try_end;
     __pyx_L3_error:;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1043
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1043
  *     try:
  *         _import_umath()
  *     except Exception:             # <<<<<<<<<<<<<<
@@ -8209,7 +8206,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_umath(void) {
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_GOTREF(__pyx_t_7);
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1044
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1044
  *         _import_umath()
  *     except Exception:
  *         raise ImportError("numpy.core.umath failed to import")             # <<<<<<<<<<<<<<
@@ -8225,7 +8222,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_umath(void) {
     goto __pyx_L5_except_error;
     __pyx_L5_except_error:;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1041
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1041
  * 
  * cdef inline int import_umath() except -1:
  *     try:             # <<<<<<<<<<<<<<
@@ -8240,7 +8237,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_umath(void) {
     __pyx_L8_try_end:;
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1040
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1040
  *         raise ImportError("numpy.core.multiarray failed to import")
  * 
  * cdef inline int import_umath() except -1:             # <<<<<<<<<<<<<<
@@ -8263,7 +8260,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_umath(void) {
   return __pyx_r;
 }
 
-/* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1046
+/* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1046
  *         raise ImportError("numpy.core.umath failed to import")
  * 
  * cdef inline int import_ufunc() except -1:             # <<<<<<<<<<<<<<
@@ -8284,7 +8281,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_ufunc(void) {
   PyObject *__pyx_t_8 = NULL;
   __Pyx_RefNannySetupContext("import_ufunc", 0);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1047
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1047
  * 
  * cdef inline int import_ufunc() except -1:
  *     try:             # <<<<<<<<<<<<<<
@@ -8300,7 +8297,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_ufunc(void) {
     __Pyx_XGOTREF(__pyx_t_3);
     /*try:*/ {
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1048
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1048
  * cdef inline int import_ufunc() except -1:
  *     try:
  *         _import_umath()             # <<<<<<<<<<<<<<
@@ -8309,7 +8306,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_ufunc(void) {
  */
       __pyx_t_4 = _import_umath(); if (unlikely(__pyx_t_4 == ((int)-1))) __PYX_ERR(1, 1048, __pyx_L3_error)
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1047
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1047
  * 
  * cdef inline int import_ufunc() except -1:
  *     try:             # <<<<<<<<<<<<<<
@@ -8323,7 +8320,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_ufunc(void) {
     goto __pyx_L8_try_end;
     __pyx_L3_error:;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1049
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1049
  *     try:
  *         _import_umath()
  *     except Exception:             # <<<<<<<<<<<<<<
@@ -8337,7 +8334,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_ufunc(void) {
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_GOTREF(__pyx_t_7);
 
-      /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1050
+      /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1050
  *         _import_umath()
  *     except Exception:
  *         raise ImportError("numpy.core.umath failed to import")             # <<<<<<<<<<<<<<
@@ -8351,7 +8348,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_ufunc(void) {
     goto __pyx_L5_except_error;
     __pyx_L5_except_error:;
 
-    /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1047
+    /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1047
  * 
  * cdef inline int import_ufunc() except -1:
  *     try:             # <<<<<<<<<<<<<<
@@ -8366,7 +8363,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_ufunc(void) {
     __pyx_L8_try_end:;
   }
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1046
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1046
  *         raise ImportError("numpy.core.umath failed to import")
  * 
  * cdef inline int import_ufunc() except -1:             # <<<<<<<<<<<<<<
@@ -21324,7 +21321,7 @@ static PyBufferProcs __pyx_tp_as_buffer_array = {
 
 static PyTypeObject __pyx_type___pyx_array = {
   PyVarObject_HEAD_INIT(0, 0)
-  "BoltonEtAl._utils.array", /*tp_name*/
+  "_utils.array", /*tp_name*/
   sizeof(struct __pyx_array_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_array, /*tp_dealloc*/
@@ -21435,7 +21432,7 @@ static PyMethodDef __pyx_methods_Enum[] = {
 
 static PyTypeObject __pyx_type___pyx_MemviewEnum = {
   PyVarObject_HEAD_INIT(0, 0)
-  "BoltonEtAl._utils.Enum", /*tp_name*/
+  "_utils.Enum", /*tp_name*/
   sizeof(struct __pyx_MemviewEnum_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_Enum, /*tp_dealloc*/
@@ -21688,7 +21685,7 @@ static PyBufferProcs __pyx_tp_as_buffer_memoryview = {
 
 static PyTypeObject __pyx_type___pyx_memoryview = {
   PyVarObject_HEAD_INIT(0, 0)
-  "BoltonEtAl._utils.memoryview", /*tp_name*/
+  "_utils.memoryview", /*tp_name*/
   sizeof(struct __pyx_memoryview_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_memoryview, /*tp_dealloc*/
@@ -21818,7 +21815,7 @@ static struct PyGetSetDef __pyx_getsets__memoryviewslice[] = {
 
 static PyTypeObject __pyx_type___pyx_memoryviewslice = {
   PyVarObject_HEAD_INIT(0, 0)
-  "BoltonEtAl._utils._memoryviewslice", /*tp_name*/
+  "_utils._memoryviewslice", /*tp_name*/
   sizeof(struct __pyx_memoryviewslice_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc__memoryviewslice, /*tp_dealloc*/
@@ -21886,207 +21883,9 @@ static PyTypeObject __pyx_type___pyx_memoryviewslice = {
 };
 
 static PyMethodDef __pyx_methods[] = {
-  {"build_training_data", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_10BoltonEtAl_6_utils_5build_training_data, METH_VARARGS|METH_KEYWORDS, 0},
+  {"build_training_data", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_6_utils_5build_training_data, METH_VARARGS|METH_KEYWORDS, 0},
   {0, 0, 0, 0}
 };
-
-static int __pyx_import_star_set(PyObject *o, PyObject* py_name, char *name) {
-  static const char* internal_type_names[] = {
-    "Enum",
-    "FILE",
-    "PyObject",
-    "PyThread_type_lock",
-    "Py_intptr_t",
-    "__Pyx_TypeInfo",
-    "__Pyx_memviewslice",
-    "__pyx_atomic_int",
-    "__pyx_buffer",
-    "__pyx_ctuple_Py_ssize_t",
-    "__pyx_ctuple_Py_ssize_t_struct",
-    "__pyx_ctuple_char__ptr",
-    "__pyx_ctuple_char__ptr_struct",
-    "__pyx_ctuple_int",
-    "__pyx_ctuple_int__and_Py_ssize_t",
-    "__pyx_ctuple_int__and_Py_ssize_t__and_Py_ssize_t",
-    "__pyx_ctuple_int__and_Py_ssize_t__and_Py_ssize_t_struct",
-    "__pyx_ctuple_int__and_Py_ssize_t_struct",
-    "__pyx_ctuple_int__and_int",
-    "__pyx_ctuple_int__and_int_struct",
-    "__pyx_ctuple_int_struct",
-    "__pyx_ctuple_long",
-    "__pyx_ctuple_long__and_long",
-    "__pyx_ctuple_long__and_long__and_long",
-    "__pyx_ctuple_long__and_long__and_long_struct",
-    "__pyx_ctuple_long__and_long_struct",
-    "__pyx_ctuple_long_struct",
-    "__pyx_memoryview",
-    "__pyx_opt_args_10BoltonEtAl_6_utils_filter_dataset",
-    "_memoryviewslice",
-    "array",
-    "dtype_t",
-    "memoryview",
-    0
-  };
-  const char** type_name = internal_type_names;
-  while (*type_name) {
-    if (__Pyx_StrEq(name, *type_name)) {
-      PyErr_Format(PyExc_TypeError, "Cannot overwrite C type %s", name);
-      goto bad;
-    }
-    type_name++;
-  }
-  if (0);
-  else if (__Pyx_StrEq(name, "Py_None")) {
-    PyErr_Format(PyExc_TypeError, "Cannot convert Python object Py_None to PyObject *");
-    __PYX_ERR(2, 57, __pyx_L2_error)
-  }
-  else if (__Pyx_StrEq(name, "__pyx_memoryview_thread_locks")) {
-    PyErr_Format(PyExc_TypeError, "Cannot convert Python object __pyx_memoryview_thread_locks to PyThread_type_lock [8]");
-    __PYX_ERR(2, 317, __pyx_L2_error)
-  }
-  else if (__Pyx_StrEq(name, "__pyx_memoryview_thread_locks_used")) {
-    __pyx_memoryview_thread_locks_used = __Pyx_PyInt_As_int(o); if (unlikely((__pyx_memoryview_thread_locks_used == (int)-1) && PyErr_Occurred())) __PYX_ERR(2, 316, __pyx_L2_error)
-  }
-  else if (__Pyx_StrEq(name, "contiguous")) {
-    Py_INCREF(o);
-    Py_DECREF(contiguous);
-    contiguous = o;
-  }
-  else if (__Pyx_StrEq(name, "generic")) {
-    Py_INCREF(o);
-    Py_DECREF(generic);
-    generic = o;
-  }
-  else if (__Pyx_StrEq(name, "indirect")) {
-    Py_INCREF(o);
-    Py_DECREF(indirect);
-    indirect = o;
-  }
-  else if (__Pyx_StrEq(name, "indirect_contiguous")) {
-    Py_INCREF(o);
-    Py_DECREF(indirect_contiguous);
-    indirect_contiguous = o;
-  }
-  else if (__Pyx_StrEq(name, "strided")) {
-    Py_INCREF(o);
-    Py_DECREF(strided);
-    strided = o;
-  }
-  else {
-    if (PyObject_SetAttr(__pyx_m, py_name, o) < 0) goto bad;
-  }
-  return 0;
-  __pyx_L2_error:;
-  __Pyx_AddTraceback("BoltonEtAl._utils", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  bad:
-  return -1;
-}
-
-static int
-__Pyx_import_all_from(PyObject *locals, PyObject *v)
-{
-    PyObject *all = PyObject_GetAttrString(v, "__all__");
-    PyObject *dict, *name, *value;
-    int skip_leading_underscores = 0;
-    int pos, err;
-    if (all == NULL) {
-        if (!PyErr_ExceptionMatches(PyExc_AttributeError))
-            return -1;
-        PyErr_Clear();
-        dict = PyObject_GetAttrString(v, "__dict__");
-        if (dict == NULL) {
-            if (!PyErr_ExceptionMatches(PyExc_AttributeError))
-                return -1;
-            PyErr_SetString(PyExc_ImportError,
-            "from-import-* object has no __dict__ and no __all__");
-            return -1;
-        }
-#if PY_MAJOR_VERSION < 3
-        all = PyObject_CallMethod(dict, (char *)"keys", NULL);
-#else
-        all = PyMapping_Keys(dict);
-#endif
-        Py_DECREF(dict);
-        if (all == NULL)
-            return -1;
-        skip_leading_underscores = 1;
-    }
-    for (pos = 0, err = 0; ; pos++) {
-        name = PySequence_GetItem(all, pos);
-        if (name == NULL) {
-            if (!PyErr_ExceptionMatches(PyExc_IndexError))
-                err = -1;
-            else
-                PyErr_Clear();
-            break;
-        }
-        if (skip_leading_underscores &&
-#if PY_MAJOR_VERSION < 3
-            PyString_Check(name) &&
-            PyString_AS_STRING(name)[0] == '_')
-#else
-            PyUnicode_Check(name) &&
-            PyUnicode_AS_UNICODE(name)[0] == '_')
-#endif
-        {
-            Py_DECREF(name);
-            continue;
-        }
-        value = PyObject_GetAttr(v, name);
-        if (value == NULL)
-            err = -1;
-        else if (PyDict_CheckExact(locals))
-            err = PyDict_SetItem(locals, name, value);
-        else
-            err = PyObject_SetItem(locals, name, value);
-        Py_DECREF(name);
-        Py_XDECREF(value);
-        if (err != 0)
-            break;
-    }
-    Py_DECREF(all);
-    return err;
-}
-static int __pyx_import_star(PyObject* m) {
-    int i;
-    int ret = -1;
-    char* s;
-    PyObject *locals = 0;
-    PyObject *list = 0;
-#if PY_MAJOR_VERSION >= 3
-    PyObject *utf8_name = 0;
-#endif
-    PyObject *name;
-    PyObject *item;
-    locals = PyDict_New();              if (!locals) goto bad;
-    if (__Pyx_import_all_from(locals, m) < 0) goto bad;
-    list = PyDict_Items(locals);        if (!list) goto bad;
-    for(i=0; i<PyList_GET_SIZE(list); i++) {
-        name = PyTuple_GET_ITEM(PyList_GET_ITEM(list, i), 0);
-        item = PyTuple_GET_ITEM(PyList_GET_ITEM(list, i), 1);
-#if PY_MAJOR_VERSION >= 3
-        utf8_name = PyUnicode_AsUTF8String(name);
-        if (!utf8_name) goto bad;
-        s = PyBytes_AS_STRING(utf8_name);
-        if (__pyx_import_star_set(item, name, s) < 0) goto bad;
-        Py_DECREF(utf8_name); utf8_name = 0;
-#else
-        s = PyString_AsString(name);
-        if (!s) goto bad;
-        if (__pyx_import_star_set(item, name, s) < 0) goto bad;
-#endif
-    }
-    ret = 0;
-bad:
-    Py_XDECREF(locals);
-    Py_XDECREF(list);
-#if PY_MAJOR_VERSION >= 3
-    Py_XDECREF(utf8_name);
-#endif
-    return ret;
-}
-
-
 
 #if PY_MAJOR_VERSION >= 3
 #if CYTHON_PEP489_MULTI_PHASE_INIT
@@ -22131,7 +21930,6 @@ static struct PyModuleDef __pyx_moduledef = {
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_ASCII, __pyx_k_ASCII, sizeof(__pyx_k_ASCII), 0, 0, 1, 1},
-  {&__pyx_n_s_BoltonEtAl__utils, __pyx_k_BoltonEtAl__utils, sizeof(__pyx_k_BoltonEtAl__utils), 0, 0, 1, 1},
   {&__pyx_kp_s_Buffer_view_does_not_expose_stri, __pyx_k_Buffer_view_does_not_expose_stri, sizeof(__pyx_k_Buffer_view_does_not_expose_stri), 0, 0, 1, 0},
   {&__pyx_kp_s_Can_only_create_a_buffer_that_is, __pyx_k_Can_only_create_a_buffer_that_is, sizeof(__pyx_k_Can_only_create_a_buffer_that_is), 0, 0, 1, 0},
   {&__pyx_kp_s_Cannot_assign_to_read_only_memor, __pyx_k_Cannot_assign_to_read_only_memor, sizeof(__pyx_k_Cannot_assign_to_read_only_memor), 0, 0, 1, 0},
@@ -22315,6 +22113,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_u_unknown_dtype_code_in_numpy_pxd, __pyx_k_unknown_dtype_code_in_numpy_pxd, sizeof(__pyx_k_unknown_dtype_code_in_numpy_pxd), 0, 1, 0, 0},
   {&__pyx_n_s_unpack, __pyx_k_unpack, sizeof(__pyx_k_unpack), 0, 0, 1, 1},
   {&__pyx_n_s_update, __pyx_k_update, sizeof(__pyx_k_update), 0, 0, 1, 1},
+  {&__pyx_n_s_utils, __pyx_k_utils, sizeof(__pyx_k_utils), 0, 0, 1, 1},
   {&__pyx_kp_s_utils_pyx, __pyx_k_utils_pyx, sizeof(__pyx_k_utils_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_v, __pyx_k_v, sizeof(__pyx_k_v), 0, 0, 1, 1},
   {&__pyx_n_s_v_t, __pyx_k_v_t, sizeof(__pyx_k_v_t), 0, 0, 1, 1},
@@ -22345,7 +22144,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "BoltonEtAl/_utils.pyx":22
+  /* "_utils.pyx":22
  * def load_tom_data(filepath: str, filename: str):
  *     print('Loading data... This might take a minute or two...')
  *     with h5py.File(join(filepath, filename), 'r') as file:             # <<<<<<<<<<<<<<
@@ -22356,7 +22155,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
-  /* "BoltonEtAl/_utils.pyx":81
+  /* "_utils.pyx":81
  * 
  *     for t in range( adv2_x.shape[0] ) :
  *        adv2_x[t,:,:] = gaussian_filter( adv2_x[t,:,:], scale_filter/dx )             # <<<<<<<<<<<<<<
@@ -22367,7 +22166,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_slice__2);
   __Pyx_GIVEREF(__pyx_slice__2);
 
-  /* "BoltonEtAl/_utils.pyx":113
+  /* "_utils.pyx":113
  *     sx = RectangularData(data=sx)
  *     sy = RectangularData(data=sy)
  *     psi_ = psi_.coarse_grain(factor=4, dims=(1,2))             # <<<<<<<<<<<<<<
@@ -22378,7 +22177,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":272
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":272
  *             if ((flags & pybuf.PyBUF_C_CONTIGUOUS == pybuf.PyBUF_C_CONTIGUOUS)
  *                 and not PyArray_CHKFLAGS(self, NPY_ARRAY_C_CONTIGUOUS)):
  *                 raise ValueError(u"ndarray is not C contiguous")             # <<<<<<<<<<<<<<
@@ -22389,7 +22188,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":276
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":276
  *             if ((flags & pybuf.PyBUF_F_CONTIGUOUS == pybuf.PyBUF_F_CONTIGUOUS)
  *                 and not PyArray_CHKFLAGS(self, NPY_ARRAY_F_CONTIGUOUS)):
  *                 raise ValueError(u"ndarray is not Fortran contiguous")             # <<<<<<<<<<<<<<
@@ -22400,7 +22199,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":306
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":306
  *                 if ((descr.byteorder == c'>' and little_endian) or
  *                     (descr.byteorder == c'<' and not little_endian)):
  *                     raise ValueError(u"Non-native byte order not supported")             # <<<<<<<<<<<<<<
@@ -22411,7 +22210,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":856
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":856
  * 
  *         if (end - f) - <int>(new_offset - offset[0]) < 15:
  *             raise RuntimeError(u"Format string allocated too short, see comment in numpy.pxd")             # <<<<<<<<<<<<<<
@@ -22422,7 +22221,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__7);
   __Pyx_GIVEREF(__pyx_tuple__7);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":880
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":880
  *             t = child.type_num
  *             if end - f < 5:
  *                 raise RuntimeError(u"Format string allocated too short.")             # <<<<<<<<<<<<<<
@@ -22433,7 +22232,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__8);
   __Pyx_GIVEREF(__pyx_tuple__8);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1038
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1038
  *         _import_array()
  *     except Exception:
  *         raise ImportError("numpy.core.multiarray failed to import")             # <<<<<<<<<<<<<<
@@ -22444,7 +22243,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__9);
   __Pyx_GIVEREF(__pyx_tuple__9);
 
-  /* "C:/Users/Arthur/Anaconda3/envs/pytorch/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1044
+  /* "C:/Users/Arthur/Anaconda3/lib/site-packages/Cython/Includes/numpy/__init__.pxd":1044
  *         _import_umath()
  *     except Exception:
  *         raise ImportError("numpy.core.umath failed to import")             # <<<<<<<<<<<<<<
@@ -22636,7 +22435,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__27);
   __Pyx_GIVEREF(__pyx_tuple__27);
 
-  /* "BoltonEtAl/_utils.pyx":20
+  /* "_utils.pyx":20
  * 
  * 
  * def load_tom_data(filepath: str, filename: str):             # <<<<<<<<<<<<<<
@@ -22648,7 +22447,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__29);
   __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(2, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_utils_pyx, __pyx_n_s_load_tom_data, 20, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) __PYX_ERR(0, 20, __pyx_L1_error)
 
-  /* "BoltonEtAl/_utils.pyx":30
+  /* "_utils.pyx":30
  * 
  * #Taken from Tom Bolton
  * def calcEddyForcing( psiEddy, psiBar, scale_filter ) :             # <<<<<<<<<<<<<<
@@ -22660,7 +22459,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__31);
   __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(3, 0, 34, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__31, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_utils_pyx, __pyx_n_s_calcEddyForcing, 30, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) __PYX_ERR(0, 30, __pyx_L1_error)
 
-  /* "BoltonEtAl/_utils.pyx":118
+  /* "_utils.pyx":118
  *     return (psi_.data, sx.data, sy.data)
  * 
  * def block_loop(n_times, n_times_per_loop, data, function, shape_result):             # <<<<<<<<<<<<<<
@@ -23080,14 +22879,14 @@ if (!__Pyx_RefNanny) {
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
-  if (__pyx_module_is_main_BoltonEtAl___utils) {
+  if (__pyx_module_is_main__utils) {
     if (PyObject_SetAttr(__pyx_m, __pyx_n_s_name_2, __pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "BoltonEtAl._utils")) {
-      if (unlikely(PyDict_SetItemString(modules, "BoltonEtAl._utils", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "_utils")) {
+      if (unlikely(PyDict_SetItemString(modules, "_utils", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   #endif
@@ -23108,7 +22907,7 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "BoltonEtAl/_utils.pyx":7
+  /* "_utils.pyx":7
  * @author: Arthur
  * """
  * import h5py             # <<<<<<<<<<<<<<
@@ -23120,7 +22919,7 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_h5py, __pyx_t_1) < 0) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":8
+  /* "_utils.pyx":8
  * """
  * import h5py
  * from os.path import join             # <<<<<<<<<<<<<<
@@ -23141,7 +22940,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":9
+  /* "_utils.pyx":9
  * import h5py
  * from os.path import join
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -23153,7 +22952,7 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_2) < 0) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":11
+  /* "_utils.pyx":11
  * import numpy as np
  * cimport numpy as np
  * from scipy.ndimage import gaussian_filter             # <<<<<<<<<<<<<<
@@ -23174,12 +22973,12 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":12
+  /* "_utils.pyx":12
  * cimport numpy as np
  * from scipy.ndimage import gaussian_filter
  * import matplotlib.pyplot as plt             # <<<<<<<<<<<<<<
  * from scipy.signal import fftconvolve, gaussian
- * from grids import *
+ * from grids import RectangularData
  */
   __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -23192,11 +22991,11 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_plt, __pyx_t_2) < 0) __PYX_ERR(0, 12, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":13
+  /* "_utils.pyx":13
  * from scipy.ndimage import gaussian_filter
  * import matplotlib.pyplot as plt
  * from scipy.signal import fftconvolve, gaussian             # <<<<<<<<<<<<<<
- * from grids import *
+ * from grids import RectangularData
  * 
  */
   __pyx_t_2 = PyList_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 13, __pyx_L1_error)
@@ -23220,26 +23019,29 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":14
+  /* "_utils.pyx":14
  * import matplotlib.pyplot as plt
  * from scipy.signal import fftconvolve, gaussian
- * from grids import *             # <<<<<<<<<<<<<<
+ * from grids import RectangularData             # <<<<<<<<<<<<<<
  * 
  * dtype = np.double
  */
   __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_INCREF(__pyx_n_s__28);
-  __Pyx_GIVEREF(__pyx_n_s__28);
-  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s__28);
+  __Pyx_INCREF(__pyx_n_s_RectangularData);
+  __Pyx_GIVEREF(__pyx_n_s_RectangularData);
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_RectangularData);
   __pyx_t_2 = __Pyx_Import(__pyx_n_s_grids, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (__pyx_import_star(__pyx_t_2) < 0) __PYX_ERR(0, 14, __pyx_L1_error);
+  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_RectangularData); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_RectangularData, __pyx_t_1) < 0) __PYX_ERR(0, 14, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":16
- * from grids import *
+  /* "_utils.pyx":16
+ * from grids import RectangularData
  * 
  * dtype = np.double             # <<<<<<<<<<<<<<
  * ctypedef double dtype_t
@@ -23253,43 +23055,43 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_dtype, __pyx_t_1) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":20
+  /* "_utils.pyx":20
  * 
  * 
  * def load_tom_data(filepath: str, filename: str):             # <<<<<<<<<<<<<<
  *     print('Loading data... This might take a minute or two...')
  *     with h5py.File(join(filepath, filename), 'r') as file:
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10BoltonEtAl_6_utils_1load_tom_data, NULL, __pyx_n_s_BoltonEtAl__utils); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_6_utils_1load_tom_data, NULL, __pyx_n_s_utils); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_load_tom_data, __pyx_t_1) < 0) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":30
+  /* "_utils.pyx":30
  * 
  * #Taken from Tom Bolton
  * def calcEddyForcing( psiEddy, psiBar, scale_filter ) :             # <<<<<<<<<<<<<<
  *     """
  *     Copied from Tom Bolton's code.'
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10BoltonEtAl_6_utils_3calcEddyForcing, NULL, __pyx_n_s_BoltonEtAl__utils); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 30, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_6_utils_3calcEddyForcing, NULL, __pyx_n_s_utils); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 30, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_calcEddyForcing, __pyx_t_1) < 0) __PYX_ERR(0, 30, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":118
+  /* "_utils.pyx":118
  *     return (psi_.data, sx.data, sy.data)
  * 
  * def block_loop(n_times, n_times_per_loop, data, function, shape_result):             # <<<<<<<<<<<<<<
  *     """Block execution of  loop"""
  *     cdef int n_iterations = n_times // n_times_per_loop
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10BoltonEtAl_6_utils_7block_loop, NULL, __pyx_n_s_BoltonEtAl__utils); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_6_utils_7block_loop, NULL, __pyx_n_s_utils); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 118, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_block_loop, __pyx_t_1) < 0) __PYX_ERR(0, 118, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "BoltonEtAl/_utils.pyx":1
+  /* "_utils.pyx":1
  * # -*- coding: utf-8 -*-             # <<<<<<<<<<<<<<
  * """
  * Created on Mon Nov 25 18:17:11 2019
@@ -23460,11 +23262,11 @@ if (!__Pyx_RefNanny) {
   __Pyx_XDECREF(__pyx_t_2);
   if (__pyx_m) {
     if (__pyx_d) {
-      __Pyx_AddTraceback("init BoltonEtAl._utils", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init _utils", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     Py_CLEAR(__pyx_m);
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init BoltonEtAl._utils");
+    PyErr_SetString(PyExc_ImportError, "init _utils");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -26885,14 +26687,14 @@ static CYTHON_INLINE int __pyx_memview_set_double(const char *itemp, PyObject *o
     }
 
 /* MemviewDtypeToObject */
-    static CYTHON_INLINE PyObject *__pyx_memview_get_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(const char *itemp) {
-    return (PyObject *) PyFloat_FromDouble(*(__pyx_t_10BoltonEtAl_6_utils_dtype_t *) itemp);
+    static CYTHON_INLINE PyObject *__pyx_memview_get_nn___pyx_t_6_utils_dtype_t(const char *itemp) {
+    return (PyObject *) PyFloat_FromDouble(*(__pyx_t_6_utils_dtype_t *) itemp);
 }
-static CYTHON_INLINE int __pyx_memview_set_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(const char *itemp, PyObject *obj) {
-    __pyx_t_10BoltonEtAl_6_utils_dtype_t value = __pyx_PyFloat_AsDouble(obj);
+static CYTHON_INLINE int __pyx_memview_set_nn___pyx_t_6_utils_dtype_t(const char *itemp, PyObject *obj) {
+    __pyx_t_6_utils_dtype_t value = __pyx_PyFloat_AsDouble(obj);
     if ((value == (double)-1) && PyErr_Occurred())
         return 0;
-    *(__pyx_t_10BoltonEtAl_6_utils_dtype_t *) itemp = value;
+    *(__pyx_t_6_utils_dtype_t *) itemp = value;
     return 1;
 }
 
@@ -27909,7 +27711,7 @@ raise_neg_overflow:
 }
 
 /* ObjectToMemviewSlice */
-    static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsdsds_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(PyObject *obj, int writable_flag) {
+    static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsdsds_nn___pyx_t_6_utils_dtype_t(PyObject *obj, int writable_flag) {
     __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
     __Pyx_BufFmt_StackElem stack[1];
     int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED) };
@@ -27920,7 +27722,7 @@ raise_neg_overflow:
     }
     retcode = __Pyx_ValidateAndInit_memviewslice(axes_specs, 0,
                                                  PyBUF_RECORDS_RO | writable_flag, 4,
-                                                 &__Pyx_TypeInfo_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t, stack,
+                                                 &__Pyx_TypeInfo_nn___pyx_t_6_utils_dtype_t, stack,
                                                  &result, obj);
     if (unlikely(retcode == -1))
         goto __pyx_fail;
@@ -27932,7 +27734,7 @@ __pyx_fail:
 }
 
 /* ObjectToMemviewSlice */
-    static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t(PyObject *obj, int writable_flag) {
+    static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn___pyx_t_6_utils_dtype_t(PyObject *obj, int writable_flag) {
     __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
     __Pyx_BufFmt_StackElem stack[1];
     int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED) };
@@ -27943,7 +27745,7 @@ __pyx_fail:
     }
     retcode = __Pyx_ValidateAndInit_memviewslice(axes_specs, 0,
                                                  PyBUF_RECORDS_RO | writable_flag, 3,
-                                                 &__Pyx_TypeInfo_nn___pyx_t_10BoltonEtAl_6_utils_dtype_t, stack,
+                                                 &__Pyx_TypeInfo_nn___pyx_t_6_utils_dtype_t, stack,
                                                  &result, obj);
     if (unlikely(retcode == -1))
         goto __pyx_fail;
@@ -27952,12 +27754,6 @@ __pyx_fail:
     result.memview = NULL;
     result.data = NULL;
     return result;
-}
-
-/* CStringEquals */
-    static CYTHON_INLINE int __Pyx_StrEq(const char *s1, const char *s2) {
-    while (*s1 != '\0' && *s1 == *s2) { s1++; s2++; }
-    return *s1 == *s2;
 }
 
 /* CheckBinaryVersion */

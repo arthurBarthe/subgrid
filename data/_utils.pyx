@@ -11,7 +11,7 @@ cimport numpy as np
 from scipy.ndimage import gaussian_filter
 import matplotlib.pyplot as plt
 from scipy.signal import fftconvolve, gaussian
-from grids import *
+from grids import RectangularData
 
 dtype = np.double
 ctypedef double dtype_t
