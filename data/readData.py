@@ -10,11 +10,12 @@ Created on Fri Nov 22 14:13:22 2019
 
 import numpy as np
 import matplotlib.pyplot as plt
-from data._utils import *
+from data._utils import load_tom_data, build_training_data, block_loop
 import os.path
 import mlflow
 
 # Set a specific experiment name for the data
+mlflow.set_tracking_uri('file:///d:\\Data sets\\NYU\\mlruns')
 mlflow.set_experiment('data')
 mlflow.start_run()
 
@@ -24,7 +25,9 @@ dx = 7.5e3
 dy = dx
 # Scale of the coarse-graining
 scale_fine = (dx, dy)
-scale_coarse = (40e3, 40e3)
+scale_coarse = (60e3, 60e3)
+
+factor = scale_coarse[0] / scale_fine[0]
 
 # Logging parameters
 mlflow.log_param('scale_coarse', scale_coarse)
@@ -48,13 +51,17 @@ print(data.shape[1:])
 
 # Processing of the data
 n_times_per_loop = 10
-shape_result = (n_times, 3, length_x // 4, length_y // 4)
+shape_result = (n_times, 3, int(length_x // factor), int(length_y // factor))
 func = lambda x: build_training_data(x, dx, dy, scale_coarse[0])
 processed_data = block_loop(n_times, n_times_per_loop, data,
                             func, shape_result)
 psi_coarse = processed_data[:, 0, :, :]
 sx_coarse = processed_data[:, 1, :, :]
 sy_coarse = processed_data[:, 2, :, :]
+
+print(psi_coarse.shape)
+print(sx_coarse.shape)
+print(sy_coarse.shape)
 
 # Saving to disk
 np.save(os.path.join(filepath_new_data, 'psi_coarse'), psi_coarse)

@@ -12,7 +12,8 @@ import mlflow
 
 
 def call_only_once(f):
-    """Decorator that ensures a function is only called at most once."""
+    """Decorator that ensures a function is only called at most once for
+    a given set of parameters."""
     f.called = list()
 
     def new_f(*args, **kargs):
@@ -378,3 +379,39 @@ class Dataset_psi_s(Dataset):
         self.std_targets = np.concatenate((self.std_sx, self.std_sy))
         self.sx /= self.std_sx
         self.sy /= self.std_sy
+
+
+if __name__ == '__main__':
+    from sklearn.preprocessing import StandardScaler
+    from torch.utils.data import DataLoader, Subset
+    batch_size = 8
+
+    dataset = RawData(r'D:\Data sets\NYU\processed_data',
+                      'psi_coarse.npy', 'sx_coarse.npy', 'sy_coarse.npy')
+    # Split train/test
+    train_split = 0.4
+    test_split = 0.75
+    n_indices = len(dataset)
+    train_index = int(train_split * n_indices)
+    test_index = int(test_split * n_indices)
+    train_dataset = Subset(dataset, np.arange(train_index))
+    test_dataset = Subset(dataset, np.arange(test_index, n_indices))
+
+    # Apply basic normalization transforms (using the training data only)
+#    s = DatasetTransformer(StandardScaler)
+#    s.fit(train_dataset)
+#    train_dataset = s.transform(train_dataset)
+#    test_dataset = s.transform(test_dataset)
+
+    # Specifies which time indices to use for the prediction
+    indices = [0, -2, -4, -6]
+    train_dataset = MultipleTimeIndices(train_dataset)
+    train_dataset.time_indices = indices
+    test_dataset = MultipleTimeIndices(test_dataset)
+    test_dataset.time_indices = indices
+
+    # Dataloaders are responsible for sending batches of data to the NN
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
+                                  shuffle=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
+                                 shuffle=False)

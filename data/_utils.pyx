@@ -110,9 +110,9 @@ cpdef build_training_data(double[:,:,:] psi, double dx, double dy,
     psi_ = RectangularData(data=psi_)
     sx = RectangularData(data=sx)
     sy = RectangularData(data=sy)
-    psi_ = psi_.coarse_grain(factor=4, dims=(1,2))
-    sx = sx.coarse_grain(factor=4, dims=(1,2))
-    sy = sy.coarse_grain(factor=4, dims=(1,2))
+    psi_ = psi_.coarse_grain(factor= int(scale // dx), dims=(1,2))
+    sx = sx.coarse_grain(factor=int(scale // dx), dims=(1,2))
+    sy = sy.coarse_grain(factor=int(scale // dy), dims=(1,2))
     return (psi_.data, sx.data, sy.data)
 
 def block_loop(n_times, n_times_per_loop, data, function, shape_result):

@@ -36,11 +36,11 @@ import torch.nn
 import matplotlib.pyplot as plt
 
 # Import our Dataset class and neural network
-from full_cnn1 import RawData, MultipleTimeIndices
-from full_cnn1 import FullyCNN
+from ..data.datasets import RawData, MultipleTimeIndices
+from ..models.full_cnn1 import FullyCNN
 
 # Import some utils functions
-from utils_nn import print_every, RunningAverage, DEVICE_TYPE
+from ..models.utils.utils_nn import print_every, RunningAverage, DEVICE_TYPE
 
 # Set the mlflow tracking uri
 mlflow.set_tracking_uri('file:///data/ag7531/mlruns')
@@ -51,14 +51,14 @@ mlflow.set_tracking_uri('file:///data/ag7531/mlruns')
 # Note that we use two indices for the train/test split. This is because we
 # want to avoid the time correlation to play in our favour during test.
 batch_size = 8
-learning_rates = {0: 1e-3}
-n_epochs = 100
+learning_rates = {0: 1e-3, 60: 5e-4, 100: 2.5e-4}
+n_epochs = 150
 train_split = 0.7
 test_split = 0.75
 
 # Parameters specific to the input data
 # past specifies the indices from the past that are used for prediction
-indices = [0, -1]
+indices = [0, ]
 
 # Other parameters
 print_loss_every = 20
@@ -74,7 +74,6 @@ print('Selected device type: ', device_type.value)
 # Log the parameters with mlflow
 mlflow.log_param('batch_size', batch_size)
 mlflow.log_param('learning_rate', learning_rates)
-mlflow.log_param('device', device)
 mlflow.log_param('device', device_type.value)
 mlflow.log_param('train_split', train_split)
 mlflow.log_param('test_split', test_split)
@@ -114,11 +113,11 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
 
 
 # NEURAL NETWORK------
-net = FullyCNN(len(indices), dataset.width, dataset.height,
-               dataset.n_output_targets)
+net = FullyCNN(len(indices), dataset.n_output_targets)
 print('--------------------')
 print(net)
 print('--------------------')
+print('***')
 # To GPU
 net.to(device)
 

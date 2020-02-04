@@ -9,6 +9,7 @@ import torch
 from os.path import join
 import numpy as np
 import warnings
+import json
 
 
 class LoadMLFlow:
@@ -37,6 +38,7 @@ class LoadMLFlow:
         # Prediction attirbutes
         self._predictions = None
         self._true_targets = None
+        # Correlations
 
     @property
     def net_class(self):
@@ -72,9 +74,15 @@ class LoadMLFlow:
                       '_' + param_name) is None:
             with open(join(self.paths['params'], param_name)) as f:
                 setattr(self, '_' + param_name, f.readline())
+        return getattr(self, '_' + param_name)
+
     @property
     def time_indices(self):
-        return self._t
+        return json.loads(self.load_param('time_indices'))
+
+    @property
+    def batch_size(self):
+        return int(self.load_param('batch_size'))
 
     @property
     def train_split(self):
@@ -92,7 +100,7 @@ class LoadMLFlow:
     def test_split(self):
         # TODO generalize this by writing a single method for all params.
         if self._test_split is None:
-            with open(join(self.paths['params'], 'train_split')) as f:
+            with open(join(self.paths['params'], 'test_split')) as f:
                 self._test_split = float(f.readline())
         return self._test_split
 
@@ -121,5 +129,9 @@ class LoadMLFlow:
                 self._true_targets = np.load(join(self.paths['artifacts'],
                                                   'truth.npy'))
             except FileNotFoundError:
-                warnings.warn('True targets not found for this run')
+                try:
+                    self._true_targets = np.load(join(self.paths['artifacts'],
+                                                  'targets.npy'))
+                except FileNotFoundError:
+                    warnings.warn('True targets not found for this run')
         return self._true_targets

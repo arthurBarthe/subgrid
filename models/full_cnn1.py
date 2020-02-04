@@ -19,8 +19,6 @@ logged.
 import torch
 from torch.nn import Module
 from torch.nn import functional as F
-from data.datasets import RawData, MultipleTimeIndices
-import numpy as np
 import mlflow
 
 
@@ -45,12 +43,9 @@ class ScaledModule(Module):
 class MLFlowNN(Module):
     """Abstract class for a pytorch NN whose characteristics are automatically
     logged through MLFLOW."""
-    def __init__(self, input_depth: int, input_width: int, input_height: int,
-                 output_size: int):
+    def __init__(self, input_depth: int, output_size: int):
         super().__init__()
         self.input_depth = input_depth
-        self.input_width = input_width
-        self.input_height = input_height
         self.output_size = output_size
         self.layers = torch.nn.ModuleList()
         self._n_layers = 0
@@ -188,49 +183,32 @@ class Divergence2d(Module):
     def forward(self, input: torch.Tensor):
         n, c, h, w = input.size()
         output1 = F.conv2d(input[:, :c//4, :, :], self.x_derivative,
-                           padding=1)
+                           padding=2)
         output1 += F.conv2d(input[:, c//4:c//2, :, :], self.y_derivative,
-                            padding=1)
+                            padding=2)
         output2 = F.conv2d(input[:, c//2:c//2+c//4, :, :], self.x_derivative,
-                           padding=1)
+                           padding=2)
         output2 += F.conv2d(input[:, c//2+c//4:, :, :], self.y_derivative,
-                            padding=1)
+                            padding=2)
         return torch.stack((output1, output2), dim=1)
 
 
-#class ModuleFactory:
-#    def __init__(self):
-#        pass
-#
-#    def build(self, *args, **kargs):
-#        pass
-#
-#
-#class FullCNNfactory(ModuleFactory):
-#    def __init__(self):
-#        super().__init__()
-#
-#    def build(self, n_layers: int, activation, )
-
-
 class FullyCNN(MLFlowNN):
-    def __init__(self, input_depth: int, input_width: int, input_height: int,
-                 output_size: int):
-        super().__init__(input_depth, input_width, input_height,
-                         output_size)
+    def __init__(self, input_depth: int, output_size: int):
+        super().__init__(input_depth, output_size)
         self.build()
 
     def build(self):
         self.add_conv2d_layer(self.input_depth, 128, 5, padding=2)
         self.add_activation('relu')
         self.add_batch_norm_layer(128)
-        self.add_conv2d_layer(128, 64, 5, padding=2)
+        self.add_conv2d_layer(128, 128, 5, padding=2)
         self.add_activation('relu')
-        self.add_batch_norm_layer(64)
-        self.add_conv2d_layer(64, 32, 5, padding=2)
+        self.add_batch_norm_layer(128)
+        self.add_conv2d_layer(128, 32, 5, padding=2)
         self.add_activation('relu')
         self.add_batch_norm_layer(32)
-        self.add_conv2d_layer(32, 32, 5, padding=2)
+        self.add_conv2d_layer(32, 32, 5, padding=1)
         self.add_activation('relu')
         self.add_batch_norm_layer(32)
 #        self.add_conv2d_layer(32, 64, 5, padding=2)
@@ -239,38 +217,10 @@ class FullyCNN(MLFlowNN):
         self.add_divergence2d_layer(32, 2)
         self.add_final_activation('identity')
 
-
 if __name__ == '__main__':
-    from sklearn.preprocessing import StandardScaler
-    from torch.utils.data import DataLoader, Subset
-    batch_size = 8
-
-    dataset = RawData(r'D:\Data sets\NYU\processed_data',
-                      'psi_coarse.npy', 'sx_coarse.npy', 'sy_coarse.npy')
-    # Split train/test
-    train_split = 0.4
-    test_split = 0.75
-    n_indices = len(dataset)
-    train_index = int(train_split * n_indices)
-    test_index = int(test_split * n_indices)
-    train_dataset = Subset(dataset, np.arange(train_index))
-    test_dataset = Subset(dataset, np.arange(test_index, n_indices))
-
-    # Apply basic normalization transforms (using the training data only)
-#    s = DatasetTransformer(StandardScaler)
-#    s.fit(train_dataset)
-#    train_dataset = s.transform(train_dataset)
-#    test_dataset = s.transform(test_dataset)
-
-    # Specifies which time indices to use for the prediction
-    indices = [0, -2, -4, -6]
-    train_dataset = MultipleTimeIndices(train_dataset)
-    train_dataset.time_indices = indices
-    test_dataset = MultipleTimeIndices(test_dataset)
-    test_dataset.time_indices = indices
-
-    # Dataloaders are responsible for sending batches of data to the NN
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
-                                  shuffle=True)
-    test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
-                                 shuffle=False)
+    import numpy as np
+    net = FullyCNN(1, 18)
+    input_ = torch.randint(-100, 100, (8, 1, 3, 3))
+    input_ = input_.to(dtype=torch.float32)
+    output = net(input_).detach().numpy()
+    print(np.sum(output))

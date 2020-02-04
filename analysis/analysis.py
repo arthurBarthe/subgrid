@@ -3,6 +3,10 @@
 Created on Thu Jan 23 21:04:01 2020
 
 @author: Arthur
+
+BUGS
+-decorator allow_hold_on only works when the function is supposed to generate
+only one figure.
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -64,10 +68,14 @@ class TimeSeriesForPoint:
     def plot_pred_vs_true(self):
         """Plots the predictions and the true target accross time for the
         instance's point."""
+        plt.figure()
         plt.plot(self.predictions)
         plt.plot(self.true_values)
         plt.legend(('Prediction', 'True values'))
         plt.title('Predictions for point {}, {}'.format(*self.point))
+        plt.figure()
+        plt.plot(self.predictions - self.true_values)
+        plt.title('Prediction errors for point {}, {}'.format(*self.point))
 
     def save_fig(self):
         if not self._fig:
