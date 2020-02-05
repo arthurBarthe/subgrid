@@ -18,16 +18,17 @@ see if there is anything remaining.
 
 from analysis.loadmlflow import LoadMLFlow
 from analysis.analysis import TimeSeriesForPoint
-from analysis.utils import select_run
+from analysis.utils import select_run, view_predictions, DisplayMode
 import mlflow
 from matplotlib import pyplot as plt
 
 # We'll run this locally
 mlflow.set_tracking_uri('file:///d:\\Data sets\\NYU\\mlruns')
+mlflow.set_experiment('Default')
 
 # If the runs dataframe already exists we use it. Note: this means you must
 # restart the interpreter if the list of runs has changed.
-run_id = select_run(sort_by='metrics.test mse')
+run_id, experiment_id = select_run(sort_by='metrics.test mse')
 mlflow_loader = LoadMLFlow(run_id, mlruns_path='d:\\Data sets\\NYU\\mlruns')
 
 # Display some info about the train and validation sets for this run
@@ -39,14 +40,4 @@ print(f'Test split: {test_split}')
 pred = mlflow_loader.predictions
 truth = mlflow_loader.true_targets
 
-fig = plt.figure()
-plt.imshow(truth[0, 0, :, :], origin='bottom')
-
-
-def onClick(event):
-    time_series0 = TimeSeriesForPoint(predictions=pred, truth=truth)
-    time_series0.point = (int(event.xdata), int(event.ydata))
-    time_series0.plot_pred_vs_true()
-
-
-fig.canvas.mpl_connect('button_press_event', onClick)
+view_predictions(pred, truth, DisplayMode.rmse)

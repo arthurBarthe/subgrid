@@ -88,7 +88,7 @@ class MLFlowNN(Module):
 
     def add_conv2d_layer(self, in_channels: int, out_channels: int,
                          kernel_size: int, stride: int = 1, padding: int = 0,
-                         dilation: int = 1, groups: int = 1, bias: int = True):
+                         dilation: int = 1, groups: int = 1, bias: bool = True):
         """Adds a convolutional layer. Same parameters as the torch Conv2d,
         the difference is that we log some of these parameters through mlflow.
         """
@@ -100,6 +100,7 @@ class MLFlowNN(Module):
         self.params_to_log['kernel{}'.format(i_layer)] = str(kernel_size)
         self.params_to_log['groups{}'.format(i_layer)] = groups
         self.params_to_log['depth{}'.format(i_layer)] = out_channels
+        self.params_to_log['bias{}'.format(i_layer)] = bias
         if groups > 1:
             self.params_to_log['groups'] = True
         if kernel_size > self.params_to_log['max_kernel_size']:
@@ -159,7 +160,8 @@ class MLFlowNN(Module):
 
 class Divergence2d(Module):
     """Class that defines a fixed layer that produces the divergence of the
-    input field."""
+    input field. Note that the padding is set to 2, hence the spatial dim
+    of the output is larger than that of the input."""
     def __init__(self, n_input_channels: int, n_output_channels: int):
         super().__init__()
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -216,6 +218,8 @@ class FullyCNN(MLFlowNN):
 #        self.add_batch_norm_layer(64)
         self.add_divergence2d_layer(32, 2)
         self.add_final_activation('identity')
+
+
 
 if __name__ == '__main__':
     import numpy as np

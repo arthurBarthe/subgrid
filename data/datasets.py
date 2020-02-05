@@ -9,6 +9,7 @@ import numpy as np
 import os.path
 import matplotlib.pyplot as plt
 import mlflow
+from sklearn.preprocessing import StandardScaler
 
 
 def call_only_once(f):
@@ -121,6 +122,20 @@ class DatasetTransformer:
         new_features = self.transformers['features'].inverse_transform(features)
         new_targets = self.transformers['targets'].transform(targets)
         return FeaturesTargetsDataset(new_features, new_targets)
+
+
+class DatasetClippedScaler(DatasetTransformer):
+    def __init__(self, apply_both=True):
+        super().__init__(transformer_class=StandardScaler)
+
+    def fit(self, X: Dataset):
+        super().fit(X)
+        scale_features = np.clip(self.transformers['features'].scale_,
+                                 1e-5, np.inf)
+        scale_targets = np.clip(self.transformers['targets'].scale_,
+                                1e-5, np.inf)
+        self.transformers['features'].scale_ = scale_features
+        self.transformers['targets'].scale_ = scale_targets
 
 
 class MLFLowPreprocessing(Dataset):

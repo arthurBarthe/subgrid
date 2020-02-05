@@ -4,6 +4,9 @@ Created on Thu Jan 23 21:04:01 2020
 
 @author: Arthur
 
+TODOS
+-write a decorator that allows to save the figure plotted by a function
+by just passing a save_fig=True to its parameters.
 BUGS
 -decorator allow_hold_on only works when the function is supposed to generate
 only one figure.

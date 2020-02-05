@@ -28,7 +28,7 @@ def print_every(to_print: str, every: int, n_iter: int):
 
 
 class RunningAverage:
-    """Class for computing a running average simply"""
+    """Class for online computing of a running average"""
     def __init__(self):
         self.n_items = 0
         self.average = 0

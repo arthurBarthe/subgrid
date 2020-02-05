@@ -36,11 +36,14 @@ import torch.nn
 import matplotlib.pyplot as plt
 
 # Import our Dataset class and neural network
-from ..data.datasets import RawData, MultipleTimeIndices
+from ..data.datasets import RawData, MultipleTimeIndices, DatasetClippedScaler
 from ..models.full_cnn1 import FullyCNN
 
 # Import some utils functions
 from ..models.utils.utils_nn import print_every, RunningAverage, DEVICE_TYPE
+
+# import training class
+from .base import Trainer
 
 # Set the mlflow tracking uri
 mlflow.set_tracking_uri('file:///data/ag7531/mlruns')
@@ -58,7 +61,7 @@ test_split = 0.75
 
 # Parameters specific to the input data
 # past specifies the indices from the past that are used for prediction
-indices = [0, ]
+indices = [0, -1]
 
 # Other parameters
 print_loss_every = 20
@@ -93,10 +96,10 @@ train_dataset = Subset(dataset, np.arange(train_index))
 test_dataset = Subset(dataset, np.arange(test_index, n_indices))
 
 # Apply basic normalization transforms (using the training data only)
-#s = DatasetTransformer(RobustScaler)
-#s.fit(train_dataset)
-#train_dataset = s.transform(train_dataset)
-#test_dataset = s.transform(test_dataset)
+s = DatasetClippedScaler()
+s.fit(train_dataset)
+train_dataset = s.transform(train_dataset)
+test_dataset = s.transform(test_dataset)
 
 # Specifies which time indices to use for the prediction
 train_dataset = MultipleTimeIndices(train_dataset)
@@ -134,6 +137,9 @@ optimizers = {i: optim.Adam(net.parameters(), lr=v) for (i, v) in
 
 # FIN NEURAL NETWORK - 
 
+trainer = Trainer(net, device)
+trainer.criterion = criterion
+
 # Training------------
 for i_epoch in range(n_epochs):
     # Set to training mode
@@ -141,27 +147,10 @@ for i_epoch in range(n_epochs):
     if i_epoch in optimizers:
         optimizer = optimizers[i_epoch]
     print('Epoch number {}.'.format(i_epoch))
-    # reset running loss to zero at each epoch
-    running_loss = RunningAverage()
-    for i_batch, batch in enumerate(train_dataloader):
-        # Zero the gradients
-        net.zero_grad()
-        # Get a batch and move it to the GPU (if possible)
-        X = batch[0].to(device, dtype=torch.float)
-        Y = batch[1].to(device, dtype=torch.float)
-        # Compute loss
-        loss = criterion(net(X), Y)
-        running_loss.update(loss.item(), X.size(0))
-        # Print current loss
-        loss_text = 'Current loss value is {}'.format(running_loss)
-        print_every(loss_text, print_loss_every, i_batch)
-        # Backpropagate
-        loss.backward()
-        # Update parameters
-        optimizer.step()
+    running_loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
     # Log the training loss
     print('Train loss for this epoch is ', running_loss)
-    mlflow.log_metric('train mse', running_loss.value, i_epoch)
+    mlflow.log_metric('train mse', running_loss, i_epoch)
     
     # Eval mode
     net.eval()
@@ -216,6 +205,7 @@ pred = np.zeros((len(test_dataset), 2, dataset.width, dataset.height))
 truth = np.zeros((len(test_dataset), 2, dataset.width, dataset.height))
 
 # Predictions on the test set using the trained model
+net.eval()
 with torch.no_grad():
     for i, data in enumerate(test_dataloader):
         X = data[0].to(device, dtype=torch.float)

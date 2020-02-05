@@ -4,6 +4,9 @@ Created on Thu Jan 23 20:12:49 2020
 
 @author: Arthur
 Contains a class for loading an MLFlow run.
+TODOS
+-write a generic loadmlflow class from which more specific classes can inherit
+from
 """
 import torch
 from os.path import join
