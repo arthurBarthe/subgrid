@@ -5,10 +5,10 @@ name: cmip2_6
 entry_points:
   main:
     parameters:
-      control: {type: string, default: True}
+      ntimes : {type: float, default: 100}
       CO2: {type: float, default: 0.0}
       lat_min : float
       lat_max : float
       long_min : float
       long_max : float
-    command: "python data --control {control} --CO2 {CO2} --bounds lat_min lat_max long_min long_max" 
+    command: "python cmip26.py lat_min lat_max long_min long_max --CO2 {CO2} --ntimes" 

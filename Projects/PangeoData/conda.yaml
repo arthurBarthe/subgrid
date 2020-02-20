@@ -1,10 +1,17 @@
-name: cmip2_6
+name: pangeo
 channels:
   - defaults
 dependencies:
-  - numpy=1.14.3
-  - pandas=0.22.0
-  - scikit-learn=0.19.1
   - intake
-  - pip:
-    - mlflow
+  - spyder=4.0.0
+  - gcsfs
+  - xarray
+  - zarr
+  - intake-xarray
+  - intake-esm
+  - iris
+  - intake_iris
+  - hvplot
+  - fabric
+prefix: /home/arthur/anaconda3/envs/pangeo
+
