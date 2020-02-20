@@ -1,0 +1,14 @@
+name: cmip2_6
+
+# conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      control: {type: string, default: True}
+      CO2: {type: float, default: 0.0}
+      lat_min : float
+      lat_max : float
+      long_min : float
+      long_max : float
+    command: "python data --control {control} --CO2 {CO2} --bounds lat_min lat_max long_min long_max" 
