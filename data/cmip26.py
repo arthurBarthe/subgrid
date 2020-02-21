@@ -57,6 +57,7 @@ if __name__ == '__main__':
 
     # Retrieve the patch of data specified in the command-line args
     patch_data = get_patch(params, catalog_url, 'usurf', 'vsurf')
+    patch_data.chunk({'time' : 50})
     
     # Convert to x-y coordinates
     patch_data = latlong_to_euclidean(patch_data, 'yu_ocean', 'xu_ocean')
@@ -64,8 +65,8 @@ if __name__ == '__main__':
 
     # Calculate eddy-forcing dataset for that particular patch
     forcing = eddy_forcing(patch_data, scale=30e3, method='mean')
-    print('Done!!!')
     pbar = ProgressBar()
     pbar.register()
     forcing = forcing.compute()
-    forcing.to_zarr('/data/ag7531/zarrtest')
+    forcing.to_zarr('/data/ag7531/sxsy')
+    patch_data.to_zarr('data/ag7531/uv')
