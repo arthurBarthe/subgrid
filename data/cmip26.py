@@ -48,7 +48,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('bounds', type=float, nargs=4, 
                         help='min lat, max_lat, min_long, max_long')
-    parser.add_argument('--ntimes', type=int, default=3000)
+    parser.add_argument('--ntimes', type=int, default=100)
     parser.add_argument('--CO2', type=int, default=0, choices=[0,1])
     if len(sys.argv) > 1:
         params = parser.parse_args()
@@ -67,4 +67,5 @@ if __name__ == '__main__':
     print('Done!!!')
     pbar = ProgressBar()
     pbar.register()
-    forcing.compute()
+    forcing = forcing.compute()
+    forcing.to_zarr('/data/ag7531/zarrtest')
