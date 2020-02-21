@@ -46,6 +46,8 @@ if __name__ == '__main__':
     import sys
     # Parse the command-line parameters
     parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('scale', type=float, default=7.5,
+                        help='scale in kilometers')
     parser.add_argument('bounds', type=float, nargs=4, 
                         help='min lat, max_lat, min_long, max_long')
     parser.add_argument('--ntimes', type=int, default=100)
@@ -53,7 +55,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         params = parser.parse_args()
     else:
-        params = parser.parse_args('0 20 10 15'.split())
+        params = parser.parse_args('15 0 20 10 15'.split())
 
     # Retrieve the patch of data specified in the command-line args
     patch_data = get_patch(params, catalog_url, 'usurf', 'vsurf')
@@ -64,7 +66,8 @@ if __name__ == '__main__':
     print(patch_data)
 
     # Calculate eddy-forcing dataset for that particular patch
-    forcing = eddy_forcing(patch_data, scale=30e3, method='mean')
+    scale_m = params.scale * 1e3
+    forcing = eddy_forcing(patch_data, scale=scale_m, method='mean')
     pbar = ProgressBar()
     pbar.register()
     forcing = forcing.compute()

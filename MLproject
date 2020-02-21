@@ -7,8 +7,9 @@ entry_points:
     parameters:
       ntimes : {type: float, default: 100}
       CO2: {type: float, default: 0}
+      scale : float
       lat_min : float
       lat_max : float
       long_min : float
       long_max : float
-    command: "python data/cmip26.py {lat_min} {lat_max} {long_min} {long_max} --CO2 {CO2} --ntimes {ntimes}" 
+    command: "python data/cmip26.py {scale} {lat_min} {lat_max} {long_min} {long_max} --CO2 {CO2} --ntimes {ntimes}" 
