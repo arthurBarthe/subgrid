@@ -48,17 +48,12 @@ def spatial_filter(data, scale):
 def eddy_forcing(u_v_dataset, scale: float, method='mean'):
     step_x = abs(u_v_dataset.coords['x'].values.mean())
     step_y = abs(u_v_dataset.coords['y'].values.mean())
-    print('A')
     adv = advections(u_v_dataset)
-    print('C')
     def ufunc(x):
         return gaussian_filter(x, (0, scale / step_x, scale / step_y))
     u_v_filtered = xr.apply_ufunc(lambda x: spatial_filter(x, 2), u_v_dataset, dask='parallelized', 
                                   output_dtypes=[float,])
-    return u_v_filtered
-    print('D')
     adv_filtered = advections(u_v_filtered)
-    print('E')
     forcing = adv_filtered - adv
     forcing.rename({'adv_x' : 'S_x', 'adv_y' : 'S_y'})
     forcing = forcing.coarsen({'x': int(scale / step_x), 
