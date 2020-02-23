@@ -38,10 +38,10 @@ def advections(u_v_dataset):
 #             result = dask.array.concatenate((result, gf))
 #     return result
 
-def spatial_filter(data, scale):
+def spatial_filter(data, sigma):
     result = np.zeros_like(data)
     for t in range(data.shape[0]):
-        result[t, ...] = gaussian_filter(data[t, ...], scale)
+        result[t, ...] = gaussian_filter(data[t, ...], sigma)
     return result
 
 
@@ -59,9 +59,10 @@ def eddy_forcing(u_v_dataset, scale: float, method='mean'):
     forcing = forcing.coarsen({'x': int(scale / step_x), 
                                'y': int(scale / step_y)}, boundary='trim')
     if method == 'mean':
-        return forcing.mean()
+        forcing = forcing.mean()
     else:
         raise('Passed method does not correspond to anything.')
+    return u_v_filtered.merge(forcing)
 
 
 if __name__ == '__main__':

@@ -15,6 +15,7 @@ from dask.diagnostics import ProgressBar
 import intake
 from convert_lat_long import *
 from coarse import *
+import mlflow
 
 # Script parameters
 catalog_url = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
@@ -70,6 +71,16 @@ if __name__ == '__main__':
     forcing = eddy_forcing(patch_data, scale=scale_m, method='mean')
     pbar = ProgressBar()
     pbar.register()
+    # Specify input vs output type for each variable of the dataset. Might
+    # be used later on for training or testing.
+    forcing['S_x'].attrs['type'] = 'output'
+    forcing['S_y'].attrs['type'] = 'output'
+    forcing['usurf'].attrs['type'] = 'input'
+    forcing['vsurf'].attrs['type'] = 'input'
     forcing = forcing.compute()
-    forcing.to_zarr('/data/ag7531/sxsy')
-    patch_data.to_zarr('data/ag7531/uv')
+    # export data
+    forcing.to_zarr('/data/ag7531/outputs/forcing')
+    patch_data.to_zarr('data/ag7531/outputs/original')
+    # Log as an artifact the forcing data
+    mlflow.log_artifact('/data/ag7531/outputs/forcing')
+    print('Completed...')
