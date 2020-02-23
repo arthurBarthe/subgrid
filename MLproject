@@ -13,3 +13,16 @@ entry_points:
       long_min : float
       long_max : float
     command: "python data/cmip26.py {scale} {lat_min} {lat_max} {long_min} {long_max} --CO2 {CO2} --ntimes {ntimes}" 
+
+  train:
+    parameters:
+      exp_id : {type: float, default: 0}
+      run_id : {type: string}
+      batchsize : {type : float, default : 8}
+      n_epochs : {type : float, default : 100}
+      train_split : {type : float, default : 0.8}
+      test_split : {type : float, default : 0.8}
+      time_indices : {type : string}
+      print_every : {type : float, default : 20}
+    command "python train/main.py {exp_id} {run_id} --batchsize {batchsize} --n_epochs {n_epochs} --train_split {train_split} --test_split {test_split} --time_indices {time_indices} --print_every {print_every}
+    
