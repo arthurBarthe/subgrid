@@ -47,7 +47,7 @@ if __name__ == '__main__':
     import sys
     # Parse the command-line parameters
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('scale', type=float, default=7.5,
+    parser.add_argument('scale', type=float, default=30,
                         help='scale in kilometers')
     parser.add_argument('bounds', type=float, nargs=4, 
                         help='min lat, max_lat, min_long, max_long')
@@ -83,4 +83,4 @@ if __name__ == '__main__':
     patch_data.to_zarr('data/ag7531/outputs/original')
     # Log as an artifact the forcing data
     mlflow.log_artifact('/data/ag7531/outputs/forcing')
-    print('Completed...')
+    print('Completed...')   

@@ -19,6 +19,7 @@ training we need to log on which dataset / scale we train.
 """
 
 import numpy as np
+import xarray as xr
 import mlflow
 import os.path
 from datetime import datetime
@@ -37,6 +38,7 @@ import matplotlib.pyplot as plt
 
 # Import our Dataset class and neural network
 from ..data.datasets import RawData, MultipleTimeIndices, DatasetClippedScaler
+from ..data.datasets import RawDataFromXrDataset
 from ..models.full_cnn1 import FullyCNN
 
 # Import some utils functions
@@ -45,26 +47,45 @@ from ..models.utils.utils_nn import print_every, RunningAverage, DEVICE_TYPE
 # import training class
 from .base import Trainer
 
+# import to parse CLI arguments
+import argparse
+
 # Set the mlflow tracking uri
 mlflow.set_tracking_uri('file:///data/ag7531/mlruns')
 
 # PARAMETERS ---------
+def negative_int(value: str):
+    return -int(value)
+description = 'Trains a model on a chosen dataset from the store. Allows \
+    to set training parameters via the CLI.'
+parser = argparse.ArgumentParser(description=description)
+parser.add_argument('exp_id', type=int, 
+                    help='Experiment id of the source dataset')
+parser.add_argument('run_id', type=str,
+                    help='Run if of the source dataset')
+parser.add_argument('--batchsize', type=int, default=8)
+parser.add_argument('--n_epochs', type=int, default=100)
+parser.add_argument('--train_split', type=float, default=0.8)
+parser.add_argument('--test_split', type=float, default=0.8)
+parser.add_argument('--time_indices', type=negative_int, nargs='*')
+parser.add_argument('--printevery', type=int, default=20)
+params = parser.parse_args()
 
 # Training parameters
 # Note that we use two indices for the train/test split. This is because we
 # want to avoid the time correlation to play in our favour during test.
-batch_size = 8
+batch_size = params.batch_size
 learning_rates = {0: 1e-3, 60: 5e-4, 100: 2.5e-4}
-n_epochs = 150
-train_split = 0.7
-test_split = 0.75
+n_epochs = params.n_epochs
+train_split = params.train_split
+test_split = params.test_split
 
 # Parameters specific to the input data
 # past specifies the indices from the past that are used for prediction
-indices = [0, -1]
+indices = params.time_indices
 
 # Other parameters
-print_loss_every = 20
+print_loss_every = params.printevery
 data_location = '/data/ag7531/'
 figures_directory = 'figures'
 
@@ -74,19 +95,28 @@ device_type = DEVICE_TYPE.GPU if torch.cuda.is_available() \
                               else DEVICE_TYPE.CPU
 print('Selected device type: ', device_type.value)
 
+# Should not be necessary anymore as automatic now. To be deleted.
 # Log the parameters with mlflow
-mlflow.log_param('batch_size', batch_size)
-mlflow.log_param('learning_rate', learning_rates)
-mlflow.log_param('device', device_type.value)
-mlflow.log_param('train_split', train_split)
-mlflow.log_param('test_split', test_split)
+# mlflow.log_param('batch_size', batch_size)
+# mlflow.log_param('learning_rate', learning_rates)
+# mlflow.log_param('device', device_type.value)
+# mlflow.log_param('train_split', train_split)
+# mlflow.log_param('test_split', test_split)
 
 # FIN PARAMETERS -----
 
 # DATA----------------
-# Load data from disk
-dataset = RawData('/data/ag7531/processed_data',
-                  'psi_coarse.npy', 'sx_coarse.npy', 'sy_coarse.npy')
+# Load data from the store, according to experiment id and run id
+mlflow_client = mlflow.tracking.MlflowClient()
+data_file = mlflow_client.download_artifacts(params.run_id, 'forcing')
+xr_dataset = xr.open_zarr(data_file)
+
+dataset = RawDataFromXrDataset(xr_dataset)
+dataset.index = 'time'
+dataset.add_input('usurf')
+dataset.add_input('vsurf')
+dataset.add_output('S_x')
+dataset.add_output('S_y')
 
 # Split train/test
 n_indices = len(dataset)
