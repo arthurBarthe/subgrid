@@ -42,7 +42,7 @@ from data.datasets import RawDataFromXrDataset
 from models.full_cnn1 import FullyCNN
 
 # Import some utils functions
-from train.utils import print_every, RunningAverage, DEVICE_TYPE
+from train.utils import RunningAverage, DEVICE_TYPE
 
 # import training class
 from train.base import Trainer
@@ -132,10 +132,10 @@ test_dataset = Subset(dataset, np.arange(test_index, n_indices))
 # test_dataset = s.transform(test_dataset)
 
 # Specifies which time indices to use for the prediction
-train_dataset = MultipleTimeIndices(train_dataset)
-train_dataset.time_indices = indices
-test_dataset = MultipleTimeIndices(test_dataset)
-test_dataset.time_indices = indices
+# train_dataset = MultipleTimeIndices(train_dataset)
+# train_dataset.time_indices = indices
+# test_dataset = MultipleTimeIndices(test_dataset)
+# test_dataset.time_indices = indices
 
 # Dataloaders are responsible for sending batches of data to the NN
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
