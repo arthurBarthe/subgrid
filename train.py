@@ -42,7 +42,7 @@ from data.datasets import RawDataFromXrDataset
 from models.full_cnn1 import FullyCNN
 
 # Import some utils functions
-from models.utils.utils_nn import print_every, RunningAverage, DEVICE_TYPE
+from train.utils import print_every, RunningAverage, DEVICE_TYPE
 
 # import training class
 from train.base import Trainer
