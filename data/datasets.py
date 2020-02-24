@@ -212,7 +212,7 @@ class RawDataFromXrDataset(Dataset):
         self._check_varname(varname)
         self._output_arrays.append(varname)
 
-    def add_input(self, var_name: str):
+    def add_input(self, varname: str):
         self._check_varname(varname)
         self._input_arrays.append(varname)
 
