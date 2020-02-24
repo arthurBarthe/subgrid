@@ -109,7 +109,7 @@ print('Selected device type: ', device_type.value)
 # Load data from the store, according to experiment id and run id
 mlflow_client = mlflow.tracking.MlflowClient()
 data_file = mlflow_client.download_artifacts(params.run_id, 'forcing')
-xr_dataset = xr.open_zarr(data_file)
+xr_dataset = xr.open_zarr(data_file).load()
 
 dataset = RawDataFromXrDataset(xr_dataset)
 dataset.index = 'time'
