@@ -37,15 +37,15 @@ import torch.nn
 import matplotlib.pyplot as plt
 
 # Import our Dataset class and neural network
-from ..data.datasets import RawData, MultipleTimeIndices, DatasetClippedScaler
-from ..data.datasets import RawDataFromXrDataset
-from ..models.full_cnn1 import FullyCNN
+from data.datasets import RawData, MultipleTimeIndices, DatasetClippedScaler
+from data.datasets import RawDataFromXrDataset
+from models.full_cnn1 import FullyCNN
 
 # Import some utils functions
-from ..models.utils.utils_nn import print_every, RunningAverage, DEVICE_TYPE
+from models.utils.utils_nn import print_every, RunningAverage, DEVICE_TYPE
 
 # import training class
-from .base import Trainer
+from train.base import Trainer
 
 # import to parse CLI arguments
 import argparse

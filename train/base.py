@@ -9,7 +9,7 @@ import torch
 from torch.nn import Module, MSELoss
 from torch.utils.data import DataLoader
 
-from ..models.utils.utils_nn import print_every, RunningAverage
+from utils import print_every, RunningAverage
 
 
 class Trainer:
