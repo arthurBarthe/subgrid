@@ -229,6 +229,14 @@ class RawDataFromXrDataset(Dataset):
     def n_output_targets(self):
         t = self[0][1]
         return t.shape[1]
+    
+    @property
+    def width(self):
+        return len(self.xr_dataset['x'])
+
+    @property
+    def height(self):
+        return len(self.xr_dataset['y'])
 
     def __len__(self):
         return len(self.xr_dataset[self._index])
