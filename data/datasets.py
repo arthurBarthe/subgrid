@@ -220,10 +220,10 @@ class RawDataFromXrDataset(Dataset):
         features = self.xr_dataset[self.input_arrays].isel(time = index)
         features = features.to_array().data
         features = features.swapaxes(0, 1)
+        if not isinstance(index, slice):
+            index = slice(index, index + 1)
         targets = self.xr_dataset[self.output_arrays].isel(time = index)
-        print(index)
-        print(targets)
-        targets = targets.to_stacked_array('', [self._index,]).data
+        targets = targets.to_stacked_array('ancillary', ['time',]).data
         return features, targets
 
     def n_output_targets(self):
