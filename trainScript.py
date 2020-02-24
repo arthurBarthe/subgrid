@@ -51,7 +51,7 @@ from train.base import Trainer
 import argparse
 
 # Set the mlflow tracking uri
-mlflow.set_tracking_uri('file:///data/ag7531/mlruns')
+# mlflow.set_tracking_uri('file:///data/ag7531/mlruns')
 
 # PARAMETERS ---------
 def negative_int(value: str):
