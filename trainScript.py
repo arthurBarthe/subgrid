@@ -147,7 +147,7 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
 
 # NEURAL NETWORK------
 # Remove *2 and make this to adapt to the dataset
-net = FullyCNN(len(indices)*2, dataset.n_output_targets)
+net = FullyCNN(len(indices)*2, dataset.n_output_targets())
 print('--------------------')
 print(net)
 print('--------------------')
