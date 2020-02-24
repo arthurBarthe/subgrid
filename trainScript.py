@@ -126,10 +126,10 @@ train_dataset = Subset(dataset, np.arange(train_index))
 test_dataset = Subset(dataset, np.arange(test_index, n_indices))
 
 # Apply basic normalization transforms (using the training data only)
-s = DatasetClippedScaler()
-s.fit(train_dataset)
-train_dataset = s.transform(train_dataset)
-test_dataset = s.transform(test_dataset)
+# s = DatasetClippedScaler()
+# s.fit(train_dataset)
+# train_dataset = s.transform(train_dataset)
+# test_dataset = s.transform(test_dataset)
 
 # Specifies which time indices to use for the prediction
 train_dataset = MultipleTimeIndices(train_dataset)
