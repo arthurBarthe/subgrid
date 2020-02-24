@@ -200,22 +200,22 @@ for i_epoch in range(n_epochs):
 
     # We also save a snapshot figure to the disk and log it
     # TODO rewrite this bit, looks confusing for now
-    ids_data = (np.random.randint(0, len(test_dataset)), 300)
-    with torch.no_grad():
-        for i, id_data in enumerate(ids_data):
-            data = test_dataset[id_data]
-            X = torch.tensor(data[0][np.newaxis, ...]).to(device,
-                                                          dtype=torch.float)
-            true = data[1][np.newaxis, ...]
-            pred = net(X).cpu().numpy()
-#            transformer = s.targets_transformer
-#            true = transformer.inverse_transform(true)
-#            pred = transformer.inverse_transform(pred)
-            fig = dataset.plot_true_vs_pred(true, pred)
-            f_name = 'image{}-{}.png'.format(i_epoch, i)
-            file_path = os.path.join(data_location, figures_directory, f_name)
-            plt.savefig(file_path)
-            plt.close(fig)
+#     ids_data = (np.random.randint(0, len(test_dataset)), 300)
+#     with torch.no_grad():
+#         for i, id_data in enumerate(ids_data):
+#             data = test_dataset[id_data]
+#             X = torch.tensor(data[0][np.newaxis, ...]).to(device,
+#                                                           dtype=torch.float)
+#             true = data[1][np.newaxis, ...]
+#             pred = net(X).cpu().numpy()
+# #            transformer = s.targets_transformer
+# #            true = transformer.inverse_transform(true)
+# #            pred = transformer.inverse_transform(pred)
+#             fig = dataset.plot_true_vs_pred(true, pred)
+#             f_name = 'image{}-{}.png'.format(i_epoch, i)
+#             file_path = os.path.join(data_location, figures_directory, f_name)
+#             plt.savefig(file_path)
+#             plt.close(fig)
     # log the epoch
     mlflow.log_param('n_epochs', i_epoch + 1)
 
