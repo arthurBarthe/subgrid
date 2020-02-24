@@ -17,6 +17,9 @@ Additionally any dataset should have some info about its scale. During the
 training we need to log on which dataset / scale we train.
 - Maybe use the xarray library?
 """
+# Necessary when running on remote ssh
+import matplotlib
+matplotlib.use('Agg')
 
 import numpy as np
 import xarray as xr
@@ -35,6 +38,7 @@ import torch.nn
 
 # For plots
 import matplotlib.pyplot as plt
+
 
 # Import our Dataset class and neural network
 from data.datasets import RawData, MultipleTimeIndices, DatasetClippedScaler
