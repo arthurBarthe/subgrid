@@ -63,6 +63,7 @@ def eddy_forcing(u_v_dataset, scale: float, method='mean'):
                                         boundary='trim')
     if method == 'mean':
         forcing = forcing.mean()
+        u_v_filtered = u_v_filtered.mean()
     else:
         raise('Passed method does not correspond to anything.')
     return u_v_filtered.merge(forcing)
