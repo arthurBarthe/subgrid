@@ -215,7 +215,7 @@ class RawDataFromXrDataset(Dataset):
         self._check_varname(varname)
         self._input_arrays.append(varname)
 
-    def __getitem___(self, index):
+    def __getitem__(self, index):
         # TODO this should be adapted to depend on self._index
         features = self.xr_dataset[self.input_arrays].isel(time = index)
         features = features.to_array().data
