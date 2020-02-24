@@ -217,10 +217,11 @@ class RawDataFromXrDataset(Dataset):
         self._input_arrays.append(varname)
 
     def __getitem___(self, index):
-        features = self.xr_dataset[self.input_arrays].isel(self.index = index)
+        # TODO this should be adapted to depend on self._index
+        features = self.xr_dataset[self.input_arrays].isel(time = index)
         features = features.to_array().data
         features = features.swapaxes(0, 1)
-        targets = self.xr_dataset[self.input_arrays].isel(self.index = index)
+        targets = self.xr_dataset[self.input_arrays].isel(time = index)
         targets = targets.to_stacked_array('', [self._index,]).data
         return features, targets
 
