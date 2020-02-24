@@ -221,6 +221,7 @@ class RawDataFromXrDataset(Dataset):
         features = features.to_array().data
         features = features.swapaxes(0, 1)
         targets = self.xr_dataset[self.output_arrays].isel(time = index)
+        print(targets)
         targets = targets.to_stacked_array('', [self._index,]).data
         return features, targets
 
