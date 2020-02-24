@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 import mlflow
 # from sklearn.preprocessing import StandardScaler
 import xarray as xr
-from xarray import Dataset, DataArray
 
 
 def call_only_once(f):
@@ -221,7 +220,7 @@ class RawDataFromXrDataset(Dataset):
         features = self.xr_dataset[self.input_arrays].isel(time = index)
         features = features.to_array().data
         features = features.swapaxes(0, 1)
-        targets = self.xr_dataset[self.input_arrays].isel(time = index)
+        targets = self.xr_dataset[self.output_arrays].isel(time = index)
         targets = targets.to_stacked_array('', [self._index,]).data
         return features, targets
 
@@ -235,7 +234,7 @@ class RawDataFromXrDataset(Dataset):
     def _check_varname(self, var_name: str):
         if var_name not in self.xr_dataset:
             raise Exception('Variable not in the xarray dataset.')
-        if var_name in self._input_arrays or var_name in self.output_arrays:
+        if var_name in self._input_arrays or var_name in self._output_arrays:
             raise Exception('Variable already added as input or output.')
 
 
