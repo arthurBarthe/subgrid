@@ -79,8 +79,8 @@ if __name__ == '__main__':
     forcing['vsurf'].attrs['type'] = 'input'
     forcing = forcing.compute()
     # export data
-    forcing.to_zarr('/data/ag7531/outputs/forcing')
-    patch_data.to_zarr('data/ag7531/outputs/original')
+    forcing.to_zarr('/data/ag7531/outputs/forcing', mode='w')
+    patch_data.to_zarr('data/ag7531/outputs/original', mode='w')
     # Log as an artifact the forcing data
     mlflow.log_artifact('/data/ag7531/outputs/forcing')
     print('Completed...')   
