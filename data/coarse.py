@@ -58,6 +58,9 @@ def eddy_forcing(u_v_dataset, scale: float, method='mean'):
     forcing = forcing.rename({'adv_x' : 'S_x', 'adv_y' : 'S_y'})
     forcing = forcing.coarsen({'x': int(scale / step_x), 
                                'y': int(scale / step_y)}, boundary='trim')
+    u_v_filtered = u_v_filtered.coarsen({'x': int(scale / step_x),
+                                         'y': int(scale / step_y)},
+                                        boundary='trim')
     if method == 'mean':
         forcing = forcing.mean()
     else:
