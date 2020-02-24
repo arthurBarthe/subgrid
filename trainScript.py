@@ -74,7 +74,7 @@ params = parser.parse_args()
 # Training parameters
 # Note that we use two indices for the train/test split. This is because we
 # want to avoid the time correlation to play in our favour during test.
-batch_size = params.batch_size
+batch_size = params.batchsize
 learning_rates = {0: 1e-3, 60: 5e-4, 100: 2.5e-4}
 n_epochs = params.n_epochs
 train_split = params.train_split
