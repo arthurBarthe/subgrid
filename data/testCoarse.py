@@ -11,6 +11,7 @@ import unittest
 from xarray import DataArray
 from xarray import Dataset
 import numpy as np
+from numpy import ma
 from coarse import *
 import matplotlib.pyplot as plt
 
@@ -69,6 +70,38 @@ class TestEddyForcing(unittest.TestCase):
         ds = Dataset({'usurf' : a1, 'vsurf' : a2})
         forcing = eddy_forcing(ds, 40)
         self.assertTrue(forcing.dims != ds.dims)
+
+    def test_eddy_forcing2(self):
+        a1 = DataArray(data = ma.zeros((100, 10, 10)), 
+                       dims = ['time', 'x', 'y'],
+                       coords = {'time' : np.arange(100) * 3,
+                                 'x' : np.arange(10) * 10,
+                                 'y' : np.arange(10) * 11})
+        a1.data.mask = np.zeros((100, 10, 10), dtype = np.bool)
+        a1.data.mask[0] = True
+        a2 = DataArray(data = np.zeros((100, 10, 10)), 
+                       dims = ['time', 'x', 'y'],
+                       coords = {'time' : np.arange(100) * 3,
+                                 'x' : np.arange(10) * 10,
+                                 'y' : np.arange(10) * 11})
+        ds = Dataset({'usurf' : a1, 'vsurf' : a2})
+        forcing = eddy_forcing(ds, 40)
+
+    def test_advections(self):
+        a1 = DataArray(data = np.zeros((1000, 40, 40)), 
+                       dims = ['time', 'x', 'y'],
+                       coords = {'time' : np.arange(1000) * 3,
+                                 'x' : np.arange(40) * 7,
+                                 'y' : np.arange(40) * 11})
+        a2= DataArray(data = np.zeros((1000, 40, 40)), 
+                       dims = ['time', 'x', 'y'],
+                       coords = {'time' : np.arange(1000) * 3,
+                                 'x' : np.arange(40) * 7,
+                                 'y' : np.arange(40) * 11})
+        ds = Dataset({'usurf' : a1, 'vsurf' : a2})
+        adv = advections(ds)
+        self.assertTrue((adv == 0).all().to_array().all().item())
+        
 
 if __name__ == '__main__':
     unittest.main()
