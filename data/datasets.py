@@ -186,7 +186,7 @@ class RawDataFromXrDataset(Dataset):
     """This class allows to define a Pytorch Dataset based on an xarray 
     dataset."""
     def __init__(self, dataset: xr.Dataset):
-        self.xr_dataset = dataset
+        self.xr_dataset = dataset / dataset.std()
         self._input_arrays = list()
         self._output_arrays = list()
         self._index = None
