@@ -41,33 +41,53 @@ def advections(u_v_dataset):
 def spatial_filter(data, sigma):
     result = np.zeros_like(data)
     for t in range(data.shape[0]):
-        result[t, ...] = gaussian_filter(data[t, ...], sigma)
+        result[t, ...] = gaussian_filter(data[t, ...], sigma,
+                                         mode='constant')
     return result
+
+def spatial_filter_dataset(dataset, sigma: float):
+    """Applies spatial filtering to the dataset across the spatial dimensions
+    """
+    return xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset, 
+                                  dask='parallelized', 
+                                  output_dtypes=[float,])
+
+def compute_grid_steps(u_v_dataset):
+    """Computes the grid steps for the (x,y) grid"""
+    grid_step = [0, 0]
+    steps_x = u_v_dataset.coords['x'].diff('x')
+    steps_y = u_v_dataset.coords['y'].diff('y')
+    grid_step[0] = abs(steps_x.mean().item())
+    grid_step[1] = abs(steps_y.mean().item())
+    return tuple(grid_step)
 
 
 def eddy_forcing(u_v_dataset, scale: float, method='mean'):
-    step_x = abs(u_v_dataset.coords['x'].values.mean())
-    step_y = abs(u_v_dataset.coords['y'].values.mean())
+    """Computes the eddy forcing terms on high resolution"""
+    # High res advection terms
     adv = advections(u_v_dataset)
-    def ufunc(x):
-        return gaussian_filter(x, (0, scale / step_x, scale / step_y))
-    u_v_filtered = xr.apply_ufunc(lambda x: spatial_filter(x, 2), u_v_dataset, dask='parallelized', 
-                                  output_dtypes=[float,])
+    # Grid steps
+    grid_steps = compute_grid_steps(u_v_dataset)
+    # Filtered u,v field
+    u_v_filtered = spatial_filter_dataset(u_v_dataset, 
+                                          (scale / grid_steps[0],
+                                          scale / grid_steps[1]))
+    # Advection term from filtered
     adv_filtered = advections(u_v_filtered)
+    # Forcing
     forcing = adv_filtered - adv
     forcing = forcing.rename({'adv_x' : 'S_x', 'adv_y' : 'S_y'})
-    forcing = forcing.coarsen({'x': int(scale / step_x), 
-                               'y': int(scale / step_y)}, boundary='trim')
-    u_v_filtered = u_v_filtered.coarsen({'x': int(scale / step_x),
-                                         'y': int(scale / step_y)},
-                                        boundary='trim')
+    # Merge filtered u,v and forcing terms
+    forcing = forcing.merge(u_v_filtered)
+    # Coarsen
+    forcing = forcing.coarsen({'x' : int(scale / grid_steps[0]),
+                            'y' : int(scale / grid_steps[1])},
+                            boundary='trim')
     if method == 'mean':
         forcing = forcing.mean()
-        u_v_filtered = u_v_filtered.mean()
     else:
         raise('Passed method does not correspond to anything.')
-    return u_v_filtered.merge(forcing)
-
+    return forcing
 
 if __name__ == '__main__':
     test = da.random.randint(0, 10, (200, 20, 20), chunks = (1, 20, 20))
