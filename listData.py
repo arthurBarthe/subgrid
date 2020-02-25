@@ -39,5 +39,5 @@ while True:
     except ValueError as e:
         break
     print(runs.iloc[selection, :])
-    show_data_sample(runs.iloc[selection, :]['run_id'])
+    show_data_sample(runs.iloc[selection, :]['run_id'], 0)
 
