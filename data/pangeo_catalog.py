@@ -20,7 +20,7 @@ def get_patch(catalog_url, ntimes : int = None, bounds : list = None,
         raise('Only control implemented for now.')
     my_data = s.to_dask()
     if bounds is not None:
-        my_data = data.sel(xu_ocean=slice(*bounds[2:]),
+        my_data = my_data.sel(xu_ocean=slice(*bounds[2:]),
                            yu_ocean=slice(*bounds[:2]))
     if ntimes is not None:
         my_data = my_data.isel(time=slice(0, ntimes))
