@@ -65,6 +65,8 @@ def compute_grid_steps(u_v_dataset):
 
 def eddy_forcing(u_v_dataset, scale: float, method='mean'):
     """Computes the eddy forcing terms on high resolution"""
+    # Replace nan values with zeros
+    u_v_dataset = u_v_dataset.fillna(0.0)
     # High res advection terms
     adv = advections(u_v_dataset)
     # Grid steps
@@ -89,7 +91,3 @@ def eddy_forcing(u_v_dataset, scale: float, method='mean'):
     else:
         raise('Passed method does not correspond to anything.')
     return forcing
-
-if __name__ == '__main__':
-    test = da.random.randint(0, 10, (200, 20, 20), chunks = (1, 20, 20))
-    filtered = spatial_filter(test, 2)
