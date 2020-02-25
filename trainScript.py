@@ -69,6 +69,7 @@ parser.add_argument('run_id', type=str,
                     help='Run if of the source dataset')
 parser.add_argument('--batchsize', type=int, default=8)
 parser.add_argument('--n_epochs', type=int, default=100)
+parser.add_argument('--learning_rate', type=float, default=1e-3)
 parser.add_argument('--train_split', type=float, default=0.8)
 parser.add_argument('--test_split', type=float, default=0.8)
 parser.add_argument('--time_indices', type=negative_int, nargs='*')
@@ -83,7 +84,7 @@ mlflow.log_param('source.run_id', params.run_id)
 # Note that we use two indices for the train/test split. This is because we
 # want to avoid the time correlation to play in our favour during test.
 batch_size = params.batchsize
-learning_rates = {0: 1e-3, 60: 5e-4, 100: 2.5e-4}
+learning_rates = {0: params.learning_rate}
 n_epochs = params.n_epochs
 train_split = params.train_split
 test_split = params.test_split
