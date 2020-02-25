@@ -75,6 +75,10 @@ parser.add_argument('--time_indices', type=negative_int, nargs='*')
 parser.add_argument('--printevery', type=int, default=20)
 params = parser.parse_args()
 
+# Log the experiment_id and run_id of the source dataset
+mlflow.log_param('source.experiment_id', params.exp_id)
+mlflow.log_param('source.run_id', run_id)
+
 # Training parameters
 # Note that we use two indices for the train/test split. This is because we
 # want to avoid the time correlation to play in our favour during test.
