@@ -23,5 +23,5 @@ while True:
         selection = int(selection)
     except ValueError as e:
         break
-    print(runs[selection, :])
+    print(runs.iloc[selection, :])
 
