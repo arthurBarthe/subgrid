@@ -19,8 +19,8 @@ def advections(u_v_dataset):
     gradient_y = u_v_dataset.differentiate('y')
     u, v = u_v_dataset['usurf'], u_v_dataset['vsurf']
     adv_x = u * gradient_x['usurf'] + v * gradient_y['usurf']
-    adv_y = v * gradient_x['vsurf'] + v * gradient_y['vsurf']
-    return xr.Dataset({'adv_x': adv_x, 'adv_y' :adv_y})
+    adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
+    return xr.Dataset({'adv_x': adv_x, 'adv_y' : adv_y})
 
 
 # def spatial_filter(data, scale):
