@@ -52,6 +52,7 @@ def spatial_filter_dataset(dataset, sigma: float):
                                   dask='parallelized', 
                                   output_dtypes=[float,])
 
+
 def compute_grid_steps(u_v_dataset):
     """Computes the grid steps for the (x,y) grid"""
     grid_step = [0, 0]

@@ -54,6 +54,21 @@ class TestEddyForcing(unittest.TestCase):
         # plt.colorbar()
         test = (filtered.to_array().values == filtered2).all()
         self.assertTrue(test.item())
+    
+    def test_eddy_forcing(self):
+        a1 = DataArray(data = np.random.randn(1000, 100, 100), 
+                       dims = ['time', 'x', 'y'],
+                       coords = {'time' : np.arange(1000) * 3,
+                                 'x' : np.arange(100) * 10,
+                                 'y' : np.arange(100) * 11})
+        a2 = DataArray(data = np.random.randn(1000, 100, 100), 
+                       dims = ['time', 'x', 'y'],
+                       coords = {'time' : np.arange(1000) * 3,
+                                 'x' : np.arange(100) * 10,
+                                 'y' : np.arange(100) * 11})
+        ds = Dataset({'usurf' : a1, 'vsurf' : a2})
+        forcing = eddy_forcing(ds, 40)
+        self.assertTrue(forcing.dims != ds.dims)
 
 if __name__ == '__main__':
     unittest.main()
