@@ -35,5 +35,5 @@ def get_patch(catalog_url, ntimes : int = None, bounds : list = None,
         return my_data[list(selected_vars)]
 
 def get_whole_data():
-    data = get_patch(catalog_url, 1, None, 0, 'usurf', 'vsurf')
+    data = get_patch(catalog_url, None, None, 0, 'usurf', 'vsurf')
     return data
