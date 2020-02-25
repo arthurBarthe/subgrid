@@ -12,7 +12,7 @@ entry_points:
       lat_max : float
       long_min : float
       long_max : float
-    command: "python data/cmip26.py {scale} {lat_min} {lat_max} {long_min} {long_max} --CO2 {CO2} --ntimes {ntimes}" 
+    command: "python cmip26.py {scale} {lat_min} {lat_max} {long_min} {long_max} --CO2 {CO2} --ntimes {ntimes}" 
 
   train:
     parameters:
