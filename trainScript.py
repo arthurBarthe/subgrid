@@ -77,7 +77,7 @@ params = parser.parse_args()
 
 # Log the experiment_id and run_id of the source dataset
 mlflow.log_param('source.experiment_id', params.exp_id)
-mlflow.log_param('source.run_id', run_id)
+mlflow.log_param('source.run_id', params.run_id)
 
 # Training parameters
 # Note that we use two indices for the train/test split. This is because we
