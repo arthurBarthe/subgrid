@@ -18,7 +18,7 @@ def show_data_sample(run_id, index: int):
     client = MlflowClient()
     forcing_data = client.download_artifacts(run_id, 'forcing')
     forcing = xr.open_zarr(forcing_data)
-    sample = forcing.iself(time=index)
+    sample = forcing.isel(time=index)
     for var in sample.values():
         plt.figure()
         var.plot()
