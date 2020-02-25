@@ -10,9 +10,9 @@ Script that lists the data runs with the relevant information
 import mlflow
 
 runs = mlflow.search_runs(experiment_ids=['1',])
-runs = runs['run_id', 'params.scale', 'params.ntimes', 
+runs = runs[['run_id', 'params.scale', 'params.ntimes', 
             'params.lat_min', 'params.lat_max', 
-            'params.long_min', 'params.long_max']
+            'params.long_min', 'params.long_max']]
 
 print('Select a run by entering its integer id (0, 1, ...) as listed\
       from below, in order to obtain more details.')
