@@ -11,9 +11,10 @@ help.
 
 import argparse
 from dask.diagnostics import ProgressBar
-from convert_lat_long import *
-from coarse import *
 import mlflow
+
+from data.convert_lat_long import *
+from data.coarse import *
 from data.pangeo_catalog import get_patch
 
 # Script parameters
