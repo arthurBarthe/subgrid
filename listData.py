@@ -6,10 +6,25 @@ Created on Tue Feb 25 09:39:23 2020
 @author: arthur
 Script that lists the data runs with the relevant information
 """
+DATA_EXPERIMENT_ID = '1'
 
 import mlflow
+from mlflow.tracking import MlflowClient
+import xarray as xr
+import matplotlib.pyplot as plt
 
-runs = mlflow.search_runs(experiment_ids=['1',])
+def show_data_sample(run_id, index: int):
+    """Plots the data for the given index"""
+    client = MlflowClient()
+    forcing_data = client.download_artifacts(run_id, 'forcing')
+    forcing = xr.open_zarr(forcing_data)
+    sample = forcing.iself(time=index)
+    for var in sample.values():
+        plt.figure()
+        var.plot()
+
+
+runs = mlflow.search_runs(experiment_ids=[DATA_EXPERIMENT_ID,])
 runs_short = runs[['run_id', 'start_time', 'params.scale', 'params.ntimes', 
             'params.lat_min', 'params.lat_max', 
             'params.long_min', 'params.long_max']]
@@ -24,4 +39,5 @@ while True:
     except ValueError as e:
         break
     print(runs.iloc[selection, :])
+    show_sample(runs.iloc[selection, :]['run_id'])
 
