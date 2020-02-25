@@ -6,7 +6,11 @@ Created on Tue Feb 25 11:04:20 2020
 @author: arthur
 """
 
+import matplotlib
+matplotlib.use('tkagg')
+import matplotlib.pyplot as plt
 import intake
+
 
 catalog_url = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
 /master/intake-catalogs/master.yaml'
@@ -29,4 +33,7 @@ def get_patch(catalog_url, ntimes : int = None, bounds : list = None,
         return my_data
     else:
         return my_data[list(selected_vars)]
-    
+
+def get_whole_data():
+    data = get_patch(catalog_url, 1, None, 0, 'usurf', 'vsurf')
+    return data
