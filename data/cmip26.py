@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     # Retrieve the patch of data specified in the command-line args
     patch_data = get_patch(params, catalog_url, 'usurf', 'vsurf')
-    patch_data.chunk({'time' : 50})
+    patch_data = patch_data.chunk({'time' : 50})
     
     # Convert to x-y coordinates
     patch_data = latlong_to_euclidean(patch_data, 'yu_ocean', 'xu_ocean')
