@@ -22,6 +22,7 @@ def show_data_sample(run_id, index: int):
     for var in sample.values():
         plt.figure()
         var.plot()
+    plt.show()
 
 
 runs = mlflow.search_runs(experiment_ids=[DATA_EXPERIMENT_ID,])
