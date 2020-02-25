@@ -10,12 +10,11 @@ help.
 """
 
 import argparse
-import dask
 from dask.diagnostics import ProgressBar
-import intake
 from convert_lat_long import *
 from coarse import *
 import mlflow
+from data.pangeo_catalog import get_patch
 
 # Script parameters
 catalog_url = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
@@ -24,22 +23,7 @@ description = 'Read data from the CMIP2.6 from a particular region and \
     applies coarse graining.'
 
 
-def get_patch(params, catalog_url, *selected_vars):
-    catalog = intake.open_catalog(catalog_url)
-    
-    if params.CO2 == 0:
-        s = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_control_ocean_surface
-    else:
-        raise('Only control implemented for now.')
-    data = s.to_dask()
-    my_data = data.sel(xu_ocean=slice(*params.bounds[2:]),
-                       yu_ocean=slice(*params.bounds[:2]))
-    my_data = my_data.isel(time=slice(0, params.ntimes))
-    
-    if selected_vars is None:
-        return my_data
-    else:
-        return my_data[list(selected_vars)]
+
 
 
 
@@ -56,10 +40,11 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         params = parser.parse_args()
     else:
-        params = parser.parse_args('15 0 20 10 15'.split())
+        params = parser.parse_args('15 0 20 10 15 --ntimes 3'.split())
 
     # Retrieve the patch of data specified in the command-line args
-    patch_data = get_patch(params, catalog_url, 'usurf', 'vsurf')
+    patch_data = get_patch(catalog_url, params.ntimes, params.bounds,
+                           0, 'usurf', 'vsurf')
     patch_data = patch_data.chunk({'time' : 50})
     
     # Convert to x-y coordinates
