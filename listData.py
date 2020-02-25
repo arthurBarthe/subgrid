@@ -10,7 +10,7 @@ Script that lists the data runs with the relevant information
 import mlflow
 
 runs = mlflow.search_runs(experiment_ids=['1',])
-runs_short = runs[['run_id', 'params.scale', 'params.ntimes', 
+runs_short = runs[['run_id', 'start_time', 'params.scale', 'params.ntimes', 
             'params.lat_min', 'params.lat_max', 
             'params.long_min', 'params.long_max']]
 
