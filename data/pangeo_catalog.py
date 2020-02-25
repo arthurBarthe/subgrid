@@ -18,7 +18,7 @@ def get_patch(catalog_url, ntimes : int = None, bounds : list = None,
         s = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_control_ocean_surface
     else:
         raise('Only control implemented for now.')
-    data = s.to_dask()
+    my_data = s.to_dask()
     if bounds is not None:
         my_data = data.sel(xu_ocean=slice(*bounds[2:]),
                            yu_ocean=slice(*bounds[:2]))
