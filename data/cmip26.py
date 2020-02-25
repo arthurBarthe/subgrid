@@ -69,7 +69,6 @@ if __name__ == '__main__':
     # Calculate eddy-forcing dataset for that particular patch
     scale_m = params.scale * 1e3
     forcing = eddy_forcing(patch_data, scale=scale_m, method='mean')
-    forcing = forcing.coarsen({})
     pbar = ProgressBar()
     pbar.register()
     # Specify input vs output type for each variable of the dataset. Might
