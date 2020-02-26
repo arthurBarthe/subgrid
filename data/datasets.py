@@ -224,7 +224,6 @@ class RawDataFromXrDataset(Dataset):
             index = slice(index, index + 1)
         targets = self.xr_dataset[self.output_arrays].isel(time = index)
         targets = targets.to_stacked_array('ancillary', ['time',]).data
-        targets = targets.squeeze()
         return features, targets
 
     def n_output_targets(self):
