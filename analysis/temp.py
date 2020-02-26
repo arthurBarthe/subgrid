@@ -15,11 +15,13 @@ layers.
 see if there is anything remaining.
 - do something similar for the multiscale
 """
+import matplotlib
+matplotlib.use('tkagg')
 
-from analysis.loadmlflow import LoadMLFlow
-from analysis.analysis import TimeSeriesForPoint
-from analysis.utils import select_run, view_predictions, DisplayMode
+from .analysis import TimeSeriesForPoint
+from .utils import select_run, view_predictions, DisplayMode
 import mlflow
+from mlflow.tracking import MlflowClient
 from matplotlib import pyplot as plt
 
 # We'll run this locally
@@ -28,16 +30,18 @@ mlflow.set_experiment('Default')
 
 # If the runs dataframe already exists we use it. Note: this means you must
 # restart the interpreter if the list of runs has changed.
-run_id, experiment_id = select_run(sort_by='metrics.test mse')
-mlflow_loader = LoadMLFlow(run_id, mlruns_path='d:\\Data sets\\NYU\\mlruns')
+run = select_run(sort_by='metrics.test mse')
+# mlflow_loader = LoadMLFlow(run_id, mlruns_path='d:\\Data sets\\NYU\\mlruns')
 
 # Display some info about the train and validation sets for this run
-train_split = mlflow_loader.train_split
-test_split = mlflow_loader.test_split
+train_split = run['train_split']
+test_split = run['test_split']
 print(f'Train split: {train_split}')
 print(f'Test split: {test_split}')
 
-pred = mlflow_loader.predictions
-truth = mlflow_loader.true_targets
+# Load the predictions and targets produced by the run
+client = MlflowClient()
+pred = client.download_artifacts(run['run_id'], 'predictions.npy')
+targets = client.download_artifacts(run['run_id'], 'truth.npy')
 
-view_predictions(pred, truth, DisplayMode.rmse)
+view_predictions(pred, targets, DisplayMode.rmse)

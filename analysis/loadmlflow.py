@@ -13,7 +13,7 @@ from os.path import join
 import numpy as np
 import warnings
 import json
-
+from mlflow.tracking import MlflowClient
 
 class LoadMLFlow:
     """Class to load an MLFlow run. In particular this allows to load the
@@ -41,7 +41,8 @@ class LoadMLFlow:
         # Prediction attirbutes
         self._predictions = None
         self._true_targets = None
-        # Correlations
+        # mlflow client
+        client = MlflowClient()
 
     @property
     def net_class(self):
