@@ -16,10 +16,6 @@ see if there is anything remaining.
 - do something similar for the multiscale
 """
 import matplotlib
-matplotlib.use('tkagg')
-
-from .analysis import TimeSeriesForPoint
-from .utils import select_run, view_predictions, DisplayMode
 import mlflow
 from mlflow.tracking import MlflowClient
 from matplotlib import pyplot as plt
