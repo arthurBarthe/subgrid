@@ -134,6 +134,10 @@ test_index = int(test_split * n_indices)
 train_dataset = Subset(dataset, np.arange(train_index))
 test_dataset = Subset(dataset, np.arange(test_index, n_indices))
 
+# Rescale 
+xr_dataset = xr_dataset / xr_dataset.std()
+
+
 # Apply basic normalization transforms (using the training data only)
 # s = DatasetClippedScaler()
 # s.fit(train_dataset)
