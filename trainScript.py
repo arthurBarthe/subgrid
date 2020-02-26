@@ -120,6 +120,12 @@ mlflow_client = mlflow.tracking.MlflowClient()
 data_file = mlflow_client.download_artifacts(params.run_id, 'forcing')
 xr_dataset = xr.open_zarr(data_file).load()
 
+# Rescale 
+xr_dataset = xr_dataset / xr_dataset.std()
+# TODO Deal with this properly :Additional rescaling for the output 
+xr_dataset['S_x'] = xr_dataset['S_x'] / 10
+xr_dataset['S_y'] = xr_dataset['S_y'] / 10
+
 dataset = RawDataFromXrDataset(xr_dataset)
 dataset.index = 'time'
 dataset.add_input('usurf')
@@ -134,11 +140,7 @@ test_index = int(test_split * n_indices)
 train_dataset = Subset(dataset, np.arange(train_index))
 test_dataset = Subset(dataset, np.arange(test_index, n_indices))
 
-# Rescale 
-xr_dataset = xr_dataset / xr_dataset.std()
-# TODO Deal with this properly :Additional rescaling for the output 
-xr_dataset['S_x'] = xr_dataset['S_x'] / 10
-xr_dataset['S_y'] = xr_dataset['S_y'] / 10
+
 
 # Apply basic normalization transforms (using the training data only)
 # s = DatasetClippedScaler()
