@@ -27,7 +27,7 @@ from mlflow.tracking import MlflowClient
 
 # If the runs dataframe already exists we use it. Note: this means you must
 # restart the interpreter if the list of runs has changed.
-run = select_run(experiment_id=0, sort_by='metrics.test mse')
+run = select_run(experiment_ids=[0,], sort_by='metrics.test mse')
 
 # Display some info about the train and validation sets for this run
 train_split = run['params.train_split']
