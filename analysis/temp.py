@@ -61,6 +61,10 @@ plt.imshow(predictions[time, 0, ...], cmap='coolwarm', vmin=-0.5, vmax=0.5)
 plt.colorbar()
 plt.show()
 
+min_pred, max_pred = np.min(predictions), np.max(predictions)
+print(f'Min prediction is {min_pred}')
+print(f'Max prediction is {max_pred}')
+
 # TODO Also show input data
 predictions = predictions[:, 0, ...]
 targets = targets[:, 0, ...]
