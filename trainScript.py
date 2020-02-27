@@ -123,8 +123,8 @@ xr_dataset = xr.open_zarr(data_file).load()
 # Rescale 
 xr_dataset = xr_dataset / xr_dataset.std()
 # TODO Deal with this properly :Additional rescaling for the output 
-xr_dataset['S_x'] = xr_dataset['S_x'] / 10
-xr_dataset['S_y'] = xr_dataset['S_y'] / 10
+xr_dataset['S_x'] = xr_dataset['S_x']
+xr_dataset['S_y'] = xr_dataset['S_y']
 
 dataset = RawDataFromXrDataset(xr_dataset)
 dataset.index = 'time'
