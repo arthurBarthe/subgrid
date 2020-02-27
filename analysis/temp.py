@@ -19,6 +19,7 @@ see if there is anything remaining.
 import matplotlib
 matplotlib.use('tkagg')
 
+import numpy as np
 from .utils import select_run, view_predictions, DisplayMode
 from .utils import play_movie
 import mlflow
@@ -38,8 +39,8 @@ print(f'Test split: {test_split}')
 # Download predictions and targets arrays
 client = MlflowClient()
 run_id = run['run_id']
-predictions = client.download_artifacts(run_id, 'predictions.npy')
-targets = client.download_artifacts(run_id, 'truth.npy')
+predictions = np.load(client.download_artifacts(run_id, 'predictions.npy'))
+targets = np.load(client.download_artifacts(run_id, 'truth.npy'))
 
 # TODO Also show input data
 
