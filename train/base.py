@@ -61,6 +61,9 @@ class Trainer:
             Y_hat = self.net(X)
 #            stds = torch.max(Y.std(dim=0), torch.ones_like(Y) * 0.2)
             # Compute loss
+            print('---')
+            print(Y_hat.size())
+            print(Y.size())
             loss = self.criterion(Y_hat, Y)
             running_loss.update(loss.item(), X.size(0))
             running_loss_.update(loss.item(), X.size(0))
