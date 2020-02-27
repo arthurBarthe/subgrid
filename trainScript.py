@@ -121,7 +121,7 @@ data_file = mlflow_client.download_artifacts(params.run_id, 'forcing')
 xr_dataset = xr.open_zarr(data_file).load()
 
 # Rescale 
-xr_dataset = xr_dataset / xr_dataset.std()
+xr_dataset = (xr_dataset - xr_dataset.mean()) / xr_dataset.std()
 # TODO Deal with this properly :Additional rescaling for the output 
 xr_dataset['S_x'] = xr_dataset['S_x']
 xr_dataset['S_y'] = xr_dataset['S_y']
