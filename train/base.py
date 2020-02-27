@@ -8,6 +8,7 @@ Created on Tue Feb  4 20:56:02 2020
 import torch
 from torch.nn import Module, MSELoss
 from torch.utils.data import DataLoader
+import numpy as np
 
 from ..models.utils.utils_nn import print_every, RunningAverage
 
@@ -50,18 +51,23 @@ class Trainer:
     def train_for_one_epoch(self, dataloader: DataLoader, optimizer):
         self._locked = True
         running_loss = RunningAverage()
+        running_loss_ = RunningAverage()
         for i_batch, batch in enumerate(dataloader):
             # Zero the gradients
             self.net.zero_grad()
             # Move batch to the GPU (if possible)
             X = batch[0].to(self._device, dtype=torch.float)
             Y = batch[1].to(self._device, dtype=torch.float)
+            Y_hat = self.net(X)
+#            stds = torch.max(Y.std(dim=0), torch.ones_like(Y) * 0.2)
             # Compute loss
-            loss = self.criterion(self.net(X), Y)
+            loss = self.criterion(Y_hat, Y)
             running_loss.update(loss.item(), X.size(0))
+            running_loss_.update(loss.item(), X.size(0))
             # Print current loss
-            loss_text = 'Current loss value is {}'.format(running_loss)
-            print_every(loss_text, self.print_loss_every, i_batch)
+            loss_text = 'Loss value {}'.format(running_loss_.average)
+            if print_every(loss_text, self.print_loss_every, i_batch):
+                running_loss_.reset()
             # Backpropagate
             loss.backward()
             # Update parameters

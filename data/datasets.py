@@ -131,9 +131,9 @@ class DatasetClippedScaler(DatasetTransformer):
     def fit(self, X: Dataset):
         super().fit(X)
         scale_features = np.clip(self.transformers['features'].scale_,
-                                 1e-5, np.inf)
+                                 1e-4, np.inf)
         scale_targets = np.clip(self.transformers['targets'].scale_,
-                                1e-5, np.inf)
+                                1e-4, np.inf)
         self.transformers['features'].scale_ = scale_features
         self.transformers['targets'].scale_ = scale_targets
 
