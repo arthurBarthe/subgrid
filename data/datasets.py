@@ -224,11 +224,12 @@ class RawDataFromXrDataset(Dataset):
             index = slice(index, index + 1)
         targets = self.xr_dataset[self.output_arrays].isel(time = index)
         targets = targets.to_stacked_array('ancillary', ['time',]).data
+        targets = targets.squeeze()
         return features, targets
 
     def n_output_targets(self):
         t = self[0][1]
-        return t.shape[1]
+        return t.shape[0]
     
     @property
     def width(self):
@@ -464,36 +465,21 @@ class Dataset_psi_s(Dataset):
 
 
 if __name__ == '__main__':
-    from sklearn.preprocessing import StandardScaler
-    from torch.utils.data import DataLoader, Subset
-    batch_size = 8
-
-    dataset = RawData(r'D:\Data sets\NYU\processed_data',
-                      'psi_coarse.npy', 'sx_coarse.npy', 'sy_coarse.npy')
-    # Split train/test
-    train_split = 0.4
-    test_split = 0.75
-    n_indices = len(dataset)
-    train_index = int(train_split * n_indices)
-    test_index = int(test_split * n_indices)
-    train_dataset = Subset(dataset, np.arange(train_index))
-    test_dataset = Subset(dataset, np.arange(test_index, n_indices))
-
-    # Apply basic normalization transforms (using the training data only)
-#    s = DatasetTransformer(StandardScaler)
-#    s.fit(train_dataset)
-#    train_dataset = s.transform(train_dataset)
-#    test_dataset = s.transform(test_dataset)
-
-    # Specifies which time indices to use for the prediction
-    indices = [0, -2, -4, -6]
-    train_dataset = MultipleTimeIndices(train_dataset)
-    train_dataset.time_indices = indices
-    test_dataset = MultipleTimeIndices(test_dataset)
-    test_dataset.time_indices = indices
-
-    # Dataloaders are responsible for sending batches of data to the NN
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
-                                  shuffle=True)
-    test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
-                                 shuffle=False)
+    import xarray as xr
+    from xarray import DataArray
+    from xarray import Dataset as xrDataset
+    from torch.utils.data import DataLoader
+    da = DataArray(data=np.zeros((20, 3, 3)), dims=('time', 'x', 'y'))
+    da2 = DataArray(data=np.ones((20, 3, 3)), dims=('time', 'x', 'y'))
+    da3 = DataArray(data=np.ones((20, 3, 3)) * 10, dims=('time', 'x', 'y'))
+    da4 = DataArray(data=np.ones((20, 3, 3)) * 20, dims=('time', 'x', 'y'))
+    ds = xrDataset({'in0': da, 'in1': da2,
+                    'out0': da3, 'out1': da4}, 
+                   coords={'time': np.arange(20),
+                           'x': [0, 5, 10], 
+                           'y': [0, 5, 10]})
+    dataset = RawDataFromXrDataset(ds)
+    dataset.add_input('in0')
+    dataset.add_input('in1')
+    dataset.add_output('out0')
+    dataset.add_output('out1')
