@@ -19,8 +19,8 @@ see if there is anything remaining.
 import matplotlib
 matplotlib.use('tkagg')
 
-from utils import select_run, view_predictions, DisplayMode
-from utils import play_movie
+from .utils import select_run, view_predictions, DisplayMode
+from .utils import play_movie
 import mlflow
 from mlflow.tracking import MlflowClient
 
