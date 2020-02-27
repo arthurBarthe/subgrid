@@ -9,7 +9,8 @@ import numpy as np
 import os.path
 import matplotlib.pyplot as plt
 import mlflow
-from sklearn.preprocessing import StandardScaler
+# from sklearn.preprocessing import StandardScaler
+import xarray as xr
 
 
 def call_only_once(f):
@@ -179,6 +180,72 @@ class MLFLowPreprocessing(Dataset):
 
     def __getitem__(self, index: int):
         return (self.new_features[index], self.new_targets[0])
+
+
+class RawDataFromXrDataset(Dataset):
+    """This class allows to define a Pytorch Dataset based on an xarray 
+    dataset."""
+    def __init__(self, dataset: xr.Dataset):
+        self.xr_dataset = dataset
+        self._input_arrays = list()
+        self._output_arrays = list()
+        self._index = None
+
+    @property
+    def index(self):
+        return self._index
+
+    @index.setter
+    def index(self, index: str):
+        self._index = index
+
+    @property
+    def output_arrays(self):
+        return self._output_arrays
+
+    @property
+    def input_arrays(self):
+        return self._input_arrays
+
+    def add_output(self, varname):
+        self._check_varname(varname)
+        self._output_arrays.append(varname)
+
+    def add_input(self, varname: str):
+        self._check_varname(varname)
+        self._input_arrays.append(varname)
+
+    def __getitem__(self, index):
+        # TODO this should be adapted to depend on self._index
+        features = self.xr_dataset[self.input_arrays].isel(time = index)
+        features = features.to_array().data
+        # features = features.swapaxes(0, 1)
+        if not isinstance(index, slice):
+            index = slice(index, index + 1)
+        targets = self.xr_dataset[self.output_arrays].isel(time = index)
+        targets = targets.to_stacked_array('ancillary', ['time',]).data
+        return features, targets
+
+    def n_output_targets(self):
+        t = self[0][1]
+        return t.shape[1]
+    
+    @property
+    def width(self):
+        return len(self.xr_dataset['x'])
+
+    @property
+    def height(self):
+        return len(self.xr_dataset['y'])
+
+    def __len__(self):
+        return len(self.xr_dataset[self._index])
+
+    def _check_varname(self, var_name: str):
+        if var_name not in self.xr_dataset:
+            raise Exception('Variable not in the xarray dataset.')
+        if var_name in self._input_arrays or var_name in self._output_arrays:
+            raise Exception('Variable already added as input or output.')
 
 
 class RawData(Dataset):
