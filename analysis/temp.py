@@ -43,7 +43,8 @@ predictions = np.load(client.download_artifacts(run_id, 'predictions.npy'))
 targets = np.load(client.download_artifacts(run_id, 'truth.npy'))
 
 # TODO Also show input data
-
+predictions = predictions[:, 0, ...]
+targets = targets[:, 0, ...]
 view_predictions(predictions, targets, display_mode=DisplayMode.rmse)
 
 #play_movie(truth, title='target')
