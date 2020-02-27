@@ -234,12 +234,13 @@ class FullyCNN(MLFlowNN):
         self.add_conv2d_layer(32, 32, 3, padding=1+(0))
         self.add_activation('relu')
         self.add_batch_norm_layer(32)
-        self.add_conv2d_layer(32, 32, 3, padding=1+0)
+        self.add_conv2d_layer(32, 32, 5, padding=2)
         self.add_activation('relu')
         self.add_batch_norm_layer(32)
-        self.add_conv2d_layer(32, 2, 1, padding=0+0)
-        # no non-linearity between last conv and divergence layer.
-#        self.add_divergence2d_layer(32, 2)
+        self.add_conv2d_layer(32, 2, 3, padding=1)
+        # self.add_activation('relu')
+        # self.add_batch_norm_layer(64)
+        # self.add_divergence2d_layer(32, 2)
         self.add_final_activation('identity')
 
 
