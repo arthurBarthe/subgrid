@@ -229,7 +229,7 @@ class RawDataFromXrDataset(Dataset):
 
     def n_output_targets(self):
         t = self[0][1]
-        return t.shape[1]
+        return t.shape[0]
     
     @property
     def width(self):
