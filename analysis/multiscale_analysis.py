@@ -18,14 +18,13 @@ mlflow.set_tracking_uri('file:///d:\\Data sets\\NYU\\mlruns')
 mlflow.set_experiment('multiscale')
 
 # Select a run and load the predictions and targets for that id.
-cols = ['params.scale_coarse']
-run_id, experiment_id = select_run(merge=('data',
-                                          'params.data_run_id',
-                                          'run_id'),
-                                   cols=cols)
+cols = ['params.scale_coarse', 'params.scale_fine', 'metrics.test mse']
+merge = [('data', 'params.data_run_id', 'run_id'),
+         ('Default', 'params.model_run_id', 'run_id')]
+run_id, experiment_id = select_run(merge=merge, cols=cols)
 loader = LoadMLFlow(run_id, experiment_id,
                     'd:\\Data sets\\NYU\\mlruns')
 predictions = loader.predictions[:1000, ...]
 targets = loader.true_targets[:1000, ...]
 
-view_predictions(predictions, targets, display_mode=DisplayMode.correlation)
+view_predictions(predictions, targets, display_mode=DisplayMode.rmse)

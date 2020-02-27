@@ -43,12 +43,11 @@ def select_run(sort_by=None, cols=None, merge=None):
     if merge is not None:
         cols[0] = 'run_id_x'
         cols[1] = 'experiment_id_x'
-        name, key_left, key_right = merge
-        experiment = mlflow.get_experiment_by_name(name)
-        df2 = mlflow.search_runs(experiment_ids=experiment.experiment_id)
-        mlflow_runs = pd.merge(mlflow_runs, df2, left_on=key_left,
-                               right_on=key_right, how='right')
-        print(mlflow_runs)
+        for name, key_left, key_right in merge:
+            experiment = mlflow.get_experiment_by_name(name)
+            df2 = mlflow.search_runs(experiment_ids=experiment.experiment_id)
+            mlflow_runs = pd.merge(mlflow_runs, df2, left_on=key_left,
+                                   right_on=key_right)
     print(mlflow_runs[cols])
     id_ = int(input('Run id?'))
     return mlflow_runs.loc[id_, cols[:2]]
