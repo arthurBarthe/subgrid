@@ -224,12 +224,11 @@ class RawDataFromXrDataset(Dataset):
             index = slice(index, index + 1)
         targets = self.xr_dataset[self.output_arrays].isel(time = index)
         targets = targets.to_stacked_array('ancillary', ['time',]).data
-        targets = targets.squeeze()
         return features, targets
 
     def n_output_targets(self):
         t = self[0][1]
-        return t.shape[0]
+        return t.shape[1]
     
     @property
     def width(self):
