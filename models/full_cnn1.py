@@ -155,7 +155,7 @@ class MLFlowNN(Module):
         output = input
         for i_layer,  layer in enumerate(self.layers):
             output = layer(output)
-        return output.reshape(self.output_size)
+        return output.reshape(-1, self.output_size)
 
 
 class Divergence2d(Module):
