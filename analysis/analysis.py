@@ -79,6 +79,7 @@ class TimeSeriesForPoint:
         plt.figure()
         plt.plot(self.predictions - self.true_values)
         plt.title('Prediction errors for point {}, {}'.format(*self.point))
+        plt.show()
 
     def save_fig(self):
         if not self._fig:

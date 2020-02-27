@@ -55,7 +55,7 @@ def select_run(sort_by=None, cols=None, merge=None):
     id_ = int(input('Run id?'))
     if id_ < 0:
         sys.exit()
-    return mlflow_runs.loc[id_, cols[:2]]
+    return mlflow_runs.loc[id_, :]
 
 
 class DisplayMode(Enum):
@@ -75,6 +75,7 @@ def view_predictions(predictions: np.ndarray, targets: np.ndarray,
     fig = plt.figure()
     plt.imshow(map_, origin='lower')
     plt.colorbar()
+    plt.show()
 
     def onClick(event):
         time_series0 = TimeSeriesForPoint(predictions=predictions,

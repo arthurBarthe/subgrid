@@ -15,36 +15,37 @@ layers.
 see if there is anything remaining.
 - do something similar for the multiscale
 """
-import numpy as np
+# These two lines are required to plot over ssh
+import matplotlib
+matplotlib.use('tkagg')
 
-from analysis.loadmlflow import LoadMLFlow
-from analysis.utils import select_run, view_predictions, DisplayMode
-from analysis.utils import play_movie
+from .utils import select_run, view_predictions, DisplayMode
+from .utils import play_movie
 import mlflow
+from mlflow.tracking import MlflowClient
 
-# We'll run this locally
-mlflow.set_tracking_uri('file:///d:\\Data sets\\NYU\\mlruns')
-mlflow.set_experiment('Default')
+# Set the experiment to data
+mlflow.set_experiment('training')
 
 # If the runs dataframe already exists we use it. Note: this means you must
 # restart the interpreter if the list of runs has changed.
-run_id, experiment_id = select_run(sort_by='metrics.test mse')
-mlflow_loader = LoadMLFlow(run_id, mlruns_path='d:\\Data sets\\NYU\\mlruns')
+run = select_run(sort_by='metrics.test mse')
 
 # Display some info about the train and validation sets for this run
-train_split = mlflow_loader.train_split
-test_split = mlflow_loader.test_split
+train_split = run['params.train_split']
+test_split = run['params.test_split']
 print(f'Train split: {train_split}')
 print(f'Test split: {test_split}')
 
-pred = mlflow_loader.predictions[:, 0, ...]
-truth = mlflow_loader.true_targets[:, 0, ...]
-psi_field = mlflow_loader.psi
-psi_field = psi_field / np.std(psi_field)
+# Download predictions and targets arrays
+client = MlflowClient()
+run_id = run['run_id']
+predictions = client.download_artifacts(run_id, 'predictions.npy')
+targets = client.download_artifacts(run_id, 'truth.npy')
 
-view_predictions(pred, truth, display_mode=DisplayMode.rmse)
-view_predictions(np.zeros_like(psi_field), psi_field,  DisplayMode.difference)
+# TODO Also show input data
+
+view_predictions(predictions, targets, display_mode=DisplayMode.rmse)
 
 #play_movie(truth, title='target')
-animation1 = play_movie(pred, title='prediction')
-animation2 = play_movie(psi_field, title='psi field')
+animation1 = play_movie(predictions, title='prediction')
