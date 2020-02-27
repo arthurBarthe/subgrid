@@ -41,7 +41,8 @@ class LoadMLFlow:
         # Prediction attirbutes
         self._predictions = None
         self._true_targets = None
-        # Correlations
+        # psi field
+        self._psi = None
 
     @property
     def net_class(self):
@@ -138,3 +139,11 @@ class LoadMLFlow:
                 except FileNotFoundError:
                     warnings.warn('True targets not found for this run')
         return self._true_targets
+
+    @property
+    def psi(self):
+        if self._psi is None:
+            path_psi = join(r'D:\Data sets\NYU\processed_data', 
+                            'psi_coarse.npy')
+            self._psi = np.load(path_psi)
+        return self._psi

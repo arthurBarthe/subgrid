@@ -15,12 +15,12 @@ layers.
 see if there is anything remaining.
 - do something similar for the multiscale
 """
+import numpy as np
 
 from analysis.loadmlflow import LoadMLFlow
-from analysis.analysis import TimeSeriesForPoint
 from analysis.utils import select_run, view_predictions, DisplayMode
+from analysis.utils import play_movie
 import mlflow
-from matplotlib import pyplot as plt
 
 # We'll run this locally
 mlflow.set_tracking_uri('file:///d:\\Data sets\\NYU\\mlruns')
@@ -37,7 +37,14 @@ test_split = mlflow_loader.test_split
 print(f'Train split: {train_split}')
 print(f'Test split: {test_split}')
 
-pred = mlflow_loader.predictions
-truth = mlflow_loader.true_targets
+pred = mlflow_loader.predictions[:, 0, ...]
+truth = mlflow_loader.true_targets[:, 0, ...]
+psi_field = mlflow_loader.psi
+psi_field = psi_field / np.std(psi_field)
 
-view_predictions(pred, truth, DisplayMode.rmse)
+view_predictions(pred, truth, display_mode=DisplayMode.rmse)
+view_predictions(np.zeros_like(psi_field), psi_field,  DisplayMode.difference)
+
+#play_movie(truth, title='target')
+animation1 = play_movie(pred, title='prediction')
+animation2 = play_movie(psi_field, title='psi field')

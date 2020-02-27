@@ -7,8 +7,9 @@ Created on Tue Feb  4 14:00:45 2020
 import numpy as np
 import mlflow
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import pandas as pd
-
+import sys
 from analysis.analysis import TimeSeriesForPoint
 
 from enum import Enum
@@ -27,6 +28,7 @@ def rmse_map(targets: np.ndarray, predictions: np.ndarray):
     """Computes the rmse of the prediction time series at each point"""
     error = predictions - targets
     stds = np.std(targets, axis = 0)
+    stds = np.clip(stds, np.min(stds[stds > 0]), np.inf)
     rmse_map = np.sqrt(np.mean(np.power(error, 2), axis=0)) / stds
     return rmse_map
 
@@ -48,8 +50,11 @@ def select_run(sort_by=None, cols=None, merge=None):
             df2 = mlflow.search_runs(experiment_ids=experiment.experiment_id)
             mlflow_runs = pd.merge(mlflow_runs, df2, left_on=key_left,
                                    right_on=key_right)
+    mlflow_runs = mlflow_runs[mlflow_runs['metrics.test mse'] < 0.02]
     print(mlflow_runs[cols])
     id_ = int(input('Run id?'))
+    if id_ < 0:
+        sys.exit()
     return mlflow_runs.loc[id_, cols[:2]]
 
 
@@ -57,6 +62,7 @@ class DisplayMode(Enum):
     """Enumeration of the different display modes for viewing methods"""
     correlation = correlation_map
     rmse = rmse_map
+    difference = lambda x, y: np.mean(x-y, axis=0)
 
 def view_predictions(predictions: np.ndarray, targets: np.ndarray,
                      display_mode=DisplayMode.correlation):
@@ -65,9 +71,9 @@ def view_predictions(predictions: np.ndarray, targets: np.ndarray,
     and predictions at that point are shown in a new plot for further
     analysis."""
     # Compute the correlation map
-    map_ = display_mode(predictions, targets)
+    map_ = display_mode(targets, predictions)
     fig = plt.figure()
-    plt.imshow(map_[0, ...], origin='lower')
+    plt.imshow(map_, origin='lower')
     plt.colorbar()
 
     def onClick(event):
@@ -76,3 +82,20 @@ def view_predictions(predictions: np.ndarray, targets: np.ndarray,
         time_series0.point = (int(event.xdata), int(event.ydata))
         time_series0.plot_pred_vs_true()
     fig.canvas.mpl_connect('button_press_event', onClick)
+
+def play_movie(predictions: np.ndarray, title : str = ''):
+    fig = plt.figure()
+    ims = list()
+    mean = np.mean(predictions)
+    std = np.std(predictions)
+    vmin, vmax = mean - std, mean + std
+    for im in predictions:
+        ims.append([plt.imshow(im, vmin=vmin, vmax=vmax,
+                               cmap='YlOrRd',
+                               origin='lower', animated=True)])
+    ani = animation.ArtistAnimation(fig, ims, 
+                                    interval=25, blit=True,
+                                    repeat_delay=1000)
+    plt.title(title)
+    plt.show()
+    return ani

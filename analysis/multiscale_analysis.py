@@ -27,4 +27,6 @@ loader = LoadMLFlow(run_id, experiment_id,
 predictions = loader.predictions[:1000, ...]
 targets = loader.true_targets[:1000, ...]
 
-view_predictions(predictions, targets, display_mode=DisplayMode.rmse)
+view_predictions(predictions.take(0, axis=1), 
+                 targets.take(0, axis=1),
+                 display_mode=DisplayMode.rmse)

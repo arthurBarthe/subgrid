@@ -17,10 +17,10 @@ logged.
 # stream datasets.
 
 import torch
-from torch.nn import Module
+from torch.nn import Module, Parameter
 from torch.nn import functional as F
 import mlflow
-
+import numpy as np
 
 class Identity(Module):
     def __init__(self):
@@ -155,7 +155,7 @@ class MLFlowNN(Module):
         output = input
         for i_layer,  layer in enumerate(self.layers):
             output = layer(output)
-        return output.view(-1, self.output_size)
+        return output.reshape(-1, self.output_size)
 
 
 class Divergence2d(Module):
@@ -167,32 +167,50 @@ class Divergence2d(Module):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.n_input_channels = n_input_channels
         self.n_output_channels = n_output_channels
-        self.x_derivative = torch.tensor([[[[0, 0, 0],
-                                          [-1, 0, 1],
-                                          [0, 0, 0]]]])
-        self.x_derivative = self.x_derivative.expand(1, n_input_channels // 4,
-                                                     -1, -1)
-        self.y_derivative = torch.tensor([[0, 1, 0],
-                                          [0, 0, 0],
-                                          [0, -1, 0]])
-        self.y_derivative = self.y_derivative.expand(1, n_input_channels // 4,
-                                                     -1, -1)
-        self.x_derivative = self.x_derivative.to(dtype=torch.float32,
+        factor = n_input_channels // n_output_channels
+        lambda_ = 1 / (factor * 2)
+        shape = (1, n_input_channels//4, 1, 1)
+        self.lambdas1x = Parameter(torch.ones(shape)) * lambda_
+        self.lambdas2x = Parameter(torch.ones(shape)) * lambda_
+        self.lambdas1y = Parameter(torch.ones(shape)) * lambda_
+        self.lambdas2y = Parameter(torch.ones(shape)) * lambda_
+        self.lambdas1x = self.lambdas1x.to(device=device)
+        self.lambdas2x = self.lambdas2x.to(device=device)
+        self.lambdas1y = self.lambdas1y.to(device=device)
+        self.lambdas2y = self.lambdas2y.to(device=device)
+        x_derivative = torch.tensor([[[[0, 0, 0],
+                                       [-1, 0, 1],
+                                       [0, 0, 0]]]])
+        x_derivative = x_derivative.expand(1, n_input_channels // 4, -1, -1)
+        y_derivative = torch.tensor([[0, 1, 0],
+                                     [0, 0, 0],
+                                     [0, -1, 0]])
+        y_derivative = y_derivative.expand(1, n_input_channels // 4, -1, -1)
+        x_derivative = x_derivative.to(dtype=torch.float32,
                                                  device=device)
-        self.y_derivative = self.y_derivative.to(dtype=torch.float32,
+        y_derivative = y_derivative.to(dtype=torch.float32,
                                                  device=device)
+        self.x_derivative = x_derivative
+        self.y_derivative = y_derivative
 
     def forward(self, input: torch.Tensor):
         n, c, h, w = input.size()
-        output1 = F.conv2d(input[:, :c//4, :, :], self.x_derivative,
+        y_derivative1 = self.y_derivative * self.lambdas1y
+        x_derivative2 = self.x_derivative * self.lambdas2x
+        y_derivative2 = self.y_derivative * self.lambdas2y
+        output11 = F.conv2d(input[:, :c//4, :, :], self.x_derivative * self.lambdas1x,
                            padding=2)
-        output1 += F.conv2d(input[:, c//4:c//2, :, :], self.y_derivative,
+        output12 = F.conv2d(input[:, c//4:c//2, :, :], self.y_derivative,
                             padding=2)
-        output2 = F.conv2d(input[:, c//2:c//2+c//4, :, :], self.x_derivative,
+        output1 = output11 + output12
+        output21 = F.conv2d(input[:, c//2:c//2+c//4, :, :], self.x_derivative,
                            padding=2)
-        output2 += F.conv2d(input[:, c//2+c//4:, :, :], self.y_derivative,
+        output22 = F.conv2d(input[:, c//2+c//4:, :, :], self.y_derivative,
                             padding=2)
-        return torch.stack((output1, output2), dim=1)
+        output2 = output21 + output22
+        res =  torch.stack((output1, output2), dim=1)
+        res = res[:,:, 0, :, :]
+        return res
 
 
 class FullyCNN(MLFlowNN):
@@ -201,22 +219,27 @@ class FullyCNN(MLFlowNN):
         self.build()
 
     def build(self):
-        self.add_conv2d_layer(self.input_depth, 128, 5, padding=2)
+        self.add_conv2d_layer(self.input_depth, 128, 5, padding=2+0)
         self.add_activation('relu')
         self.add_batch_norm_layer(128)
-        self.add_conv2d_layer(128, 128, 5, padding=2)
+        self.add_conv2d_layer(128, 64, 3, padding=1+0)
         self.add_activation('relu')
-        self.add_batch_norm_layer(128)
-        self.add_conv2d_layer(128, 32, 5, padding=2)
-        self.add_activation('relu')
-        self.add_batch_norm_layer(32)
-        self.add_conv2d_layer(32, 32, 5, padding=1)
+        self.add_batch_norm_layer(64)
+        self.add_conv2d_layer(64, 32, 3, padding=1+0)
         self.add_activation('relu')
         self.add_batch_norm_layer(32)
-#        self.add_conv2d_layer(32, 64, 5, padding=2)
-#        self.add_activation('relu')
-#        self.add_batch_norm_layer(64)
-        self.add_divergence2d_layer(32, 2)
+        self.add_conv2d_layer(32, 32, 3, padding=1+0)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32, 32, 3, padding=1+(0))
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32, 32, 3, padding=1+0)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32, 2, 1, padding=0+0)
+        # no non-linearity between last conv and divergence layer.
+#        self.add_divergence2d_layer(32, 2)
         self.add_final_activation('identity')
 
 
@@ -226,5 +249,9 @@ if __name__ == '__main__':
     net = FullyCNN(1, 18)
     input_ = torch.randint(-100, 100, (8, 1, 3, 3))
     input_ = input_.to(dtype=torch.float32)
-    output = net(input_).detach().numpy()
-    print(np.sum(output))
+    output = net(input_)
+    output_ = output.detach().numpy()
+    print(output.size())
+    s = torch.sum(output)
+    print(s.item())
+    s.backward()

@@ -56,8 +56,8 @@ class TimeSeriesForPoint:
 
     def _build_time_series(self):
         x, y = self.point
-        self._time_series['predictions'] = self._predictions[:, 0, y, x]
-        self._time_series['true values'] = self._truth[:, 0, y, x]
+        self._time_series['predictions'] = self._predictions[:, y, x]
+        self._time_series['true values'] = self._truth[:, y, x]
 
     @property
     def predictions(self):

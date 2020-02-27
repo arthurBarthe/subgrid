@@ -25,7 +25,7 @@ dx = 7.5e3
 dy = dx
 # Scale of the coarse-graining
 scale_fine = (dx, dy)
-scale_coarse = (37.5e3, 37.5e3)
+scale_coarse = (35e3, 35e3)
 
 factor = scale_coarse[0] / scale_fine[0]
 
