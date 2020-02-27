@@ -19,11 +19,20 @@ see if there is anything remaining.
 import matplotlib
 matplotlib.use('tkagg')
 
+import matplotlib.pyplot as plt
+
 import numpy as np
 from .utils import select_run, view_predictions, DisplayMode
 from .utils import play_movie
 import mlflow
 from mlflow.tracking import MlflowClient
+import argparse
+
+# Parse parameter
+parser =  argparse.ArgumentParser()
+parser.add_argument('--time', type=int, default=0)
+params = parser.parse_args()
+time = params.time
 
 
 # If the runs dataframe already exists we use it. Note: this means you must
@@ -41,6 +50,16 @@ client = MlflowClient()
 run_id = run['run_id']
 predictions = np.load(client.download_artifacts(run_id, 'predictions.npy'))
 targets = np.load(client.download_artifacts(run_id, 'truth.npy'))
+
+# Plot the sample at the given time
+plt.figure()
+plt.subplot(121)
+plt.imshow(targets[time, 0, ...], cmap='coolwarm', vmin=-0.5, vmax=0.5)
+plt.colorbar()
+plt.subplot(122)
+plt.imshow(predictions[time, 0, ...], cmap='coolwarm', vmin=-0.5, vmax=0.5)
+plt.colorbar()
+plt.show()
 
 # TODO Also show input data
 predictions = predictions[:, 0, ...]
