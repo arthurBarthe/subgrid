@@ -39,7 +39,7 @@ else:
 
 # Retrieve the patch of data specified in the command-line args
 patch_data, grid_data = get_patch(catalog_url, params.ntimes, params.bounds,
-                       0, 'usurf', 'vsurf')
+                                  0, 'usurf', 'vsurf')
 patch_data = patch_data.chunk({'time' : 50})
 
 # Convert to x-y coordinates

@@ -7,9 +7,6 @@ Created on Wed Feb 19 12:15:35 2020
 """
 
 import xarray as xr
-import dask
-import dask.array as da
-import dask.bag as db
 from scipy.ndimage import gaussian_filter
 import numpy as np
 
@@ -65,6 +62,7 @@ def compute_grid_steps(u_v_dataset):
 
 def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
     """Computes the eddy forcing terms on high resolution"""
+    # TODO check if we can do something smarter here
     # Replace nan values with zeros
     u_v_dataset = u_v_dataset.fillna(0.0)
     # High res advection terms
@@ -75,19 +73,19 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
     u_v_filtered = spatial_filter_dataset(u_v_dataset, 
                                           (scale / grid_steps[0],
                                           scale / grid_steps[1]))
-    # Advection term from filtered
+    # Advection term from filtered velocity field
     adv_filtered = advections(u_v_filtered)
     # Forcing
     forcing = adv_filtered - adv
     forcing = forcing.rename({'adv_x' : 'S_x', 'adv_y' : 'S_y'})
     # Merge filtered u,v and forcing terms
     forcing = forcing.merge(u_v_filtered)
-    # Reweight using the area 
+    # Reweight using the area of the cell
     forcing = forcing * grid_data['area_u'] / 1e8
     # Coarsen
     forcing = forcing.coarsen({'x' : int(scale / grid_steps[0]),
-                            'y' : int(scale / grid_steps[1])},
-                            boundary='trim')
+                               'y' : int(scale / grid_steps[1])},
+                                boundary='trim')
     if method == 'mean':
         forcing = forcing.mean()
     else:
