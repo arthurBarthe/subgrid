@@ -20,9 +20,11 @@ def show_data_sample(forcing, index: int):
         plt.figure()
         if var.name in ('usurf', 'vsurf'):
             var.plot(cmap='coolwarm')
+            plt.figure()
             var.plot.hist(bins=100)
         elif var.name in ('S_x', 'S_y'):
             var.plot(cmap='coolwarm', vmin=-5, vmax=5)
+            plt.figure()
             var.plot.hist(bins=100, range=(-5, 5))
     plt.show()
 
