@@ -63,7 +63,7 @@ def compute_grid_steps(u_v_dataset):
     return tuple(grid_step)
 
 
-def eddy_forcing(u_v_dataset, scale: float, method='mean'):
+def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
     """Computes the eddy forcing terms on high resolution"""
     # Replace nan values with zeros
     u_v_dataset = u_v_dataset.fillna(0.0)
@@ -82,6 +82,8 @@ def eddy_forcing(u_v_dataset, scale: float, method='mean'):
     forcing = forcing.rename({'adv_x' : 'S_x', 'adv_y' : 'S_y'})
     # Merge filtered u,v and forcing terms
     forcing = forcing.merge(u_v_filtered)
+    # Reweight using the area 
+    forcing = forcing * grid_data['area_u'] / 1e8
     # Coarsen
     forcing = forcing.coarsen({'x' : int(scale / grid_steps[0]),
                             'y' : int(scale / grid_steps[1])},

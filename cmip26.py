@@ -38,7 +38,7 @@ else:
     params = parser.parse_args('15 35 50 -48 -22 --ntimes 2000'.split())
 
 # Retrieve the patch of data specified in the command-line args
-patch_data = get_patch(catalog_url, params.ntimes, params.bounds,
+patch_data, grid_data = get_patch(catalog_url, params.ntimes, params.bounds,
                        0, 'usurf', 'vsurf')
 patch_data = patch_data.chunk({'time' : 50})
 
@@ -48,7 +48,7 @@ print(patch_data)
 
 # Calculate eddy-forcing dataset for that particular patch
 scale_m = params.scale * 1e3
-forcing = eddy_forcing(patch_data, scale=scale_m, method='mean')
+forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean')
 pbar = ProgressBar()
 pbar.register()
 # Specify input vs output type for each variable of the dataset. Might
