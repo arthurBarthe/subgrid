@@ -19,11 +19,12 @@ import intake
 catalog_url = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
 /master/intake-catalogs/master.yaml'
 
+
 def get_patch(catalog_url, ntimes : int = None, bounds : list = None,
-              c02 = 0, *selected_vars):
+              c02_level = 0, *selected_vars):
     """Returns a patch of data of the cmip 2.6 model along the grid info"""
     catalog = intake.open_catalog(catalog_url)
-    if c02 == 0:
+    if c02_level == 0:
         s = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_control_ocean_surface
     else:
         raise NotImplementedError('Only control implemented for now.')
@@ -45,9 +46,11 @@ def get_patch(catalog_url, ntimes : int = None, bounds : list = None,
     else:
         return my_data[list(selected_vars)], grid_data
 
+
 def get_whole_data():
-    data = get_patch(catalog_url, None, None, 0, 'usurf', 'vsurf')
-    return data
+    data, grid = get_patch(catalog_url, None, None, 0, 'usurf', 'vsurf')
+    return data, grid
+
 
 if __name__ == '__main__':
     import os
