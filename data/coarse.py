@@ -13,11 +13,11 @@ import xarray as xr
 from scipy.ndimage import gaussian_filter
 import numpy as np
 
-def advections(u_v_dataset):
+def advections(u_v_field, grid_data):
     """Computes advection terms"""
-    gradient_x = u_v_dataset.differentiate('x')
-    gradient_y = u_v_dataset.differentiate('y')
-    u, v = u_v_dataset['usurf'], u_v_dataset['vsurf']
+    gradient_x = u_v_field.diff(dim='xu_ocean') / grid_data['dxu']
+    gradient_y = u_v_field.diff(dim='yu_ocean') / grid_data['dyu']
+    u, v = u_v_field['usurf'], u_v_field['vsurf']
     adv_x = u * gradient_x['usurf'] + v * gradient_y['usurf']
     adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
     return xr.Dataset({'adv_x': adv_x, 'adv_y' : adv_y})
@@ -75,7 +75,7 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
     # Replace nan values with zeros
     u_v_dataset = u_v_dataset.fillna(0.0)
     # High res advection terms
-    adv = advections(u_v_dataset)
+    adv = advections(u_v_dataset, grid_data)
     # Grid steps
     grid_steps = compute_grid_steps(grid_data)
     # Filtered u,v field
@@ -83,7 +83,7 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
                                           (scale / grid_steps[0],
                                           scale / grid_steps[1]))
     # Advection term from filtered velocity field
-    adv_filtered = advections(u_v_filtered)
+    adv_filtered = advections(u_v_filtered, grid_data)
     # Forcing
     forcing = adv_filtered - adv
     forcing = forcing.rename({'adv_x' : 'S_x', 'adv_y' : 'S_y'})
