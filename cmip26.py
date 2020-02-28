@@ -45,6 +45,7 @@ patch_data = patch_data.chunk({'time' : 50})
 # Convert to x-y coordinates
 patch_data = latlong_to_euclidean(patch_data, 'yu_ocean', 'xu_ocean')
 print(patch_data)
+print(grid_data)
 
 # Calculate eddy-forcing dataset for that particular patch
 scale_m = params.scale * 1e3
