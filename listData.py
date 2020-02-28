@@ -13,15 +13,17 @@ from mlflow.tracking import MlflowClient
 import xarray as xr
 import matplotlib.pyplot as plt
 
-def show_data_sample(run_id, index: int):
+def show_data_sample(forcing, index: int):
     """Plots the data for the given index"""
-    client = MlflowClient()
-    forcing_data = client.download_artifacts(run_id, 'forcing')
-    forcing = xr.open_zarr(forcing_data)
     sample = forcing.isel(time=index)
     for var in sample.values():
         plt.figure()
-        var.plot()
+        if var.name in ('usurf', 'vsurf'):
+            var.plot(cmap='coolwarm')
+            var.plot.hist(bins=100)
+        elif var.name in ('S_x', 'S_y'):
+            var.plot(cmap='coolwarm', vmin=-5, vmax=5)
+            var.plot.hist(bins=100, range=(-5, 5))
     plt.show()
 
 
@@ -40,5 +42,10 @@ while True:
     except ValueError as e:
         break
     print(runs.iloc[selection, :])
-    show_data_sample(runs.iloc[selection, :]['run_id'], 0)
+    run_id = runs.iloc[selection, :]['run_id']
+    client = MlflowClient()
+    forcing_data = client.download_artifacts(run_id, 'forcing')
+    forcing = xr.open_zarr(forcing_data)
+    forcing = forcing / forcing.std()
+    show_data_sample(forcing, 0)
 

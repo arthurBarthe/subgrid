@@ -33,9 +33,10 @@ def rmse_map(targets: np.ndarray, predictions: np.ndarray):
     return rmse_map
 
 
-def select_run(sort_by=None, cols=None, merge=None):
+def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
+    """Allows to select a run"""
 #    if not hasattr(sys.modules['__main__'], 'mlflow_runs'):
-    mlflow_runs = mlflow.search_runs()
+    mlflow_runs = mlflow.search_runs(*args, **kargs)
     if cols is None:
         cols = list()
     cols = ['run_id', 'experiment_id' ] + cols
