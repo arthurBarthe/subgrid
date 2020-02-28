@@ -37,7 +37,7 @@ def get_patch(catalog_url, ntimes : int = None, bounds : list = None,
         my_data = my_data.sel(xu_ocean=slice(*bounds[2:]),
                            yu_ocean=slice(*bounds[:2]))
         grid_data = grid_data.sel(xu_ocean=slice(*bounds[2:]),
-                                  yu_ocean=slice(*bounds[2:]))
+                                  yu_ocean=slice(*bounds[:2]))
     if ntimes is not None:
         my_data = my_data.isel(time=slice(0, ntimes))
     
