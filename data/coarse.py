@@ -93,8 +93,8 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
     forcing = forcing * grid_data['area_u'] / 1e8
     print(forcing)
     # Coarsen
-    forcing = forcing.coarsen({'x' : int(scale / grid_steps[0]),
-                               'y' : int(scale / grid_steps[1])},
+    forcing = forcing.coarsen({'xu_ocean' : int(scale / grid_steps[0]),
+                               'yu_ocean' : int(scale / grid_steps[1])},
                                 boundary='trim')
     if method == 'mean':
         forcing = forcing.mean()
