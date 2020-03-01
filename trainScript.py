@@ -8,7 +8,6 @@ Torch implementation of a similar form of NN as in Bolton et al
 TODO list
 - check that the divergence layer works as expected, i.e. check sum of 
 output layer is zero.
-- make a private github repo
 - analyze the importance of memory 
 - train on one scale (e.g. 30 km) and test on a range of different
 scales (e.g 10km, 20km, 40km, 50km, 60km). For that I need to write 
@@ -60,6 +59,8 @@ import argparse
 # PARAMETERS ---------
 def negative_int(value: str):
     return -int(value)
+
+
 description = 'Trains a model on a chosen dataset from the store. Allows \
     to set training parameters via the CLI.'
 parser = argparse.ArgumentParser(description=description)
