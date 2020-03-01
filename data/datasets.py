@@ -233,11 +233,11 @@ class RawDataFromXrDataset(Dataset):
     
     @property
     def width(self):
-        return len(self.xr_dataset['x'])
+        return len(self.xr_dataset['xu_ocean'])
 
     @property
     def height(self):
-        return len(self.xr_dataset['y'])
+        return len(self.xr_dataset['yu_ocean'])
 
     def __len__(self):
         return len(self.xr_dataset[self._index])
