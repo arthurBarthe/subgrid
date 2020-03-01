@@ -64,8 +64,8 @@ def spatial_filter_dataset(dataset, sigma: float):
 
 
 def compute_grid_steps(grid_info: xr.Dataset):
-    step_x = grid_info['dxu'].mean().item()
-    step_y = grid_info['dyu'].mean().item()
+    step_x = grid_info['dxu'].mean().compute().item()
+    step_y = grid_info['dyu'].mean().compute().item()
     return step_x, step_y
 
 
