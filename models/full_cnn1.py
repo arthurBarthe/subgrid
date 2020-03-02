@@ -63,8 +63,9 @@ class MLFlowNN(Module):
                               'batch_normalization': False
                               }
         self.logged_params = False
-        self.image_dims = (width, height)
-        self.image_size = width * height
+        if width is not None and height is not None:
+            self.image_dims = (width, height)
+            self.image_size = width * height
 
     @property
     def n_layers(self) -> int:
@@ -257,7 +258,6 @@ class FullyCNN(MLFlowNN):
         out_features = self.output_size
         self.add_linear_layer(in_features, out_features)
         self.add_final_activation('identity')
-
 
 
 if __name__ == '__main__':

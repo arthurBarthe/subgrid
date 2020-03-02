@@ -16,7 +16,7 @@ Additionally any dataset should have some info about its scale. During the
 training we need to log on which dataset / scale we train.
 - Maybe use the xarray library?
 """
-# Necessary when running on remote ssh
+# Necessary when running on remote ssh to obtain the plots locally
 import matplotlib
 matplotlib.use('Agg')
 
@@ -59,7 +59,6 @@ import argparse
 # PARAMETERS ---------
 def negative_int(value: str):
     return -int(value)
-
 
 description = 'Trains a model on a chosen dataset from the store. Allows \
     to set training parameters via the CLI.'
@@ -165,7 +164,10 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
 
 # NEURAL NETWORK------
 # Remove *2 and make this to adapt to the dataset
-net = FullyCNN(len(indices)*2, dataset.n_output_targets())
+width = dataset.width
+height = dataset.height
+net = FullyCNN(len(indices)*2, dataset.n_output_targets(),
+               width, height)
 print('--------------------')
 print(net)
 print('--------------------')
