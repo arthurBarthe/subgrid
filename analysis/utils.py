@@ -51,7 +51,6 @@ def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
             df2 = mlflow.search_runs(experiment_ids=experiment.experiment_id)
             mlflow_runs = pd.merge(mlflow_runs, df2, left_on=key_left,
                                    right_on=key_right)
-    mlflow_runs = mlflow_runs[mlflow_runs['metrics.test mse']]
     print(mlflow_runs[cols])
     id_ = int(input('Run id?'))
     if id_ < 0:
