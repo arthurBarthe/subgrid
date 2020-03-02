@@ -95,6 +95,7 @@ class MLFlowNN(Module):
         layer = torch.nn.Linear(in_features, out_features, bias)
         i_layer = self.n_layers
         self.params_to_log['layer{}'.format(i_layer)] = 'Linear'
+        self.layers.append(torch.nn.Flatten())
         self.layers.append(layer)
         self.n_layers += 1
 
@@ -241,7 +242,7 @@ class FullyCNN(MLFlowNN):
         # self.add_conv2d_layer(32, 32, 3, padding=1+0)
         # self.add_activation('relu')
         # self.add_batch_norm_layer(32)
-        self.add_conv2d_layer(32,   32, 3, padding=1+0)
+        self.add_conv2d_layer(32, 32, 3, padding=1+0)
         self.add_activation('relu')
         self.add_batch_norm_layer(32)
         # self.add_conv2d_layer(32, 32, 3, padding=1+(0))
