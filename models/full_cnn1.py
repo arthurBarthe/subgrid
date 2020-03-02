@@ -92,7 +92,7 @@ class MLFlowNN(Module):
 
     def add_linear_layer(self, in_features : int, out_features : int, 
                          bias : bool = True):
-        layer = nn.Linear(in_features, out_features, bias)
+        layer = torch.nn.Linear(in_features, out_features, bias)
         i_layer = self.n_layers
         self.params_to_log['layer{}'.format(i_layer)] = 'Linear'
         self.layers.append(layer)
