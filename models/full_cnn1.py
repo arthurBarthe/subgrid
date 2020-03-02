@@ -43,7 +43,8 @@ class ScaledModule(Module):
 class MLFlowNN(Module):
     """Abstract class for a pytorch NN whose characteristics are automatically
     logged through MLFLOW."""
-    def __init__(self, input_depth: int, output_size: int):
+    def __init__(self, input_depth: int, output_size: int, width : int = None,
+                 height : int = None):
         super().__init__()
         self.input_depth = input_depth
         self.output_size = output_size
@@ -62,6 +63,8 @@ class MLFlowNN(Module):
                               'batch_normalization': False
                               }
         self.logged_params = False
+        self.image_dims = (width, height)
+        self.image_size = width * height
 
     @property
     def n_layers(self) -> int:
@@ -85,6 +88,14 @@ class MLFlowNN(Module):
         to this activation, as it plays a specific role."""
         self.layers.append(self.activation_choices[activation])
         self.params_to_log['last_layer_activation'] = activation
+
+    def add_linear_layer(self, in_features : int, out_features : int, 
+                         bias : bool = True):
+        layer = nn.Linear(in_features, out_features, bias)
+        i_layer = self.n_layers
+        self.params_to_log['layer{}'.format(i_layer)] = 'Linear'
+        self.layers.append(layer)
+        self.n_layers += 1
 
     def add_conv2d_layer(self, in_channels: int, out_channels: int,
                          kernel_size: int, stride: int = 1, padding: int = 0,
@@ -214,8 +225,9 @@ class Divergence2d(Module):
 
 
 class FullyCNN(MLFlowNN):
-    def __init__(self, input_depth: int, output_size: int):
-        super().__init__(input_depth, output_size)
+    def __init__(self, input_depth: int, output_size: int, width : int = None,
+                 height : int = None):
+        super().__init__(input_depth, output_size, width, height)
         self.build()
 
     def build(self):
@@ -225,12 +237,12 @@ class FullyCNN(MLFlowNN):
         self.add_conv2d_layer(64, 32, 3, padding=1+0)
         self.add_activation('relu')
         self.add_batch_norm_layer(32)
-        self.add_conv2d_layer(32, 32, 3, padding=1+0)
-        self.add_activation('relu')
-        self.add_batch_norm_layer(32)
-        self.add_conv2d_layer(32, 2, 3, padding=1+0)
+        # self.add_conv2d_layer(32, 32, 3, padding=1+0)
         # self.add_activation('relu')
         # self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32,   32, 3, padding=1+0)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
         # self.add_conv2d_layer(32, 32, 3, padding=1+(0))
         # self.add_activation('relu')
         # self.add_batch_norm_layer(32)
@@ -241,6 +253,9 @@ class FullyCNN(MLFlowNN):
         # self.add_activation('relu')
         # self.add_batch_norm_layer(64)
         # self.add_divergence2d_layer(32, 2)
+        in_features = self.image_size * 32
+        out_features = self.output_size
+        self.add_linear_layer(in_features, out_features)
         self.add_final_activation('identity')
 
 
