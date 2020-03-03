@@ -74,6 +74,8 @@ parser.add_argument('--train_split', type=float, default=0.8)
 parser.add_argument('--test_split', type=float, default=0.8)
 parser.add_argument('--time_indices', type=negative_int, nargs='*')
 parser.add_argument('--printevery', type=int, default=20)
+parser.add_argument('--weight_decay', type=float, default=0.1,
+                    help="Controls the weight decay on the linear layer")
 params = parser.parse_args()
 
 # Log the experiment_id and run_id of the source dataset
@@ -85,6 +87,7 @@ mlflow.log_param('source.run_id', params.run_id)
 # want to avoid the time correlation to play in our favour during test.
 batch_size = params.batchsize
 learning_rates = {0: params.learning_rate}
+weight_decay = params.weight_decay
 n_epochs = params.n_epochs
 train_split = params.train_split
 test_split = params.test_split
@@ -99,6 +102,7 @@ data_location = '/data/ag7531/'
 figures_directory = 'figures'
 
 # Device selection. If available we use the GPU.
+# TODO Allow CLI argument to select the GPU
 device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 device_type = DEVICE_TYPE.GPU if torch.cuda.is_available() \
                               else DEVICE_TYPE.CPU
@@ -187,7 +191,7 @@ linear_layer = net.linear_layer
 conv_layers = net.conv_layers
 params = [{'params' : layer.parameters()} for layer in conv_layers]
 params.append({'params' : linear_layer.parameters(),
-                        'weight_decay' : 0.05})
+               'weight_decay' : weight_decay})
 optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0) 
               for (i, v) in learning_rates.items()}
 

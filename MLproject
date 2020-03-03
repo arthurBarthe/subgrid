@@ -25,5 +25,6 @@ entry_points:
       test_split : {type : float, default : 0.8}
       time_indices : {type : string, default : 0}
       print_every : {type : float, default : 20}
-    command: "python trainScript.py {exp_id} {run_id} --batchsize {batchsize} --learning_rate {learning_rate} --n_epochs {n_epochs} --train_split {train_split} --test_split {test_split} --time_indices {time_indices} --printevery {print_every}"
+      weight_decay : {type : float, default : 0.1}
+    command: "python trainScript.py {exp_id} {run_id} --batchsize {batchsize} --learning_rate {learning_rate} --n_epochs {n_epochs} --train_split {train_split} --test_split {test_split} --time_indices {time_indices} --printevery {print_every} --weight_decay {weight_decay}"
     

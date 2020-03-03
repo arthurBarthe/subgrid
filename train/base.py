@@ -67,6 +67,7 @@ class Trainer:
             # Print current loss
             loss_text = 'Loss value {}'.format(running_loss_.average)
             if print_every(loss_text, self.print_loss_every, i_batch):
+                # Every time we print we reset the running average
                 running_loss_.reset()
             # Backpropagate
             loss.backward()
