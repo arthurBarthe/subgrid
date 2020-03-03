@@ -183,10 +183,10 @@ mlflow.log_artifact('nn_architecture.txt')
 
 # MSE criterion + Adam optimizer
 criterion = torch.nn.MSELoss()
-linear_layer = net.linear_layer
+# linear_layer = net.linear_layer
 conv_layers = net.conv_layers
 params = [{'params' : layer.parameters()} for layer in conv_layers]
-params.append({'params' : linear_layer.parameters(),
+# params.append({'params' : linear_layer.parameters(),
                         'weight_decay' : 0.2})
 optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0) 
               for (i, v) in learning_rates.items()}
