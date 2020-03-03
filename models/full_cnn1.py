@@ -50,6 +50,8 @@ class MLFlowNN(Module):
         self.output_size = output_size
         self.layers = torch.nn.ModuleList()
         self._n_layers = 0
+        self.conv_layers = []
+        self.linear_layer = []
         self.activation_choices = {'relu': torch.nn.ReLU(),
                                    'selu': torch.nn.SELU(),
                                    'tanh': torch.nn.Tanh(),
@@ -123,6 +125,7 @@ class MLFlowNN(Module):
             self.params_to_log['max_depth'] = out_channels
         # Register that we have added a layer
         self.n_layers += 1
+        self.conv_layers.append(conv_layer)
 
     def add_divergence2d_layer(self, n_input_channels: int,
                                n_output_channels: int):
