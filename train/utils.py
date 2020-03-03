@@ -25,13 +25,15 @@ def print_every(to_print: str, every: int, n_iter: int):
     """
     if n_iter % every == every - 1:
         print(to_print)
+        return True
+    return False
 
 
 class RunningAverage:
     """Class for online computing of a running average"""
     def __init__(self):
         self.n_items = 0
-        self.average = 0
+        self.average = 0.0
 
     @property
     def value(self):
@@ -53,6 +55,10 @@ class RunningAverage:
         self.n_items = self.n_items + weight
         self.average = temp / self.n_items
         return self.average
+
+    def reset(self):
+        self.n_items = 0
+        self.average = 0.0
 
     def __str__(self):
         return str(self.average)
