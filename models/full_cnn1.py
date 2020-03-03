@@ -259,7 +259,7 @@ class FullyCNN(MLFlowNN):
         # self.add_activation('relu')
         # self.add_batch_norm_layer(64)
         # self.add_divergence2d_layer(32, 2)
-        in_features = self.image_size * 16
+        in_features = self.image_size * 12
         out_features = self.output_size
         self.add_linear_layer(in_features, out_features)
         self.add_final_activation('identity')
