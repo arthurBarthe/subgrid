@@ -91,7 +91,7 @@ def play_movie(predictions: np.ndarray, title : str = ''):
     std = np.std(predictions)
     vmin, vmax = mean - std, mean + std
     for im in predictions:
-        ims.append([plt.contourf(im, vmin=vmin, vmax=vmax,
+        ims.append([plt.imshow(im, vmin=vmin, vmax=vmax,
                                cmap='YlOrRd',
                                origin='lower', animated=True)])
     ani = animation.ArtistAnimation(fig, ims, 
