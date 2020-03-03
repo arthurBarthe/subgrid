@@ -78,6 +78,7 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
     u_v_dataset = u_v_dataset.fillna(0.0)
     # Grid steps
     grid_steps = compute_grid_steps(grid_data)
+    print('Average grid steps: ', grid_steps)
     # High res advection terms
     adv = advections(u_v_dataset, grid_data)
     adv = spatial_filter_dataset(adv, scale / grid_steps[0], 
