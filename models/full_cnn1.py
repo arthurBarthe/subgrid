@@ -255,7 +255,7 @@ class FullyCNN(MLFlowNN):
         # self.add_conv2d_layer(32, 32, 5, padding=2)
         # self.add_activation('relu')
         # self.add_batch_norm_layer(32)
-        self.add_conv2d_layer(32, 16, 3, padding=1)
+        self.add_conv2d_layer(32, 12, 3, padding=1)
         # self.add_activation('relu')
         # self.add_batch_norm_layer(64)
         # self.add_divergence2d_layer(32, 2)
