@@ -121,7 +121,7 @@ data_file = mlflow_client.download_artifacts(params.run_id, 'forcing')
 xr_dataset = xr.open_zarr(data_file).load()
 
 # Rescale 
-xr_dataset = (xr_dataset - xr_dataset.mean()) / xr_dataset.std()
+xr_dataset = xr_dataset / xr_dataset.std()
 # TODO Deal with this properly :Additional rescaling for the output 
 xr_dataset['S_x'] = xr_dataset['S_x']
 xr_dataset['S_y'] = xr_dataset['S_y']
@@ -187,7 +187,7 @@ linear_layer = net.linear_layer
 conv_layers = net.conv_layers
 params = [{'params' : layer.parameters()} for layer in conv_layers]
 params.append({'params' : linear_layer.parameters(),
-                        'weight_decay' : 0.2})
+                        'weight_decay' : 0.3})
 optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0) 
               for (i, v) in learning_rates.items()}
 
