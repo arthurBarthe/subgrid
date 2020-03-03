@@ -73,7 +73,7 @@ def view_predictions(predictions: np.ndarray, targets: np.ndarray,
     # Compute the correlation map
     map_ = display_mode(targets, predictions)
     fig = plt.figure()
-    plt.contourf(map_, origin='lower')
+    plt.imshow(map_, origin='lower')
     plt.colorbar()
     plt.show()
 
