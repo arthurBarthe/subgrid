@@ -55,10 +55,10 @@ targets = np.load(client.download_artifacts(run_id, 'truth.npy'))
 # Plot the sample at the given time
 plt.figure()
 plt.subplot(121)
-plt.imshow(targets[time, 0, ...], cmap='coolwarm', vmin=-0.5, vmax=0.5)
+plt.contourf(targets[time, 0, ...], cmap='coolwarm', vmin=-0.5, vmax=0.5)
 plt.colorbar()
 plt.subplot(122)
-plt.imshow(predictions[time, 0, ...], cmap='coolwarm', vmin=-0.5, vmax=0.5)
+plt.contourf(predictions[time, 0, ...], cmap='coolwarm', vmin=-0.5, vmax=0.5)
 plt.colorbar()
 plt.show()
 
