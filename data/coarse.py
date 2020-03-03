@@ -64,20 +64,24 @@ def spatial_filter_dataset(dataset, sigma: float):
 
 
 def compute_grid_steps(grid_info: xr.Dataset):
+    """Returns the average grid step along each axis, used later in the
+    application of a Gaussian filter"""
     step_x = grid_info['dxu'].mean().compute().item()
     step_y = grid_info['dyu'].mean().compute().item()
     return step_x, step_y
 
 
 def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
-    """Computes the eddy forcing terms on high resolution"""
+    """Computes the eddy forcing terms."""
     # TODO check if we can do something smarter here
     # Replace nan values with zeros
     u_v_dataset = u_v_dataset.fillna(0.0)
-    # High res advection terms
-    adv = advections(u_v_dataset, grid_data)
     # Grid steps
     grid_steps = compute_grid_steps(grid_data)
+    # High res advection terms
+    adv = advections(u_v_dataset, grid_data)
+    adv = spatial_filter_dataset(adv, scale / grid_steps[0], 
+                                 scale / grid_steps[1])
     # Filtered u,v field
     u_v_filtered = spatial_filter_dataset(u_v_dataset, 
                                           (scale / grid_steps[0],
