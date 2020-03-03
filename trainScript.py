@@ -187,7 +187,7 @@ criterion = torch.nn.MSELoss()
 conv_layers = net.conv_layers
 params = [{'params' : layer.parameters()} for layer in conv_layers]
 # params.append({'params' : linear_layer.parameters(),
-                        'weight_decay' : 0.2})
+                        # 'weight_decay' : 0.2})
 optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0) 
               for (i, v) in learning_rates.items()}
 
