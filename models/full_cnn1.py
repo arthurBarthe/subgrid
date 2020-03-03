@@ -98,6 +98,7 @@ class MLFlowNN(Module):
         self.layers.append(torch.nn.Flatten())
         self.layers.append(layer)
         self.n_layers += 1
+        self.linear_layer = layer
 
     def add_conv2d_layer(self, in_channels: int, out_channels: int,
                          kernel_size: int, stride: int = 1, padding: int = 0,
