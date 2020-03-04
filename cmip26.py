@@ -59,7 +59,7 @@ forcing['usurf'].attrs['type'] = 'input'
 forcing['vsurf'].attrs['type'] = 'input'
 forcing = forcing.compute()
 # export data
-forcing.to_zarr('/data/ag7531/outputs/forcing', mode='w')
+forcing.to_zarr('forcing', mode='w')
 # Log as an artifact the forcing data
-mlflow.log_artifact('/data/ag7531/outputs/forcing')
+mlflow.log_artifact('forcing')
 print('Completed...')   
