@@ -183,10 +183,10 @@ print('***')
 net.to(device)
 
 # Log the text representation of the net into a txt artifact
-with open('nn_architecture.txt', 'w') as f:
+with open(os.path.join(data_location, 'nn_architecture.txt'), 'w') as f:
     print('Writing neural net architecture into txt file.')
     f.write(str(net))
-mlflow.log_artifact('nn_architecture.txt')
+mlflow.log_artifact(os.path.join(data_location, 'nn_architecture.txt'))
 
 # MSE criterion + Adam optimizer
 criterion = torch.nn.MSELoss()
@@ -281,11 +281,11 @@ with torch.no_grad():
         truth[i * batch_size:(i+1) * batch_size] = Y
 
 # log the predictions as artifacts
-np.save(os.path.join(data_location, 'models', 'predictions'), pred)
-np.save(os.path.join(data_location, 'models', 'truth'), truth)
-mlflow.log_artifact(os.path.join(data_location, 'models', 'predictions.npy'))
-mlflow.log_artifact(os.path.join(data_location, 'models', 'truth.npy'))
-
+np.save(os.path.join(data_location, 'modeloutput', 'predictions'), pred)
+np.save(os.path.join(data_location, 'modeloutput', 'truth'), truth)
+# mlflow.log_artifact(os.path.join(data_location, 'model', 'predictions.npy'))
+# mlflow.log_artifact(os.path.join(data_location, 'models', 'truth.npy'))
+mlflow.log_artifact(os.path.join(data_location, 'modeloutput'))
 
 # Correlation map, shape (2, dataset.width, dataset.height)
 correlation_map = np.mean(truth * pred, axis=0)
@@ -295,7 +295,7 @@ correlation_map /= np.maximum(np.std(truth, axis=0) * np.std(pred, axis=0),
 
 print('Saving correlation map to disk')
 # Save the correlation map to disk and its plot as well.
-np.save('/data/ag7531/analysis/correlation_map', correlation_map)
+np.save(os.path.join(data_location, 'correlation_map'), correlation_map)
 
 fig = plt.figure()
 plt.subplot(121)
@@ -314,7 +314,7 @@ plt.close(fig)
 # FIN CORRELATION MAP 
 
 # log the figures as artifacts
-mlflow.log_artifact(os.path.join(data_location, figures_directory))
+# mlflow.log_artifact(os.path.join(data_location, figures_directory))
 # log the correlation map figure
 mlflow.log_artifact(file_path)
 if 'y' in input('register as success?').lower():
