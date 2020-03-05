@@ -106,7 +106,7 @@ figures_directory = 'figures'
 
 # Device selection. If available we use the GPU.
 # TODO Allow CLI argument to select the GPU
-device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 device_type = DEVICE_TYPE.GPU if torch.cuda.is_available() \
                               else DEVICE_TYPE.CPU
 print('Selected device type: ', device_type.value)
