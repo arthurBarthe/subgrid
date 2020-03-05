@@ -53,6 +53,9 @@ from train.base import Trainer
 # import to parse CLI arguments
 import argparse
 
+# import to create temporary dir used to save the model and predictions
+import tempfile
+
 # Set the mlflow tracking uri
 # mlflow.set_tracking_uri('file:///data/ag7531/mlruns')
 
@@ -98,7 +101,7 @@ indices = params.time_indices
 
 # Other parameters
 print_loss_every = params.printevery
-data_location = '/data/ag7531/'
+data_location = tempfile.mkdtemp()
 figures_directory = 'figures'
 
 # Device selection. If available we use the GPU.
