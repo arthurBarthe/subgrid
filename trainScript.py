@@ -101,8 +101,21 @@ indices = params.time_indices
 
 # Other parameters
 print_loss_every = params.printevery
+
+# Directories where temporary data will be saved
 data_location = tempfile.mkdtemp()
 figures_directory = 'figures'
+models_directory = 'models'
+model_output_dir = 'model_output'
+def _check_dir(dir_path):
+    """Tries to create the directory if it does not already exists"""
+    if not os.path.exists(dir_path):
+        os.mkdir(dir_path)
+
+_check_dir(os.path.join(data_location, figures_directory))
+_check_dir(os.path.join(data_location, models_directory))
+_check_dir(os.path.join(data_location, model_output_dir))
+
 
 # Device selection. If available we use the GPU.
 # TODO Allow CLI argument to select the GPU
@@ -281,11 +294,9 @@ with torch.no_grad():
         truth[i * batch_size:(i+1) * batch_size] = Y
 
 # log the predictions as artifacts
-np.save(os.path.join(data_location, 'modeloutput', 'predictions'), pred)
-np.save(os.path.join(data_location, 'modeloutput', 'truth'), truth)
-# mlflow.log_artifact(os.path.join(data_location, 'model', 'predictions.npy'))
-# mlflow.log_artifact(os.path.join(data_location, 'models', 'truth.npy'))
-mlflow.log_artifact(os.path.join(data_location, 'modeloutput'))
+np.save(os.path.join(data_location, model_output_dir, 'predictions.npy'), pred)
+np.save(os.path.join(data_location, model_output_dir, 'truth.npy'), truth)
+mlflow.log_artifact(os.path.join(data_location, model_output_dir))
 
 # Correlation map, shape (2, dataset.width, dataset.height)
 correlation_map = np.mean(truth * pred, axis=0)
