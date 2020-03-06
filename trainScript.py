@@ -56,8 +56,6 @@ import argparse
 # import to create temporary dir used to save the model and predictions
 import tempfile
 
-# Set the mlflow tracking uri
-# mlflow.set_tracking_uri('file:///data/ag7531/mlruns')
 
 # PARAMETERS ---------
 def negative_int(value: str):
@@ -103,7 +101,7 @@ indices = params.time_indices
 print_loss_every = params.printevery
 
 # Directories where temporary data will be saved
-data_location = tempfile.mkdtemp()
+data_location = tempfile.mkdtemp(dir='./')
 figures_directory = 'figures'
 models_directory = 'models'
 model_output_dir = 'model_output'
@@ -142,9 +140,6 @@ xr_dataset = xr.open_zarr(data_file).load()
 
 # Rescale 
 xr_dataset = xr_dataset / xr_dataset.std()
-# TODO Deal with this properly :Additional rescaling for the output 
-xr_dataset['S_x'] = xr_dataset['S_x']
-xr_dataset['S_y'] = xr_dataset['S_y']
 
 dataset = RawDataFromXrDataset(xr_dataset)
 dataset.index = 'time'
@@ -268,7 +263,6 @@ for i_epoch in range(n_epochs):
 
 # Save the trained model to disk
 print('Saving the neural network learnt parameters to disk...')
-#model_name = str(datetime.now()).split('.')[0] + '.pth'
 model_name = 'trained_model.pth'
 full_path = os.path.join(data_location, 'models', model_name)
 torch.save(net.state_dict(), full_path)
