@@ -24,6 +24,7 @@ import numpy as np
 import xarray as xr
 import mlflow
 import os.path
+import os
 from datetime import datetime
 
 # For pre-processing
@@ -109,6 +110,9 @@ def _check_dir(dir_path):
     """Tries to create the directory if it does not already exists"""
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
+
+# print cwd for debugging
+print('Current working dir is ', os.getcwd())
 
 _check_dir(os.path.join(data_location, figures_directory))
 _check_dir(os.path.join(data_location, models_directory))
