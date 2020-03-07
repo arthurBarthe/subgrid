@@ -102,7 +102,7 @@ indices = params.time_indices
 print_loss_every = params.printevery
 
 # Directories where temporary data will be saved
-data_location = tempfile.mkdtemp(dir='./')
+data_location = tempfile.mkdtemp(dir='/scratch/ag7531/temp/')
 figures_directory = 'figures'
 models_directory = 'models'
 model_output_dir = 'model_output'
@@ -112,7 +112,7 @@ def _check_dir(dir_path):
         os.mkdir(dir_path)
 
 # print cwd for debugging
-print('Current working dir is ', os.getcwd())
+print('Created temporary dir at  ', data_location)
 
 _check_dir(os.path.join(data_location, figures_directory))
 _check_dir(os.path.join(data_location, models_directory))
@@ -158,7 +158,7 @@ train_index = int(train_split * n_indices)
 test_index = int(test_split * n_indices)
 train_dataset = Subset(dataset, np.arange(train_index))
 test_dataset = Subset(dataset, np.arange(test_index, n_indices))
-
+ 
 
 
 # Apply basic normalization transforms (using the training data only)
@@ -187,7 +187,7 @@ width = dataset.width
 height = dataset.height
 net = FullyCNN(len(indices)*2, dataset.n_output_targets(),
                width, height)
-print('--------------------')
+print('----------*----------')
 print(net)
 print('--------------------')
 print('***')
