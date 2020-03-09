@@ -266,12 +266,17 @@ for i_epoch in range(n_epochs):
 
 
 # Save the trained model to disk
+print('Moving the network to the CPU before saving...')
+net.cpu()
 print('Saving the neural network learnt parameters to disk...')
 model_name = 'trained_model.pth'
 full_path = os.path.join(data_location, 'models', model_name)
 torch.save(net.state_dict(), full_path)
+print('Logging the neural network model...')
 mlflow.log_artifact(full_path)
 print('Neural network saved and logged in the artifacts.')
+print('Now putting it back on the gpu')
+net.cuda(device)
 
 # FIN TRAINING -------
 
