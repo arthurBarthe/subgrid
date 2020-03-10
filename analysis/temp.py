@@ -66,8 +66,8 @@ plt.colorbar()
 plt.show()
 
 # Plot the time series of the MSE
-mse_time_series = np.mean(np.power(predictions - targets, 2), 
-                          axis = (1, 2, 3))
+mse_time_series = np.sqrt(np.mean(np.power(predictions - targets, 2), 
+                          axis = (1, 2, 3)))
 plt.figure()
 plt.plot(mse_time_series)
 plt.show()
