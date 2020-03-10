@@ -16,16 +16,11 @@ Additionally any dataset should have some info about its scale. During the
 training we need to log on which dataset / scale we train.
 - Maybe use the xarray library?
 """
-# Necessary when running on remote ssh to obtain the plots locally
-import matplotlib
-matplotlib.use('Agg')
-
 import numpy as np
 import xarray as xr
 import mlflow
 import os.path
 import os
-from datetime import datetime
 
 # For pre-processing
 # from sklearn.preprocessing import StandardScaler, RobustScaler
@@ -145,6 +140,7 @@ xr_dataset = xr.open_zarr(data_file).load()
 # Rescale 
 xr_dataset = xr_dataset / xr_dataset.std()
 
+# Convert to a pytorch dataset and specify which variables are input/output
 dataset = RawDataFromXrDataset(xr_dataset)
 dataset.index = 'time'
 dataset.add_input('usurf')
@@ -156,7 +152,7 @@ dataset.add_output('S_y')
 n_indices = len(dataset)
 train_index = int(train_split * n_indices)
 test_index = int(test_split * n_indices)
-train_dataset = Subset(dataset, np.arange(train_index))
+train_dataset = Subset(dataset, np.arange(0, train_index, 10))
 test_dataset = Subset(dataset, np.arange(test_index, n_indices))
  
 
@@ -199,8 +195,7 @@ with open(os.path.join(data_location, 'nn_architecture.txt'), 'w') as f:
     print('Writing neural net architecture into txt file.')
     f.write(str(net))
 mlflow.log_artifact(os.path.join(data_location, 'nn_architecture.txt'))
-# FIN NEURAL NETWORK - 
-
+# FIN NEURAL NETWORK -
 
 
 # Training------------
