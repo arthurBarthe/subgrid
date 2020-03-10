@@ -49,8 +49,11 @@ print(f'Test split: {test_split}')
 # Download predictions and targets arrays
 client = MlflowClient()
 run_id = run['run_id']
-predictions = np.load(client.download_artifacts(run_id, 'predictions.npy'))
-targets = np.load(client.download_artifacts(run_id, 'truth.npy'))
+predictions_file = client.download_artifacts(run_id, 
+                                             'model_output/predictions.npy')
+targets_file = client.download_artifacts(run_id, 'model_output/truth.npy')
+predictions = np.load(predictions_file)
+targets = np.load(targets_file)
 
 # Plot the sample at the given time
 plt.figure()
