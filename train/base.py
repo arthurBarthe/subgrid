@@ -93,7 +93,7 @@ class Trainer:
             Y = batch[1].to(self._device, dtype=torch.float)
             Y_hat = self.net(X)
             # Compute loss
-            loss = self.criterion(Y, Yhat)
+            loss = self.criterion(Y, Y_hat)
             running_loss.update(loss.item(), X.size(0))
             running_loss_.update(loss.item(), X.size(0))
             # Print current loss
