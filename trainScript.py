@@ -199,7 +199,11 @@ with open(os.path.join(data_location, 'nn_architecture.txt'), 'w') as f:
     print('Writing neural net architecture into txt file.')
     f.write(str(net))
 mlflow.log_artifact(os.path.join(data_location, 'nn_architecture.txt'))
+# FIN NEURAL NETWORK - 
 
+
+
+# Training------------
 # MSE criterion + Adam optimizer
 criterion = torch.nn.MSELoss()
 linear_layer = net.linear_layer
@@ -211,12 +215,9 @@ params.append({'params' : linear_layer.parameters(),
 optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0) 
               for (i, v) in learning_rates.items()}
 
-# FIN NEURAL NETWORK - 
-
 trainer = Trainer(net, device)
 trainer.criterion = criterion
 
-# Training------------
 for i_epoch in range(n_epochs):
     # Set to training mode
     net.train()
@@ -233,7 +234,6 @@ for i_epoch in range(n_epochs):
 
     # At the end of each epoch we compute the test loss and print it
     with torch.no_grad():
-        nb_samples = 0
         running_loss = RunningAverage()
         for i, data in enumerate(test_dataloader):
             X = data[0].to(device, dtype=torch.float)
@@ -331,7 +331,7 @@ plt.close(fig)
 # mlflow.log_artifact(os.path.join(data_location, figures_directory))
 # log the correlation map figure
 mlflow.log_artifact(file_path)
-if 'y' in input('register as success?').lower():
-    mlflow.set_tag('success', 'True')
-else:
-    mlflow.set_tag('success', 'False')
+# if 'y' in input('register as success?').lower():
+#     mlflow.set_tag('success', 'True')
+# else:
+#     mlflow.set_tag('success', 'False')
