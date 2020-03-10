@@ -8,12 +8,26 @@ Created on Tue Feb  4 20:56:02 2020
 import torch
 from torch.nn import Module, MSELoss
 from torch.utils.data import DataLoader
-import numpy as np
 
 from .utils import print_every, RunningAverage
 
 
 class Trainer:
+    """Training object for a neural network on a specific device. Defines
+    a training method that trains for one epoch.
+    
+    Properties
+    ----------
+    
+    :net: Module,
+        Neural network that is trained
+    
+    :criterion: Loss,
+        Criterion used in the objective function.
+    
+    :print_loss_every: int,
+        Sets the number of batches that the average loss is printed.
+    """
     def __init__(self, net: Module, device: torch.device):
         self._net = net
         self._device = device
@@ -41,14 +55,33 @@ class Trainer:
         self._criterion = criterion
 
     @property
-    def print_loss_every(self):
+    def print_loss_every(self) -> int:
         return self._print_loss_every
 
     @print_loss_every.setter
     def print_loss_every(self, value: int):
         self._print_loss_every = value
 
-    def train_for_one_epoch(self, dataloader: DataLoader, optimizer):
+    def train_for_one_epoch(self, dataloader: DataLoader, optimizer) -> float:
+        """Trains the neural network for one epoch using the data provided
+        through the dataloader passed as an argument, and the optimizer
+        passed as an argument.
+        
+        Parameters
+        ----------
+        
+        :dataloader: DataLoader,
+            The Pytorch DataLoader object used to provide training data.
+        
+        :optimizer: Optimizer,
+            The Pytorch Optimizer used to update the parameters after each
+            forward-backward pass.
+        
+        Returns
+        -------
+        float
+            The average train loss for this epoch.
+        """
         self._locked = True
         running_loss = RunningAverage()
         running_loss_ = RunningAverage()
@@ -59,9 +92,8 @@ class Trainer:
             X = batch[0].to(self._device, dtype=torch.float)
             Y = batch[1].to(self._device, dtype=torch.float)
             Y_hat = self.net(X)
-#            stds = torch.max(Y.std(dim=0), torch.ones_like(Y) * 0.2)
             # Compute loss
-            loss = self.criterion(Y_hat, Y)
+            loss = self.criterion(Y, Yhat)
             running_loss.update(loss.item(), X.size(0))
             running_loss_.update(loss.item(), X.size(0))
             # Print current loss
