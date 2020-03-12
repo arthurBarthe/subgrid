@@ -15,7 +15,8 @@ from analysis.analysis import TimeSeriesForPoint
 from enum import Enum
 
 
-def correlation_map(truth, pred):
+
+def correlation_map(truth : np.ndarray, pred : np.ndarray):
     """Computes the correlation at each point of the domain between the
     truth and the prediction."""
     correlation_map = np.mean(truth * pred, axis=0)
@@ -24,18 +25,21 @@ def correlation_map(truth, pred):
     return correlation_map
 
 
-def rmse_map(targets: np.ndarray, predictions: np.ndarray):
-    """Computes the rmse of the prediction time series at each point"""
+def rmse_map(targets: np.ndarray, predictions: np.ndarray, 
+             normalized : bool = False):
+    """Computes the rmse of the prediction time series at each point."""
     error = predictions - targets
     stds = np.std(targets, axis = 0)
-    stds = np.clip(stds, np.min(stds[stds > 0]), np.inf)
+    if normalized:
+        stds = np.clip(stds, np.min(stds[stds > 0]), np.inf)
+    else:
+        stds = 1
     rmse_map = np.sqrt(np.mean(np.power(error, 2), axis=0)) / stds
     return rmse_map
 
 
 def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
-    """Allows to select a run"""
-#    if not hasattr(sys.modules['__main__'], 'mlflow_runs'):
+    """Allows to select a run from the tracking store interactively"""
     mlflow_runs = mlflow.search_runs(*args, **kargs)
     if cols is None:
         cols = list()
@@ -64,6 +68,7 @@ class DisplayMode(Enum):
     rmse = rmse_map
     difference = lambda x, y: np.mean(x-y, axis=0)
 
+
 def view_predictions(predictions: np.ndarray, targets: np.ndarray,
                      display_mode=DisplayMode.correlation):
     """Plots the correlation map for the passed predictions and targets.
@@ -83,6 +88,52 @@ def view_predictions(predictions: np.ndarray, targets: np.ndarray,
         time_series0.point = (int(event.xdata), int(event.ydata))
         time_series0.plot_pred_vs_true()
     fig.canvas.mpl_connect('button_press_event', onClick)
+
+
+def sample(data : np.ndarray, step_time : int = 1, nb_per_time: int = 5):
+    """Samples points from the data, where it is assumed that the data
+    is 4-D, with the first dimension representing time , the second
+    the channel, and the others representing spatial dimensions. 
+    The sampling is done for every step_time image, and for each image 
+    nb_per_time points are randomly selected.
+
+    Parameters
+    ----------
+    
+    :data: ndarray, (n_time, n_channels, n_x, n_y)
+        The time series of images to sample from.
+    
+    :step_time: int,
+        The distance in time between two consecutive images used for the 
+        sampling.
+
+    :nb_per_time: int,
+        Number of points used (chosen randomly according to a uniform 
+        distribution over the spatial domain) for each image.
+    
+
+    Returns
+    -------
+    :sample: ndarray, (n_time / step_time, n_channels, nb_per_time )
+        The sampled data.
+    """
+    if data.ndim != 4:
+        raise ValueError('The data is expected to have 4 dimensions.')
+    n_times, n_channels, n_x, n_y = data.shape
+    time_indices = np.arange(0, n_times, step_time)
+    x_indices = np.random.randint(0, n_x,
+                                  (time_indices.shape[0], 2, nb_per_time))
+    y_indices = np.random.randint(0, n_y,
+                                  (time_indices.shape[0], 2, nb_per_time))
+    channel_indices = np.zeros_like(x_indices)
+    channel_indices[:, 1, :] = 1
+    time_indices = time_indices.reshape((-1, 1, 1))
+    time_indices = time_indices.repeat(2, axis = 1)
+    time_indices = time_indices.repeat(nb_per_time, axis = 2)
+    
+    selection = time_indices, channel_indices, x_indices, y_indices
+    sample = data[selection]
+    return sample
 
 def play_movie(predictions: np.ndarray, title : str = ''):
     fig = plt.figure()

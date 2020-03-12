@@ -79,7 +79,8 @@ print(f'Max prediction is {max_pred}')
 # TODO Also show input data
 predictions = predictions[:, 0, ...]
 targets = targets[:, 0, ...]
-view_predictions(predictions, targets, display_mode=DisplayMode.rmse)
+view_predictions(predictions, targets, DisplayMode.rmse)
+view_predictions(predictions, targets, DisplayMode.correlation)
 
 #play_movie(truth, title='target')
 animation1 = play_movie(predictions, title='prediction')
