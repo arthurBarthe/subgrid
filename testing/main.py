@@ -66,6 +66,9 @@ dataset.add_input('vsurf')
 dataset.add_output('S_x')
 dataset.add_output('S_y')
 
+width = dataset.width
+height = dataset.height
+
 test_index = int(test_split * len(dataset))
 test_dataset = Subset(dataset, np.arange(test_index, len(dataset)))
 # TODO Allow multiple time indices.
@@ -75,7 +78,8 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                              shuffle=False, drop_last=True)
 
 # Load the model itself
-net = FullyCNN(2 * len(time_indices), dataset.n_output_targets)
+net = FullyCNN(2 * len(time_indices), dataset.n_output_targets,
+               width, height)
 net.to(device=device)
 net.load_state_dict(torch.load(model_file))
 net.eval()
