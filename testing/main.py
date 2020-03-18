@@ -27,7 +27,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # First we retrieve a trained model based on a run id for the default
 # experiment (folder mlruns/0)
 cols = ['metrics.test mse', 'start_time', 'params.time_indices']
-model_run = select_run(sort_by=cols[0], cols=cols[1:])
+model_run = select_run(sort_by=cols[0], cols=cols[1:],
+                       experiment_ids=['2',])
 
 # Load some extra parameters of the model.
 time_indices = model_run.time_indices
