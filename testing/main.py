@@ -31,9 +31,9 @@ model_run = select_run(sort_by=cols[0], cols=cols[1:],
                        experiment_ids=['2',])
 
 # Load some extra parameters of the model.
-time_indices = model_run.time_indices
 # TODO add back time indices
-# test_split = model_run.test_split
+# time_indices = model_run.time_indices
+test_split = model_run.test_split
 batch_size = model_run.batch_size
 
 # Load the model's file
