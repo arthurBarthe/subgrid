@@ -45,8 +45,8 @@ model_file = client.download_artifacts(model_run.run_id, 'trained_model.pth')
 mlflow.set_experiment('forcingdata')
 mlflow_runs = mlflow.search_runs()
 cols = ['params.lat_min, params.lat_max', 
-        'params.long_min', 'params.long_max',
-        'params.scale_coarse', 'params.scale_fine']
+        'params.long_min', 'params.long_max']
+        # 'params.scale_coarse', 'params.scale_fine']
 data_run, experiment_id = select_run(sort_by=None, cols=cols)
 client = mlflow.tracking.MlflowClient()
 data_file = client.download_artifacts(data_run.run_id, 'forcing')
