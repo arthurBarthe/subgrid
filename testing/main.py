@@ -31,8 +31,7 @@ model_run = select_run(sort_by=cols[0], cols=cols[1:],
                        experiment_ids=['2',])
 
 # Load some extra parameters of the model.
-# TODO add back time indices
-# time_indices = model_run.time_indices
+time_indices = model_run['params.time_indices']
 test_split = model_run['params.test_split']
 # batch_size = model_run['params.batch_size']
 batch_size = 8
@@ -47,7 +46,7 @@ mlflow_runs = mlflow.search_runs()
 cols = ['params.lat_min', 'params.lat_max', 
         'params.long_min', 'params.long_max']
         # 'params.scale_coarse', 'params.scale_fine']
-data_run, experiment_id = select_run(sort_by=None, cols=cols)
+data_run = select_run(sort_by=None, cols=cols)
 client = mlflow.tracking.MlflowClient()
 data_file = client.download_artifacts(data_run.run_id, 'forcing')
 xr_dataset = xr.open_zarr(data_file).load()
@@ -69,7 +68,7 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                              shuffle=False, drop_last=True)
 
 # Load the model itself
-net = FullyCNN(len(time_indices), dataset.n_output_targets)
+net = FullyCNN(2 * len(time_indices), dataset.n_output_targets)
 net.to(device=device)
 net.load_state_dict(torch.load(model_file))
 net.eval()
