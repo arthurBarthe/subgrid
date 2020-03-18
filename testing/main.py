@@ -59,6 +59,12 @@ mlflow.start_run()
 
 # Generate the dataset
 dataset = RawDataFromXrDataset(xr_dataset)
+dataset.index = 'time'
+dataset.add_input('usurf')
+dataset.add_input('vsurf')
+dataset.add_output('S_x')
+dataset.add_output('S_y')
+
 test_index = int(test_split * len(dataset))
 test_dataset = Subset(dataset, np.arange(test_index, len(dataset)))
 # TODO Allow multiple time indices.
