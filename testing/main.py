@@ -10,9 +10,9 @@ import mlflow
 import torch
 import numpy as np
 import xarray as xr
-from ..analysis.utils import select_run
-from ..models.full_cnn1 import FullyCNN
-from ..data.datasets import RawDataFromXrDataset
+from analysis.utils import select_run
+from models.full_cnn1 import FullyCNN
+from data.datasets import RawDataFromXrDataset
 from torch.utils.data import DataLoader, Subset
 import os.path
 
