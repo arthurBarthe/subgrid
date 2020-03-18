@@ -32,7 +32,7 @@ model_run = select_run(sort_by=cols[0], cols=cols[1:],
 
 # Load some extra parameters of the model.
 # TODO allow general time_indices
-time_indices = 0
+time_indices = [0,]
 test_split = int(float(model_run['params.test_split']))
 # batch_size = model_run['params.batch_size']
 batch_size = 8
