@@ -239,6 +239,7 @@ class FullyCNN(MLFlowNN):
                  height : int = None, do_not_load_linear : bool = False):
         super().__init__(input_depth, output_size, width, height)
         self.build()
+        self.do_not_load_linear = do_not_load_linear
 
     def build(self):
         self.add_conv2d_layer(self.input_depth, 128, 5, padding=2+0)
@@ -265,7 +266,8 @@ class FullyCNN(MLFlowNN):
         # self.add_divergence2d_layer(32, 2)
         in_features = self.image_size * 16
         out_features = self.output_size
-        self.add_linear_layer(in_features, out_features, do_not_load_linear)
+        self.add_linear_layer(in_features, out_features, 
+                              self.do_not_load_linear)
         self.add_final_activation('identity')
 
 
