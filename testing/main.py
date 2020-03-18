@@ -78,7 +78,7 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                              shuffle=False, drop_last=True)
 
 # Load the model itself
-net = FullyCNN(2 * len(time_indices), dataset.n_output_targets,
+net = FullyCNN(2 * len(time_indices), dataset.n_output_targets()),
                width, height)
 net.to(device=device)
 net.load_state_dict(torch.load(model_file))
