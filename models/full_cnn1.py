@@ -93,8 +93,12 @@ class MLFlowNN(Module):
         self.params_to_log['last_layer_activation'] = activation
 
     def add_linear_layer(self, in_features : int, out_features : int, 
-                         bias : bool = True):
+                         bias : bool = True, do_not_load : bool = False):
         layer = torch.nn.Linear(in_features, out_features, bias)
+        if do_not_load:
+            # The following line prevents the layer from loading its
+            # parameters from the state dict on calls to load_state_dict
+            layer._load_from_state_dict = lambda *args : None
         i_layer = self.n_layers
         self.params_to_log['layer{}'.format(i_layer)] = 'Linear'
         self.layers.append(torch.nn.Flatten())
@@ -232,7 +236,7 @@ class Divergence2d(Module):
 
 class FullyCNN(MLFlowNN):
     def __init__(self, input_depth: int, output_size: int, width : int = None,
-                 height : int = None):
+                 height : int = None, do_not_load_linear : bool = False):
         super().__init__(input_depth, output_size, width, height)
         self.build()
 
@@ -261,7 +265,7 @@ class FullyCNN(MLFlowNN):
         # self.add_divergence2d_layer(32, 2)
         in_features = self.image_size * 16
         out_features = self.output_size
-        self.add_linear_layer(in_features, out_features)
+        self.add_linear_layer(in_features, out_features, do_not_load_linear)
         self.add_final_activation('identity')
 
 
