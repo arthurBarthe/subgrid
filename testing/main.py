@@ -31,8 +31,9 @@ model_run = select_run(sort_by=cols[0], cols=cols[1:],
                        experiment_ids=['2',])
 
 # Load some extra parameters of the model.
-time_indices = model_run['params.time_indices']
-test_split = model_run['params.test_split']
+# TODO allow general time_indices
+time_indices = 0
+test_split = int(model_run['params.test_split'])
 # batch_size = model_run['params.batch_size']
 batch_size = 8
 
