@@ -34,7 +34,8 @@ model_run = select_run(sort_by=cols[0], cols=cols[1:],
 # TODO add back time indices
 # time_indices = model_run.time_indices
 test_split = model_run['params.test_split']
-batch_size = model_run['params.batch_size']
+# batch_size = model_run['params.batch_size']
+batch_size = 8
 
 # Load the model's file
 client = mlflow.tracking.MlflowClient()
