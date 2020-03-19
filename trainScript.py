@@ -38,7 +38,6 @@ import matplotlib.pyplot as plt
 # Import our Dataset class and neural network
 from data.datasets import RawData, MultipleTimeIndices, DatasetClippedScaler
 from data.datasets import RawDataFromXrDataset
-from models.full_cnn1 import FullyCNN
 
 # Import some utils functions
 from train.utils import RunningAverage, DEVICE_TYPE
