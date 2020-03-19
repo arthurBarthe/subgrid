@@ -42,7 +42,7 @@ test_split = float(model_run['params.test_split'])
 learning_rate = float(model_run['params.learning_rate'])
 batch_size = int(model_run['params.batchsize'])
 source_data_id = model_run['params.source.run_id']
-n_epochs = model_run['params.n_epochs']
+n_epochs = int(model_run['params.n_epochs'])
 
 # Load the model's file
 client = mlflow.tracking.MlflowClient()
