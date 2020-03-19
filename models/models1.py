@@ -236,7 +236,7 @@ class Divergence2d(Module):
 class Model2(MLFlowNN):
     def __init__(self, input_depth: int, output_size: int, 
                  width: int, height: int, do_not_load_linear : bool = False):
-        super(Model1, self).__init__(input_depth, output_size, width, depth)
+        super(Model2, self).__init__(input_depth, output_size, width, depth)
         self.do_not_load_linear = do_not_load_linear
         self.build()
 
