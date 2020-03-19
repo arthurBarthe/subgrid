@@ -60,6 +60,9 @@ client = mlflow.tracking.MlflowClient()
 data_file = client.download_artifacts(data_run.run_id, 'forcing')
 xr_dataset = xr.open_zarr(data_file).load()
 
+# TODO we have temporarily reduced the size
+x_dataset = xr_dataset.isel(xu_ocean = slice(0, 40), yu_ocean = slice(0, 40))
+
 
 # Set the experiment to 'multiscale'
 print('Logging to experiment multiscale')
@@ -96,7 +99,7 @@ net = FullyCNN(2 * len(time_indices), dataset.n_output_targets(),
 net.to(device=device)
 logging.info('Loading the conv layers')
 net.load_state_dict(torch.load(model_file))
-    
+
 # Train the linear layer only
 criterion = torch.nn.MSELoss()
 print('width: {}, height: {}'.format(width, height))
@@ -110,7 +113,7 @@ for i_epoch in range(n_epochs):
     loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
     print('Epoch {}'.format(i_epoch))
     print('Train loss for this epoch is {}'.format(loss))
-    
+
 
 # Log the run_id of the loaded model (useful to recover info
 # about the scale that was used to train this model for
