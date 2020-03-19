@@ -61,7 +61,7 @@ data_file = client.download_artifacts(data_run.run_id, 'forcing')
 xr_dataset = xr.open_zarr(data_file).load()
 
 # TODO we have temporarily reduced the size
-x_dataset = xr_dataset.isel(xu_ocean = slice(0, 40), yu_ocean = slice(0, 40))
+xr_dataset = xr_dataset.isel(xu_ocean = slice(0, 40), yu_ocean = slice(0, 40))
 
 
 # Set the experiment to 'multiscale'
