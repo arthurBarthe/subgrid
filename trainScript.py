@@ -233,13 +233,13 @@ for i_epoch in range(n_epochs):
     if i_epoch in optimizers:
         optimizer = optimizers[i_epoch]
     print('Epoch number {}.'.format(i_epoch))
-    running_loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
+    train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
     test_loss = trainer.test(test_dataloader)
     # Log the training loss
-    print('Train loss for this epoch is ', running_loss)
+    print('Train loss for this epoch is ', train_loss)
     print('Test loss for this epoch is ', test_loss)
-    mlflow.log_metric('train mse', running_loss, i_epoch)
-    mlflow.log_metric('test mse', running_loss.value, i_epoch)
+    mlflow.log_metric('train mse', train_loss, i_epoch)
+    mlflow.log_metric('test mse', test_loss, i_epoch)
 
     # We also save a snapshot figure to the disk and log it
     # TODO rewrite this bit, looks confusing for now
