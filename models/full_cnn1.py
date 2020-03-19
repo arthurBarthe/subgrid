@@ -267,14 +267,14 @@ class FullyCNN(MLFlowNN):
         # self.add_divergence2d_layer(32, 2)
         in_features = self.image_size * 16
         out_features = self.output_size
-        self.add_linear_layer(in_features, out_features, 
+        self.add_linear_layer(in_features, out_features, True,
                               self.do_not_load_linear)
         self.add_final_activation('identity')
 
 
 if __name__ == '__main__':
     import numpy as np
-    net = FullyCNN(1, 18)
+    net = FullyCNN(1, 18, 3, 3)
     input_ = torch.randint(-100, 100, (8, 1, 3, 3))
     input_ = input_.to(dtype=torch.float32)
     output = net(input_)
