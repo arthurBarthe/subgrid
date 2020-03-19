@@ -238,8 +238,9 @@ class FullyCNN(MLFlowNN):
     def __init__(self, input_depth: int, output_size: int, width : int = None,
                  height : int = None, do_not_load_linear : bool = False):
         super().__init__(input_depth, output_size, width, height)
-        self.build()
         self.do_not_load_linear = do_not_load_linear
+        self.build()
+        
 
     def build(self):
         self.add_conv2d_layer(self.input_depth, 128, 5, padding=2+0)
