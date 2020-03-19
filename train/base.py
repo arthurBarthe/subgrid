@@ -106,3 +106,17 @@ class Trainer:
             # Update parameters
             optimizer.step()
         return running_loss.value
+    
+    def test(self, dataloader) -> float:
+        # TODO add something to check that the dataloader is different from
+        # that used for the training
+        running_loss = RunningAverage()
+        for i_batch, batch in enumerate(dataloader):
+            # Move batch to GPU
+            X = batch[0].to(self._device, dtype=torch.float)
+            Y = batch[1].to(self._device, dtype=torch.float)
+            Y_hat = self.net(X)
+            # Compute loss
+            loss = self.criterion(Y, Y_hat)
+            running_loss.update(loss.item(), X.size(0))
+        return running_loss.value

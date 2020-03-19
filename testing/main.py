@@ -110,9 +110,11 @@ net.train()
 trainer = Trainer(net, device)
 trainer.criterion = criterion
 for i_epoch in range(n_epochs):
-    loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
+    train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
+    test_loss = trainer.test(test_dataloader)
     print('Epoch {}'.format(i_epoch))
-    print('Train loss for this epoch is {}'.format(loss))
+    print('Train loss for this epoch is {}'.format(train_loss))
+    print('Test loss for this epoch is {}'.format(test_loss))
 
 
 # Log the run_id of the loaded model (useful to recover info
