@@ -110,8 +110,6 @@ for i_epoch in range(n_epochs):
     print('Epoch {}'.format(i_epoch))
     print('Train loss for this epoch is {}'.format(loss))
     
-    
-
 
 # Log the run_id of the loaded model (useful to recover info
 # about the scale that was used to train this model for
