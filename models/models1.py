@@ -233,6 +233,26 @@ class Divergence2d(Module):
         res = res[:,:, 0, :, :]
         return res
 
+class Model2(MLFlowNN):
+    def __init__(self, input_depth: int, output_size: int, 
+                 width: int, height: int, do_not_load_linear : bool = False):
+        super(Model1, self).__init__(input_depth, output_size, width, depth)
+        self.do_not_load_linear = do_not_load_linear
+        self.build()
+
+    def build(self):
+        self.add_conv2d_layer(self.input_depth, 128, 5, padding=2+0)
+        self.add_max_pool_layer(2)
+        self.add_conv2d_layer(128, 64, 3, padding=1+0)
+        self.add_max_pool_layer(2)
+        self.add_conv2d_layer(64, 16, 3, padding=1+0)
+        in_features = int(self.image_size / (4*4) * 16)
+        out_features = self.output_size
+        self.add_linear_layer(in_features, out_features, True,
+                              self.do_not_load_linear)
+        self.add_final_activation('identity')
+
+
 
 class FullyCNN(MLFlowNN):
     def __init__(self, input_depth: int, output_size: int, width : int = None,
@@ -274,8 +294,8 @@ class FullyCNN(MLFlowNN):
 
 if __name__ == '__main__':
     import numpy as np
-    net = FullyCNN(1, 18, 3, 3)
-    input_ = torch.randint(-100, 100, (8, 1, 3, 3))
+    net = FullyCNN(1, 100*100, 100, 100)
+    input_ = torch.randint(-3, 3, (8, 1, 100, 100))
     input_ = input_.to(dtype=torch.float32)
     output = net(input_)
     output_ = output.detach().numpy()
