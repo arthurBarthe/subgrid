@@ -82,6 +82,7 @@ class Trainer:
         float
             The average train loss for this epoch.
         """
+        self.net.train()
         self._locked = True
         running_loss = RunningAverage()
         running_loss_ = RunningAverage()
@@ -110,6 +111,7 @@ class Trainer:
     def test(self, dataloader) -> float:
         # TODO add something to check that the dataloader is different from
         # that used for the training
+        self.net.eval()
         running_loss = RunningAverage()
         for i_batch, batch in enumerate(dataloader):
             # Move batch to GPU
