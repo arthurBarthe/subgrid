@@ -101,6 +101,7 @@ net.load_state_dict(torch.load(model_file))
 criterion = torch.nn.MSELoss()
 optimizer = torch.optim.Adam(net.linear_layer, lr=learning_rate)
 print('Training the fully connected layer...')
+net.to(device)
 net.train()
 trainer = Trainer(net, device)
 trainer.criterion = criterion
