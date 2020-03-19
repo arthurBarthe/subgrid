@@ -73,6 +73,8 @@ parser.add_argument('--time_indices', type=negative_int, nargs='*')
 parser.add_argument('--printevery', type=int, default=20)
 parser.add_argument('--weight_decay', type=float, default=0.1,
                     help="Controls the weight decay on the linear layer")
+parser.add_argument('--model_module_name', type=str, default='models.models1')
+parser.add_argument('--model_cls_name', type=str, default='FullyCNN')
 params = parser.parse_args()
 
 # Log the experiment_id and run_id of the source dataset
@@ -88,6 +90,8 @@ weight_decay = params.weight_decay
 n_epochs = params.n_epochs
 train_split = params.train_split
 test_split = params.test_split
+model_module_name = params.model_module_name
+model_cls_name = params.model_cls_name
 
 # Parameters specific to the input data
 # past specifies the indices from the past that are used for prediction
@@ -181,7 +185,19 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
 # Remove *2 and make this to adapt to the dataset
 width = dataset.width
 height = dataset.height
-net = FullyCNN(len(indices)*2, dataset.n_output_targets(),
+
+# Recover the model's class
+import importlib
+try:
+    models_module = importlib.import_module(model_module_name)
+    model_cls = getattr(models_module, model_cls_name)
+except ModuleNotFoundError as e:
+    e.msg = 'Coud not find the specified model\'s module (' + e.msg + ')'
+    raise e
+except AttributeError as e:
+    e.msg = 'Could not find the specified model\'s class (' + e.msg + ')'
+
+net = model_cls(len(indices)*2, dataset.n_output_targets(),
                width, height)
 print('----------*----------')
 print(net)
@@ -215,27 +231,15 @@ trainer.criterion = criterion
 
 for i_epoch in range(n_epochs):
     # Set to training mode
-    net.train()
     if i_epoch in optimizers:
         optimizer = optimizers[i_epoch]
     print('Epoch number {}.'.format(i_epoch))
     running_loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
+    test_loss = trainer.test(test_dataloader)
     # Log the training loss
     print('Train loss for this epoch is ', running_loss)
+    print('Test loss for this epoch is ', test_loss)
     mlflow.log_metric('train mse', running_loss, i_epoch)
-    
-    # Eval mode
-    net.eval()
-
-    # At the end of each epoch we compute the test loss and print it
-    with torch.no_grad():
-        running_loss = RunningAverage()
-        for i, data in enumerate(test_dataloader):
-            X = data[0].to(device, dtype=torch.float)
-            Y = data[1].to(device, dtype=torch.float)
-            loss = criterion(net(X), Y)
-            running_loss.update(loss.item(), X.size(0))
-    print('Test loss for this epoch is ', running_loss)
     mlflow.log_metric('test mse', running_loss.value, i_epoch)
 
     # We also save a snapshot figure to the disk and log it
