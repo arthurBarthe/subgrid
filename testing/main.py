@@ -99,7 +99,7 @@ net.load_state_dict(torch.load(model_file))
     
 # Train the linear layer only
 criterion = torch.nn.MSELoss()
-optimizer = torch.optim.Adam(net.linear_layer, lr=learning_rate)
+optimizer = torch.optim.Adam(net.linear_layer.parameters(), lr=learning_rate)
 print('Training the fully connected layer...')
 net.to(device)
 net.train()
@@ -121,6 +121,7 @@ mlflow.log_param('data_run_id', data_run.run_id)
 predictions = np.zeros((len(test_dataset), 2, dataset.width, dataset.height))
 truth = np.zeros((len(test_dataset), 2, dataset.width, dataset.height))
 
+net.eval()
 with torch.no_grad():
     for i, data in enumerate(test_dataloader):
         print(i)
