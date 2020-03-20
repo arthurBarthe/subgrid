@@ -197,7 +197,7 @@ except AttributeError as e:
     e.msg = 'Could not find the specified model\'s class (' + e.msg + ')'
 
 net = model_cls(len(indices)*2, dataset.n_output_targets(),
-               height, wdith)
+               height, width)
 print('----------*----------')
 print(net)
 print('--------------------')
