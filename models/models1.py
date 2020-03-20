@@ -19,6 +19,9 @@ logged.
 import torch
 from torch.nn import Module, Parameter
 from torch.nn import functional as F
+from torch.nn.modules.utils import _pair
+from torch.nn.functional import pad
+import torch.nn as nn
 import mlflow
 import numpy as np
 
@@ -39,12 +42,66 @@ class ScaledModule(Module):
     def forward(self, input: torch.Tensor):
         return self.factor * self.module.forward(input)
 
+class LocallyConnected2d(nn.Module):
+    """Class based on the code provided on the following link:
+        https://discuss.pytorch.org/t/locally-connected-layers/26979
+    """
+    def __init__(self, input_h, input_w, in_channels, out_channels,
+                 kernel_size, padding, stride, bias=False):
+        super(LocallyConnected2d, self).__init__()
+        self.kernel_size = _pair(kernel_size)
+        self.stride = _pair(stride)
+        self.padding = _pair(padding)
+        def padding_extract(padding):
+            new = []
+            for el in padding:
+                new.append(int(el))
+                new.append(int(el))
+            return tuple(new)
+        self.padding_long = padding_extract(self.padding)
+        output_size = self.calculate_output_size(input_h, input_w, 
+                                                 self.kernel_size, 
+                                                 self.padding,
+                                                 self.stride)
+        # TODO modify the initialization (scaling)
+        self.weight = nn.Parameter(
+            torch.randn(1, out_channels, in_channels, output_size[0],
+                        output_size[1], kernel_size**2)
+        )
+        if bias:
+            self.bias = nn.Parameter(
+                torch.randn(1, out_channels, output_size[0], output_size[1])
+            )
+        else:
+            self.register_parameter('bias', None)
+        
+    def forward(self, x):
+        _, c, h, w = x.size()
+        kh, kw = self.kernel_size
+        dh, dw = self.stride
+        x = pad(x, self.padding_long)
+        x = x.unfold(2, kh, dh).unfold(3, kw, dw)
+        x = x.contiguous().view(*x.size()[:-2], -1)
+        # Sum in in_channel and kernel_size dims
+        out = (x.unsqueeze(1) * self.weight).sum([2, -1])
+        if self.bias is not None:
+            out += self.bias
+        return out
+
+    @staticmethod
+    def calculate_output_size(input_h : int, input_w : int, kernel_size : int,
+                              padding : int = None, stride : int = 1):
+        # TODO add the stride bit. Right now it assumes 1.
+        output_h = int(input_h - (kernel_size[0] - 1) / 2 + padding[0])
+        output_w = int(input_w - (kernel_size[1] - 1) / 2 + padding[1])
+        return output_h, output_w
+
 
 class MLFlowNN(Module):
     """Abstract class for a pytorch NN whose characteristics are automatically
     logged through MLFLOW."""
-    def __init__(self, input_depth: int, output_size: int, width : int = None,
-                 height : int = None):
+    def __init__(self, input_depth: int, output_size: int, height : int = None,
+                 width: int = None):
         super().__init__()
         self.input_depth = input_depth
         self.output_size = output_size
@@ -68,6 +125,8 @@ class MLFlowNN(Module):
         if width is not None and height is not None:
             self.image_dims = (width, height)
             self.image_size = width * height
+            self.width = width
+            self.height = height
 
     @property
     def n_layers(self) -> int:
@@ -105,6 +164,21 @@ class MLFlowNN(Module):
         self.layers.append(layer)
         self.n_layers += 1
         self.linear_layer = layer
+
+    def add_locally_connected2d(self, input_h, input_w, in_channels: int, 
+                                out_channels : int, kernel_size : int,
+                                padding : int, stride : int = 1,
+                                bias : bool = True, do_not_load : bool = True):
+        layer = LocallyConnected2d(input_h, input_w, in_channels,
+                                   out_channels, kernel_size, padding, 
+                                   stride, bias)
+        if do_not_load:
+            layer._load_from_state_dict = lambda *args : None
+        i_layer = self.params_to_log['layer{}'.format(i_layer)] = 'Local lin'
+        self.layers.append(layer)
+        self.n_layers += 1
+        self.linear_layer = layer
+        
 
     def add_conv2d_layer(self, in_channels: int, out_channels: int,
                          kernel_size: int, stride: int = 1, padding: int = 0,
@@ -253,6 +327,40 @@ class Model2(MLFlowNN):
         self.add_final_activation('identity')
 
 
+class Model3(MLFlowNN):
+    def __init__(self, input_depth: int, output_size: int, height : int = None,
+                 width : int = None, do_not_load_linear : bool = False):
+        super().__init__(input_depth, output_size, height, width)
+        self.do_not_load_linear = do_not_load_linear
+        self.build()
+        
+
+    def build(self):
+        self.add_conv2d_layer(self.input_depth, 128, 5, padding=2+0)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(128)
+        self.add_conv2d_layer(128, 64, 3, padding=1+0)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(64)
+        self.add_conv2d_layer(64, 32, 3, padding=1+0)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32, 32, 3, padding=1+0)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32, 32, 3, padding=1+(0))
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32, 32, 3, padding=1)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32, 16, 3, padding=1)
+        self.add_locally_connected2d(self.height, self.width, 16, 2, 
+                                     kernel_size=5, padding=2,
+                                     do_not_load=True)
+        self.add_final_activation('identity')
+
+
 
 class FullyCNN(MLFlowNN):
     def __init__(self, input_depth: int, output_size: int, width : int = None,
@@ -294,12 +402,16 @@ class FullyCNN(MLFlowNN):
 
 if __name__ == '__main__':
     import numpy as np
-    net = FullyCNN(1, 100*100, 100, 100)
-    input_ = torch.randint(-3, 3, (8, 1, 100, 100))
-    input_ = input_.to(dtype=torch.float32)
-    output = net(input_)
-    output_ = output.detach().numpy()
-    print(output.size())
-    s = torch.sum(output)
-    print(s.item())
-    s.backward()
+    # net = FullyCNN(1, 100*100, 100, 100)
+    # input_ = torch.randint(-3, 3, (8, 1, 100, 100))
+    # input_ = input_.to(dtype=torch.float32)
+    # output = net(input_)
+    # output_ = output.detach().numpy()
+    # print(output.size())
+    # s = torch.sum(output)
+    # print(s.item())
+    # s.backward()
+    
+    net = Model3(2, 2*15*10, 15, 10)
+    input_ = torch.randint(0, 10, (17, 2, 15, 10)).to(dtype=torch.float)
+    output = net(input_)    
