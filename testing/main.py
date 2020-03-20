@@ -95,7 +95,7 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
 # Load the model itself
 logging.info('Creating the neural network model')
 net = FullyCNN(2 * len(time_indices), dataset.n_output_targets(),
-               width, height, True)
+               height, width, True)
 net.to(device=device)
 logging.info('Loading the conv layers')
 net.load_state_dict(torch.load(model_file))

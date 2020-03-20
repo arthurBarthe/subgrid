@@ -182,8 +182,8 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
 
 # NEURAL NETWORK------
 # Remove *2 and make this to adapt to the dataset
-width = dataset.width
 height = dataset.height
+width = dataset.width
 
 # Recover the model's class
 import importlib
@@ -197,7 +197,7 @@ except AttributeError as e:
     e.msg = 'Could not find the specified model\'s class (' + e.msg + ')'
 
 net = model_cls(len(indices)*2, dataset.n_output_targets(),
-               width, height)
+               height, wdith)
 print('----------*----------')
 print(net)
 print('--------------------')
