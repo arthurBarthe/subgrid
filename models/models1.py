@@ -68,6 +68,7 @@ class LocallyConnected2d(nn.Module):
                         output_size[1], 
                         self.kernel_size[0] * self.kernel_size[1])
         )
+        # Scaling of the weight parameters according to number of inputs
         self.weight.data = self.weight / np.sqrt(in_channels * 
                                                  self.kernel_size[0]
                                                  * self.kernel_size[1])
@@ -77,7 +78,7 @@ class LocallyConnected2d(nn.Module):
             )
         else:
             self.register_parameter('bias', None)
-        
+
     def forward(self, x):
         _, c, h, w = x.size()
         kh, kw = self.kernel_size
@@ -336,7 +337,6 @@ class Model3(MLFlowNN):
         super().__init__(input_depth, output_size, height, width)
         self.do_not_load_linear = do_not_load_linear
         self.build()
-        
 
     def build(self):
         self.add_conv2d_layer(self.input_depth, 128, 5, padding=2+0)
@@ -358,8 +358,9 @@ class Model3(MLFlowNN):
         self.add_activation('relu')
         self.add_batch_norm_layer(32)
         self.add_conv2d_layer(32, 16, 3, padding=1)
+        self.add_batch_norm_layer(16)
         self.add_locally_connected2d(self.height, self.width, 16, 2, 
-                                     kernel_size=3, padding=1,
+                                     kernel_size=15, padding=7,
                                      do_not_load=True)
         self.add_final_activation('identity')
 
@@ -371,7 +372,7 @@ class FullyCNN(MLFlowNN):
         super().__init__(input_depth, output_size, width, height)
         self.do_not_load_linear = do_not_load_linear
         self.build()
-        
+
 
     def build(self):
         self.add_conv2d_layer(self.input_depth, 128, 5, padding=2+0)

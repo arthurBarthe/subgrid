@@ -109,6 +109,21 @@ class Trainer:
         return running_loss.value
     
     def test(self, dataloader) -> float:
+        """Returns the validation loss on the provided data. The criterion
+        used is the same as the one used for the training.
+        
+        Parameters
+        ----------
+        
+        :dataloader: Dataloader,
+            The Pytorch dataloader providing the data for validation.
+        
+        
+        Returns
+        ----------
+        float
+            The validation loss calculated over the provided data.
+        """
         # TODO add something to check that the dataloader is different from
         # that used for the training
         self.net.eval()
