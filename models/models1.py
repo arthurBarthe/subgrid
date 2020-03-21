@@ -357,10 +357,10 @@ class Model3(MLFlowNN):
         self.add_conv2d_layer(32, 32, 3, padding=1)
         self.add_activation('relu')
         self.add_batch_norm_layer(32)
-        self.add_conv2d_layer(32, 16, 3, padding=1)
-        self.add_batch_norm_layer(16)
+        self.add_conv2d_layer(32, 8, 3, padding=1)
+        self.add_batch_norm_layer(8)
         self.add_locally_connected2d(self.height, self.width, 16, 2, 
-                                     kernel_size=31, padding=15,
+                                     kernel_size=5, padding=2,
                                      do_not_load=True)
         self.add_final_activation('identity')
 
