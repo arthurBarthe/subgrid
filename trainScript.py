@@ -16,6 +16,14 @@ Additionally any dataset should have some info about its scale. During the
 training we need to log on which dataset / scale we train.
 - Maybe use the xarray library?
 """
+
+# This is required to avoid some issue when run on NYU's prince server
+import os
+if os.environ.get('DISPLAY', '') == '':
+    import matplotlib
+    matplotlib.use('tkagg')
+# --------------------------------------------------------------------
+
 import numpy as np
 import xarray as xr
 import mlflow
@@ -177,6 +185,9 @@ train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
                               shuffle=True)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                              shuffle=False)
+
+print('Size of training data: {}'.format(len(train_dataset)))
+print('Size of validation data : {}'.format(len(test_dataset)))
 # FIN DATA------------
 
 
@@ -227,6 +238,7 @@ optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0)
 
 trainer = Trainer(net, device)
 trainer.criterion = criterion
+trainer.print_loss_every = print_loss_every
 
 for i_epoch in range(n_epochs):
     # Set to training mode
@@ -325,11 +337,6 @@ plt.close(fig)
 
 # FIN CORRELATION MAP 
 
-# log the figures as artifacts
-# mlflow.log_artifact(os.path.join(data_location, figures_directory))
-# log the correlation map figure
+# Log artifacts
+print('Logging artifacts...')
 mlflow.log_artifact(file_path)
-# if 'y' in input('register as success?').lower():
-#     mlflow.set_tag('success', 'True')
-# else:
-#     mlflow.set_tag('success', 'False')
