@@ -359,7 +359,7 @@ class Model3(MLFlowNN):
         self.add_batch_norm_layer(32)
         self.add_conv2d_layer(32, 16, 3, padding=1)
         self.add_locally_connected2d(self.height, self.width, 16, 2, 
-                                     kernel_size=5, padding=2,
+                                     kernel_size=2, padding=2,
                                      do_not_load=True)
         self.add_final_activation('identity')
 
