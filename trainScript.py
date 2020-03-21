@@ -163,7 +163,7 @@ dataset.add_output('S_y')
 n_indices = len(dataset)
 train_index = int(train_split * n_indices)
 test_index = int(test_split * n_indices)
-train_dataset = Subset(dataset, np.arange(0, train_index, 10))
+train_dataset = Subset(dataset, np.arange(train_index))
 test_dataset = Subset(dataset, np.arange(test_index, n_indices))
  
 
