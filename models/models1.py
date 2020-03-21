@@ -63,11 +63,13 @@ class LocallyConnected2d(nn.Module):
                                                  self.kernel_size, 
                                                  self.padding,
                                                  self.stride)
-        # TODO modify the initialization (scaling)
         self.weight = nn.Parameter(
             torch.randn(1, out_channels, in_channels, output_size[0],
-                        output_size[1], kernel_size**2)
+                        output_size[1], 
+                        self.kernel_size[0] * self.kernel_size[1])
         )
+        self.weight = self.weight / np.sqrt(in_channels * self.kernel_size[0]
+                                            * self.kernel_size[1])
         if bias:
             self.bias = nn.Parameter(
                 torch.randn(1, out_channels, output_size[0], output_size[1])
