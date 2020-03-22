@@ -232,7 +232,7 @@ conv_layers = net.conv_layers
 params = [{'params' : layer.parameters()} for layer in conv_layers]
 params.append({'params' : linear_layer.parameters(),
                'weight_decay' : weight_decay,
-               'lr' : learning_rates[0] / 10})
+               'lr' : learning_rates[0]})
 optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0) 
               for (i, v) in learning_rates.items()}
 
