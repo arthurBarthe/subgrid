@@ -260,6 +260,8 @@ for i_epoch in range(n_epochs):
         for i, id_data in enumerate(ids_data):
             data = test_dataset[id_data]
             X, Y = data
+            X = torch.tensor(X)
+            Y = torch.tensor(Y)
             X = X.to(device, dtype=torch.float)
             Y = Y.to(device, dtype=torch.float)
             X = torch.unsqueeze(X, dim=0)
