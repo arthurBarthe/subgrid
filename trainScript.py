@@ -266,7 +266,7 @@ for i_epoch in range(n_epochs):
             Y = Y.to(device, dtype=torch.float)
             X = torch.unsqueeze(X, dim=0)
             Y = torch.unsqueeze(Y, dim=0)
-            Y_hat = net(X).cpu().numpy()
+            Y_hat = net(X)
             Y = Y.cpu().numpy().squeeze()
             Y_hat = Y_hat.cpu().numpy().squeeze()
 #            transformer = s.targets_transformer
