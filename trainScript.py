@@ -260,8 +260,10 @@ for i_epoch in range(n_epochs):
         for i, id_data in enumerate(ids_data):
             data = test_dataset[id_data]
             X, Y = data
-            X = torch.unsqueeze(X, dim=0).to(device, dtype=torch.float)
-            Y = torch.unsqueeze(Y, dim=0).to(device, dtype=torch.float)
+            X = X.to(device, dtype=torch.float)
+            Y = Y.to(device, dtype=torch.float)
+            X = torch.unsqueeze(X, dim=0)
+            Y = torch.unsqueeze(Y, dim=0)
             Y_hat = net(X).cpu().numpy()
             Y = Y.cpu().numpy().squeeze()
             Y_hat = Y_hat.cpu().numpy().squeeze()
