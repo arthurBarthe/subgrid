@@ -254,8 +254,9 @@ class MLFlowNN(Module):
         output = input
         for i_layer,  layer in enumerate(self.layers):
             output = layer(output)
-        return output.reshape(-1, self.output_size)
-
+        # Old version
+        # return output.reshape(-1, self.output_size)
+        return output
 
 class Divergence2d(Module):
     """Class that defines a fixed layer that produces the divergence of the

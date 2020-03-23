@@ -215,16 +215,22 @@ class RawDataFromXrDataset(Dataset):
         self._check_varname(varname)
         self._input_arrays.append(varname)
 
-    def __getitem__(self, index):
+    def __getitem__OLD(self, index):
         # TODO this should be adapted to depend on self._index
         features = self.xr_dataset[self.input_arrays].isel(time = index)
         features = features.to_array().data
-        # features = features.swapaxes(0, 1)
         if not isinstance(index, slice):
             index = slice(index, index + 1)
         targets = self.xr_dataset[self.output_arrays].isel(time = index)
         targets = targets.to_stacked_array('ancillary', ['time',]).data
         targets = targets.squeeze()
+        return features, targets
+
+    def __getitem__(self, index):
+        features = self.xr_dataset[self.input_arrays].isel({self._index : index})
+        features = features.to_array().data
+        targets = self.xr_dataset[self.output_arrays].isel({self._index : index})
+        targets = targets.to_array().data
         return features, targets
 
     def n_output_targets(self):
@@ -244,9 +250,9 @@ class RawDataFromXrDataset(Dataset):
 
     def _check_varname(self, var_name: str):
         if var_name not in self.xr_dataset:
-            raise Exception('Variable not in the xarray dataset.')
+            raise KeyError('Variable not in the xarray dataset.')
         if var_name in self._input_arrays or var_name in self._output_arrays:
-            raise Exception('Variable already added as input or output.')
+            raise ValueError('Variable already added as input or output.')
 
 
 class RawData(Dataset):
