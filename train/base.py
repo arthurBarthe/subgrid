@@ -107,7 +107,7 @@ class Trainer:
             # Update parameters
             optimizer.step()
         return running_loss.value
-    
+
     def test(self, dataloader) -> float:
         """Returns the validation loss on the provided data. The criterion
         used is the same as the one used for the training.
