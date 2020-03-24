@@ -18,6 +18,7 @@ from data.datasets import RawDataFromXrDataset
 from train.base import Trainer
 
 import os.path
+import importlib
 
 import tempfile
 import logging
@@ -30,8 +31,9 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # First we retrieve a trained model based on a run id for the default
 # experiment (folder mlruns/0)
-cols = ['metrics.test mse', 'start_time', 'params.time_indices']
-model_run = select_run(sort_by=cols[0], cols=cols[1:],
+cols = ['metrics.test mse', 'start_time', 'params.time_indices', 
+        'params.model_cls_name', 'params.source.run_id']
+model_run = select_run(sort_by='start_time', cols=cols,
                        experiment_ids=['2',])
 
 # Load some extra parameters of the model.
@@ -39,10 +41,13 @@ model_run = select_run(sort_by=cols[0], cols=cols[1:],
 time_indices = [0,]
 train_split = float(model_run['params.train_split'])
 test_split = float(model_run['params.test_split'])
-learning_rate = float(model_run['params.learning_rate']) / 10
+learning_rate = float(model_run['params.learning_rate'])
 batch_size = int(model_run['params.batchsize'])
 source_data_id = model_run['params.source.run_id']
 n_epochs = int(model_run['params.n_epochs'])
+model_module_name = model_run['params.model_module_name']
+model_cls_name = model_run['params.model_cls_name']
+
 
 # Load the model's file
 client = mlflow.tracking.MlflowClient()
@@ -52,16 +57,14 @@ model_file = client.download_artifacts(model_run.run_id, 'trained_model.pth')
 mlflow.set_experiment('forcingdata')
 mlflow_runs = mlflow.search_runs()
 cols = ['params.lat_min', 'params.lat_max', 
-        'params.long_min', 'params.long_max']
+        'params.long_min', 'params.long_max',
+        'params.scale']
         # 'params.scale_coarse', 'params.scale_fine']
 data_run = select_run(sort_by=None, cols=cols)
 # TODO check that the run_id is different from source_data_id
 client = mlflow.tracking.MlflowClient()
 data_file = client.download_artifacts(data_run.run_id, 'forcing')
 xr_dataset = xr.open_zarr(data_file).load()
-
-# TODO we have temporarily reduced the size
-xr_dataset = xr_dataset.isel(xu_ocean = slice(0, 40), yu_ocean = slice(0, 40))
 
 
 # Set the experiment to 'multiscale'
@@ -94,10 +97,18 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
 
 # Load the model itself
 logging.info('Creating the neural network model')
-net = FullyCNN(2 * len(time_indices), dataset.n_output_targets(),
+try:
+    module = importlib.import_module(model_module_name)
+    model_cls = getattr(module, model_cls_name)
+except ModuleNotFoundError as e:
+    e.msg = 'Could not retrieve the module in which the trained model is \
+        defined.' + e.msg
+except AttributeError as e:
+    e.msg = 'Could not retrieve the model\'s class. ' + e.msg
+net = model_cls(2 * len(time_indices), dataset.n_output_targets(),
                height, width, True)
 net.to(device=device)
-logging.info('Loading the conv layers')
+logging.info('Loading the neural net paraeters')
 net.load_state_dict(torch.load(model_file))
 
 # Train the linear layer only
