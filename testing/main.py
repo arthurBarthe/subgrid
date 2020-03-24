@@ -40,7 +40,7 @@ model_run = select_run(sort_by='start_time', cols=cols,
 time_indices = [0,]
 train_split = float(model_run['params.train_split'])
 test_split = float(model_run['params.test_split'])
-learning_rate = float(model_run['params.learning_rate'])
+learning_rate = float(model_run['params.learning_rate']) / 100
 batch_size = int(model_run['params.batchsize'])
 source_data_id = model_run['params.source.run_id']
 n_epochs = int(model_run['params.n_epochs'])
