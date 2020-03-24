@@ -14,7 +14,6 @@ scales (e.g 10km, 20km, 40km, 50km, 60km). For that I need to write
 a new file in analysis/ that does testing on a specific dataset.
 Additionally any dataset should have some info about its scale. During the 
 training we need to log on which dataset / scale we train.
-- Maybe use the xarray library?
 """
 
 # This is required to avoid some issue with matplotlib when running on NYU's 
@@ -58,6 +57,7 @@ from train.base import Trainer
 import argparse
 
 # import to create temporary dir used to save the model and predictions
+# before logging through MLFlow
 import tempfile
 
 
@@ -111,6 +111,8 @@ print_loss_every = params.printevery
 
 # Directories where temporary data will be saved
 data_location = tempfile.mkdtemp(dir='/scratch/ag7531/temp/')
+print('Created temporary dir at  ', data_location)
+
 figures_directory = 'figures'
 models_directory = 'models'
 model_output_dir = 'model_output'
@@ -118,9 +120,6 @@ def _check_dir(dir_path):
     """Tries to create the directory if it does not already exists"""
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
-
-# print cwd for debugging
-print('Created temporary dir at  ', data_location)
 
 _check_dir(os.path.join(data_location, figures_directory))
 _check_dir(os.path.join(data_location, models_directory))
@@ -134,13 +133,6 @@ device_type = DEVICE_TYPE.GPU if torch.cuda.is_available() \
                               else DEVICE_TYPE.CPU
 print('Selected device type: ', device_type.value)
 
-# Should not be necessary anymore as automatic now. To be deleted.
-# Log the parameters with mlflow
-# mlflow.log_param('batch_size', batch_size)
-# mlflow.log_param('learning_rate', learning_rates)
-# mlflow.log_param('device', device_type.value)
-# mlflow.log_param('train_split', train_split)
-# mlflow.log_param('test_split', test_split)
 
 # FIN PARAMETERS -----
 
@@ -168,19 +160,20 @@ test_index = int(test_split * n_indices)
 train_dataset = Subset(dataset, np.arange(train_index))
 test_dataset = Subset(dataset, np.arange(test_index, n_indices))
  
-
-
-# Apply basic normalization transforms (using the training data only)
-# s = DatasetClippedScaler()
-# s.fit(train_dataset)
-# train_dataset = s.transform(train_dataset)
-# test_dataset = s.transform(test_dataset)
-
-# Specifies which time indices to use for the prediction
-# train_dataset = MultipleTimeIndices(train_dataset)
-# train_dataset.time_indices = indices
-# test_dataset = MultipleTimeIndices(test_dataset)
-# test_dataset.time_indices = indices
+def function_used_to_toggle_in_spyder():
+    pass
+    # Apply basic normalization transforms (using the training data only)
+    # s = DatasetClippedScaler()
+    # s.fit(train_dataset)
+    # train_dataset = s.transform(train_dataset)
+    # test_dataset = s.transform(test_dataset)
+    
+    # Specifies which time indices to use for the prediction
+    # train_dataset = MultipleTimeIndices(train_dataset)
+    # train_dataset.time_indices = indices
+    # test_dataset = MultipleTimeIndices(test_dataset)
+    # test_dataset.time_indices = indices
+    pass
 
 # Dataloaders are responsible for sending batches of data to the NN
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
