@@ -41,14 +41,16 @@ model_run = select_run(sort_by='start_time', cols=cols,
 time_indices = [0,]
 train_split = float(model_run['params.train_split'])
 test_split = float(model_run['params.test_split'])
-learning_rates = learning_rates_from_string(model_run['params.learning_rate'])
 batch_size = int(model_run['params.batchsize'])
 source_data_id = model_run['params.source.run_id']
 n_epochs = int(model_run['params.n_epochs'])
 model_module_name = model_run['params.model_module_name']
 model_cls_name = model_run['params.model_cls_name']
+learning_rates = learning_rates_from_string(model_run['params.learning_rate'])
+weight_decay = float(model_run['params.weight_decay'])
 
 learning_rate = learning_rates[0] / 100
+n_epochs = n_epochs / 4
 
 # Load the model's file
 client = mlflow.tracking.MlflowClient()
@@ -56,7 +58,6 @@ model_file = client.download_artifacts(model_run.run_id, 'trained_model.pth')
 
 # Test dataset
 mlflow.set_experiment('forcingdata')
-mlflow_runs = mlflow.search_runs()
 cols = ['params.lat_min', 'params.lat_max', 
         'params.long_min', 'params.long_max',
         'params.scale']
@@ -97,6 +98,8 @@ train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
                               shuffle=True, drop_last=True)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                              shuffle=False, drop_last=True)
+print('Size of training data: {}'.format(len(train_dataset)))
+print('Size of validation data : {}'.format(len(test_dataset)))
 
 # Load the model itself
 logging.info('Creating the neural network model')
@@ -117,7 +120,8 @@ net.load_state_dict(torch.load(model_file))
 # Train the linear layer only
 criterion = torch.nn.MSELoss()
 print('width: {}, height: {}'.format(width, height))
-optimizer = torch.optim.Adam(net.linear_layer.parameters(), lr=learning_rate)
+optimizer = torch.optim.Adam(net.linear_layer.parameters(), lr=learning_rate,
+                             weight_decay=weight_decay)
 print('Training the last layer only...')
 net.to(device)
 trainer = Trainer(net, device)
