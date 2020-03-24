@@ -75,7 +75,7 @@ mlflow.start_run()
 
 # Generate the dataset
 xr_dataset = xr.open_zarr(data_file).load()
-xr_dataset = xr_dataset / xr_dataset
+xr_dataset = xr_dataset / xr_dataset.std()
 dataset = RawDataFromXrDataset(xr_dataset)
 dataset.index = 'time'
 dataset.add_input('usurf')
@@ -118,9 +118,8 @@ net.load_state_dict(torch.load(model_file))
 criterion = torch.nn.MSELoss()
 print('width: {}, height: {}'.format(width, height))
 optimizer = torch.optim.Adam(net.linear_layer.parameters(), lr=learning_rate)
-print('Training the fully connected layer...')
+print('Training the last layer only...')
 net.to(device)
-net.train()
 trainer = Trainer(net, device)
 trainer.criterion = criterion
 for i_epoch in range(n_epochs):
