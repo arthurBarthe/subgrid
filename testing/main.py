@@ -63,7 +63,7 @@ data_run = select_run(sort_by=None, cols=cols)
 # TODO check that the run_id is different from source_data_id
 client = mlflow.tracking.MlflowClient()
 data_file = client.download_artifacts(data_run.run_id, 'forcing')
-xr_dataset = xr.open_zarr(data_file).load()
+
 
 
 # Set the experiment to 'multiscale'
@@ -72,6 +72,8 @@ mlflow.set_experiment('multiscale')
 mlflow.start_run()
 
 # Generate the dataset
+xr_dataset = xr.open_zarr(data_file).load()
+xr_dataset = xr_dataset / xr_dataset
 dataset = RawDataFromXrDataset(xr_dataset)
 dataset.index = 'time'
 dataset.add_input('usurf')
