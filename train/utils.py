@@ -84,3 +84,13 @@ class RunningAverage:
 
     def __str__(self):
         return str(self.average)
+
+
+def learning_rates_from_string(rates_string: str) -> dict:
+    temp = rates_string.split('/')
+    if len(temp) % 2 != 0:
+        raise Exception('The learning rates should be provided in pairs.')
+    rates = {}
+    for i in range(int(len(temp) / 2)):
+        rates[int(temp[2*i])] = float(temp[2*i+1])
+    return rates

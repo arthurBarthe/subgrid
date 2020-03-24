@@ -49,7 +49,7 @@ from data.datasets import RawData, MultipleTimeIndices, DatasetClippedScaler
 from data.datasets import RawDataFromXrDataset
 
 # Import some utils functions
-from train.utils import DEVICE_TYPE
+from train.utils import DEVICE_TYPE, learning_rates_from_string
 
 # import training class
 from train.base import Trainer
@@ -64,15 +64,6 @@ import tempfile
 # PARAMETERS ---------
 def negative_int(value: str):
     return -int(value)
-
-def learning_rates_from_string(rates_string: str) -> dict:
-    temp = rates_string.split('/')
-    if len(temp) % 2 != 0:
-        raise Exception('The learning rates should be provided in pairs.')
-    rates = {}
-    for i in range(int(len(temp) / 2)):
-        rates[int(temp[2*i])] = float(temp[2*i+1])
-    return rates
 
 description = 'Trains a model on a chosen dataset from the store. Allows \
     to set training parameters via the CLI.'
