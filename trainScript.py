@@ -64,16 +64,26 @@ import tempfile
 def negative_int(value: str):
     return -int(value)
 
+def learning_rates_from_string(rates_string: str) -> dict:
+    temp = rates_string.split()
+    if len(temp) % 2 != 0:
+        raise Exception('The learning rates should be provided in pairs.')
+    rates = {}
+    for i in range(int(len(temp) / 2)):
+        rates[int(temp[2*i])] = float(temp[2*i+1])
+    return rates
+
 description = 'Trains a model on a chosen dataset from the store. Allows \
     to set training parameters via the CLI.'
 parser = argparse.ArgumentParser(description=description)
 parser.add_argument('exp_id', type=int, 
                     help='Experiment id of the source dataset')
 parser.add_argument('run_id', type=str,
-                    help='Run if of the source dataset')
+                    help='Run id of the source dataset')
 parser.add_argument('--batchsize', type=int, default=8)
 parser.add_argument('--n_epochs', type=int, default=100)
-parser.add_argument('--learning_rate', type=float, default=1e-3)
+parser.add_argument('--learning_rate', type=learning_rates_from_string,
+                    default={0 : 1e-3})
 parser.add_argument('--train_split', type=float, default=0.8)
 parser.add_argument('--test_split', type=float, default=0.8)
 parser.add_argument('--time_indices', type=negative_int, nargs='*')
@@ -92,7 +102,7 @@ mlflow.log_param('source.run_id', params.run_id)
 # Note that we use two indices for the train/test split. This is because we
 # want to avoid the time correlation to play in our favour during test.
 batch_size = params.batchsize
-learning_rates = {0: params.learning_rate}
+learning_rates = params.learning_rate
 weight_decay = params.weight_decay
 n_epochs = params.n_epochs
 train_split = params.train_split
