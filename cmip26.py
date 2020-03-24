@@ -8,6 +8,7 @@ This script allows to select data from the cmip2.6 simulations made
 available on the Pangeo intake data catalog. Run cmip26 -h to display
 help.
 """
+print('Starting the script')
 import sys
 
 import argparse
