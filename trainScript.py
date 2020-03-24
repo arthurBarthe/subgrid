@@ -254,6 +254,7 @@ for i_epoch in range(n_epochs):
     # Set to training mode
     if i_epoch in optimizers:
         optimizer = optimizers[i_epoch]
+        print('Switching to new optimizer:\n', optimizer)
     print('Epoch number {}.'.format(i_epoch))
     train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
     test_loss = trainer.test(test_dataloader)
