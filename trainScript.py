@@ -65,7 +65,7 @@ def negative_int(value: str):
     return -int(value)
 
 def learning_rates_from_string(rates_string: str) -> dict:
-    temp = rates_string.split()
+    temp = rates_string.split('/')
     if len(temp) % 2 != 0:
         raise Exception('The learning rates should be provided in pairs.')
     rates = {}
@@ -83,7 +83,7 @@ parser.add_argument('run_id', type=str,
 parser.add_argument('--batchsize', type=int, default=8)
 parser.add_argument('--n_epochs', type=int, default=100)
 parser.add_argument('--learning_rate', type=learning_rates_from_string,
-                    default={0 : 1e-3})
+                    default={'0\1e-3'})
 parser.add_argument('--train_split', type=float, default=0.8)
 parser.add_argument('--test_split', type=float, default=0.8)
 parser.add_argument('--time_indices', type=negative_int, nargs='*')
