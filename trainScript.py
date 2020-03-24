@@ -17,7 +17,8 @@ training we need to log on which dataset / scale we train.
 - Maybe use the xarray library?
 """
 
-# This is required to avoid some issue when run on NYU's prince server
+# This is required to avoid some issue with matplotlib when running on NYU's 
+# prince server
 import os
 if os.environ.get('DISPLAY', '') == '':
     import matplotlib

@@ -4,13 +4,14 @@ Created on Wed Jan 29 18:38:40 2020
 
 @author: Arthur
 """
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import os.path
 import matplotlib.pyplot as plt
 import mlflow
 # from sklearn.preprocessing import StandardScaler
 import xarray as xr
+import logging
 
 
 def call_only_once(f):
@@ -184,7 +185,7 @@ class MLFLowPreprocessing(Dataset):
 
 class RawDataFromXrDataset(Dataset):
     """This class allows to define a Pytorch Dataset based on an xarray 
-    dataset."""
+    dataset easily."""
     def __init__(self, dataset: xr.Dataset):
         self.xr_dataset = dataset
         self._input_arrays = list()
@@ -215,25 +216,20 @@ class RawDataFromXrDataset(Dataset):
         self._check_varname(varname)
         self._input_arrays.append(varname)
 
-    def __getitem__OLD(self, index):
-        # TODO this should be adapted to depend on self._index
-        features = self.xr_dataset[self.input_arrays].isel(time = index)
-        features = features.to_array().data
-        if not isinstance(index, slice):
-            index = slice(index, index + 1)
-        targets = self.xr_dataset[self.output_arrays].isel(time = index)
-        targets = targets.to_stacked_array('ancillary', ['time',]).data
-        targets = targets.squeeze()
-        return features, targets
-
     def __getitem__(self, index):
-        features = self.xr_dataset[self.input_arrays].isel({self._index : index})
-        features = features.to_array().data
-        targets = self.xr_dataset[self.output_arrays].isel({self._index : index})
-        targets = targets.to_array().data
+        try:
+            features = self.xr_dataset[self.input_arrays].isel({self._index : index})
+            features = features.to_array().data
+            targets = self.xr_dataset[self.output_arrays].isel({self._index : index})
+            targets = targets.to_array().data
+        except KeyError as e:
+            e.msg = e.msg + '\n Make sure you have defined the index, inputs,\
+                and outputs.'
+            raise e
         return features, targets
 
     def n_output_targets(self):
+        logging.warning('Depreciated. To be removed.')
         t = self[0][1]
         return t.shape[0]
     
@@ -246,7 +242,11 @@ class RawDataFromXrDataset(Dataset):
         return len(self.xr_dataset['yu_ocean'])
 
     def __len__(self):
-        return len(self.xr_dataset[self._index])
+        try:
+            return len(self.xr_dataset[self._index])
+        except KeyError as e:
+            e.msg = e.msg + '\n Make sure you have defined the index.'
+            raise e
 
     def _check_varname(self, var_name: str):
         if var_name not in self.xr_dataset:
@@ -485,7 +485,10 @@ if __name__ == '__main__':
                            'x': [0, 5, 10], 
                            'y': [0, 5, 10]})
     dataset = RawDataFromXrDataset(ds)
+    dataset.index = 'tim'
     dataset.add_input('in0')
     dataset.add_input('in1')
     dataset.add_output('out0')
     dataset.add_output('out1')
+    
+    loader = DataLoader(dataset, batch_size=3, drop_last=True)

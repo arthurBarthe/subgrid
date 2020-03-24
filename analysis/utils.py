@@ -47,6 +47,7 @@ def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
     if sort_by is not None:
         mlflow_runs.sort_values(by=sort_by)
         cols.append(sort_by)
+    cols = list(set(cols))
     if merge is not None:
         cols[0] = 'run_id_x'
         cols[1] = 'experiment_id_x'
@@ -55,6 +56,8 @@ def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
             df2 = mlflow.search_runs(experiment_ids=experiment.experiment_id)
             mlflow_runs = pd.merge(mlflow_runs, df2, left_on=key_left,
                                    right_on=key_right)
+    if len(mlflow_runs) == 0:
+        raise Exception('No data found. Check that you set correctly the store')
     print(mlflow_runs[cols])
     id_ = int(input('Run id?'))
     if id_ < 0:

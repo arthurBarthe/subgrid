@@ -6,22 +6,30 @@ Created on Thu Jan  9 15:40:09 2020
 """
 from enum import Enum
 
+
 class DEVICE_TYPE(Enum):
     GPU = 'GPU'
     CPU = 'CPU'
 
-def print_every(to_print: str, every: int, n_iter: int):
-    """prints every given number of iterations.
+def print_every(to_print: str, every: int, n_iter: int) -> bool:
+    """Prints every given number of iterations.
+    
     Parameters
     ----------
-    to_print: str
-    The string to print
     
-    every: int
-    The string passed to the function is only printed every 'every' call.
+    :to_print: str,
+        The string to print
     
-    n_iter:int
-    The index of the calls, which is to be handled by the user.
+    :every: int,
+        The string passed to the function is only printed every 'every' call.
+    
+    :n_iter: int,
+        The index of the calls, which is to be handled by the user.
+    
+    Returns
+    ----------
+    Bool
+        True if printed, False if not
     """
     if n_iter % every == every - 1:
         print(to_print)
@@ -39,17 +47,29 @@ class RunningAverage:
     def value(self):
         return self.average
 
-    def update(self, value: float, weight: float = 1):
+    def update(self, value: float, weight: float = 1) -> float:
         """Adds some value to be used in the running average.
+        
         Parameters
         ----------
-        value: float
-        Value to be added in the computation of the running average.
 
-        weight: int
-        Weight to be given to the passed value. Can be useful if the function
-        update is called with values that already are averages over some
-        given number of elements.
+        :value: float, 
+            Value to be added in the computation of the running 
+            average.
+
+        :weight: int, 
+            Weight to be given to the passed value. 
+            Can be useful if the function
+            update is called with values that already are averages over some
+            given number of elements.
+        
+        Returns
+        -------
+        The updated value of the average
+        
+        Examples
+        --------
+        blablabla
         """
         temp = self.average * self.n_items + value * weight
         self.n_items = self.n_items + weight
@@ -57,6 +77,8 @@ class RunningAverage:
         return self.average
 
     def reset(self):
+        """Resets the running average to zero as well as its number of items
+        """
         self.n_items = 0
         self.average = 0.0
 
