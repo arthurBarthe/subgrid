@@ -88,7 +88,7 @@ class RunningAverage:
 
 def learning_rates_from_string(rates_string: str) -> dict:
     temp = rates_string.split('/')
-    if len(temp) == 0:
+    if len(temp) == 1:
         return {0: float(rates_string)}
     if len(temp) % 2 != 0:
         raise Exception('The learning rates should be provided in pairs.')
