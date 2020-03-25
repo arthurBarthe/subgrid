@@ -327,7 +327,7 @@ s_x_pred = xr.DataArray(data=pred[:, 0, ...], dims = new_dims,
                       coords = new_coords)
 s_y_pred = xr.DataArray(data=pred[:, 1, ...], dims = new_dims, 
                       coords = new_coords)
-output_dataset = xr.Dataset(data = {'u_surf' : u_surf, 'v_surf' : v_surf,
+output_dataset = xr.Dataset({'u_surf' : u_surf, 'v_surf' : v_surf,
                                     'S_x': s_x, 'S_y' : s_y,
                                     'S_xpred' : s_x_pred,
                                     'S_ypred' : s_y_pred})
