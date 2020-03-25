@@ -295,7 +295,7 @@ net.cuda(device)
 # FIN TRAINING -------
 
 # CORRELATION MAP ----
-u_v_surf = np.zeros(len(test_dataset, 2, dataset.height, dataset.width))
+u_v_surf = np.zeros(len(test_dataset), 2, dataset.height, dataset.width)
 pred = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
 truth = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
 
