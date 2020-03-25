@@ -215,7 +215,6 @@ net.to(device)
 with open(os.path.join(data_location, 'nn_architecture.txt'), 'w') as f:
     print('Writing neural net architecture into txt file.')
     f.write(str(net))
-mlflow.log_artifact(os.path.join(data_location, 'nn_architecture.txt'))
 # FIN NEURAL NETWORK -
 
 
@@ -289,7 +288,6 @@ model_name = 'trained_model.pth'
 full_path = os.path.join(data_location, 'models', model_name)
 torch.save(net.state_dict(), full_path)
 print('Logging the neural network model...')
-mlflow.log_artifact(full_path)
 print('Neural network saved and logged in the artifacts.')
 print('Now putting it back on the gpu')
 net.cuda(device)
@@ -297,25 +295,46 @@ net.cuda(device)
 # FIN TRAINING -------
 
 # CORRELATION MAP ----
-pred = np.zeros((len(test_dataset), 2, dataset.width, dataset.height))
-truth = np.zeros((len(test_dataset), 2, dataset.width, dataset.height))
+u_v_surf = np.zeros(len(test_dataset, 2, dataset.height, dataset.width))
+pred = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
+truth = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
 
 # Predictions on the test set using the trained model
 net.eval()
 with torch.no_grad():
     for i, data in enumerate(test_dataloader):
+        u_v_surf[i * batch_size : (i+1) * batch_size] = data[0].numpy()
+        truth[i * batch_size:(i+1) * batch_size] = data[1].numpy()
         X = data[0].to(device, dtype=torch.float)
-        pred_i = net(X)
-        pred_i = pred_i.cpu().numpy()
-        pred_i = np.reshape(pred_i, (-1, 2, dataset.width, dataset.height))
-        pred[i * batch_size:(i+1) * batch_size] = pred_i
-        Y = np.reshape(data[1], (-1, 2, dataset.width, dataset.height))
-        truth[i * batch_size:(i+1) * batch_size] = Y
+        Y_hat = net(X)
+        Y_hat = Y_hat.cpu().numpy()
+        pred[i * batch_size:(i+1) * batch_size] = Y_hat
+# Convert to dataset
+new_dims = ('time', 'latitude', 'longitude')
+coords = xr_dataset.coords
+new_coords = {'time' : coords['time'][test_index:],
+                                'latitude' : coords['yu_ocean'],
+                                'longitude' : coords['xu_ocean']}
+u_surf = xr.DataArray(data=u_v_surf[:, 0, ...], dims = new_dims, 
+                      coords = new_coords)
+v_surf = xr.DataArray(data=u_v_surf[:, 1, ...], dims = new_dims,
+                      coords = new_coords)
+s_x = xr.DataArray(data=truth[:, 0, ...], dims = new_dims, 
+                      coords = new_coords)
+s_y = xr.DataArray(data=truth[:, 1, ...], dims = new_dims, 
+                      coords = new_coords)
+s_x_pred = xr.DataArray(data=pred[:, 0, ...], dims = new_dims, 
+                      coords = new_coords)
+s_y_pred = xr.DataArray(data=pred[:, 1, ...], dims = new_dims, 
+                      coords = new_coords)
+output_dataset = xr.Dataset(data = {'u_surf' : u_surf, 'v_surf' : v_surf,
+                                    'S_x': s_x, 'S_y' : s_y,
+                                    'S_xpred' : s_x_pred,
+                                    'S_ypred' : s_y_pred})
 
-# log the predictions as artifacts
-np.save(os.path.join(data_location, model_output_dir, 'predictions.npy'), pred)
-np.save(os.path.join(data_location, model_output_dir, 'truth.npy'), truth)
-mlflow.log_artifact(os.path.join(data_location, model_output_dir))
+# Save dataset
+output_dataset.to_zarr(os.path.join(data_location, model_output_dir,
+                                    'test_output'))
 
 # Correlation map, shape (2, dataset.width, dataset.height)
 correlation_map = np.mean(truth * pred, axis=0)
@@ -345,4 +364,5 @@ plt.close(fig)
 
 # Log artifacts
 print('Logging artifacts...')
-mlflow.log_artifact(file_path)
+mlflow.log_artifact(data_location)
+print('Done...')
