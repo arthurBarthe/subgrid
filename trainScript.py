@@ -212,7 +212,8 @@ print('***')
 net.to(device)
 
 # Log the text representation of the net into a txt artifact
-with open(os.path.join(data_location, 'nn_architecture.txt'), 'w') as f:
+with open(os.path.join(data_location, models_directory,
+                       'nn_architecture.txt'), 'w') as f:
     print('Writing neural net architecture into txt file.')
     f.write(str(net))
 # FIN NEURAL NETWORK -
@@ -285,7 +286,7 @@ print('Moving the network to the CPU before saving...')
 net.cpu()
 print('Saving the neural network learnt parameters to disk...')
 model_name = 'trained_model.pth'
-full_path = os.path.join(data_location, 'models', model_name)
+full_path = os.path.join(data_location, models_directory, model_name)
 torch.save(net.state_dict(), full_path)
 print('Logging the neural network model...')
 print('Neural network saved and logged in the artifacts.')
@@ -344,7 +345,8 @@ correlation_map /= np.maximum(np.std(truth, axis=0) * np.std(pred, axis=0),
 
 print('Saving correlation map to disk')
 # Save the correlation map to disk and its plot as well.
-np.save(os.path.join(data_location, 'correlation_map'), correlation_map)
+np.save(os.path.join(data_location, model_output_dir, 'correlation_map'),
+        correlation_map)
 
 fig = plt.figure()
 plt.subplot(121)
@@ -364,5 +366,7 @@ plt.close(fig)
 
 # Log artifacts
 print('Logging artifacts...')
-mlflow.log_artifact(data_location)
+mlflow.log_artifact(os.path.join(data_location, figures_directory))
+mlflow.log_artifact(os.path.join(data_location, model_output_dir))
+mlflow.log_artifact(os.path.join(data_location, models_directory))
 print('Done...')
