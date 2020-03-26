@@ -151,12 +151,12 @@ net.eval()
 with torch.no_grad():
     for i, data in enumerate(test_dataloader):
         print(i)
-        velocities[i * batch_size, (i + 1) * batch_size] = data[0].numpy()
-        truth[i * batch_size, (i + 1) * batch_size] = data[1].numpy()
+        velocities[i * batch_size : (i + 1) * batch_size] = data[0].numpy()
+        truth[i * batch_size : (i + 1) * batch_size] = data[1].numpy()
         X = data[0].to(device, dtype=torch.float)
         pred_i = net(X)
         pred_i = pred_i.cpu().numpy()
-        predictions[i * batch_size:(i+1) * batch_size] = pred_i
+        predictions[i * batch_size : (i+1) * batch_size] = pred_i
 
 # Put this into an xarray dataset before saving
 new_dims = ('time', 'latitude', 'longitude')
