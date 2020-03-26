@@ -143,7 +143,7 @@ mlflow.log_param('model_run_id', model_run.run_id)
 # Log the run_id for the data
 mlflow.log_param('data_run_id', data_run.run_id)
 # Do the predictions for that dataset using the loaded model
-velocities = np.zeros((len(test_dataset, 2, dataset.height, dataset.width)))
+velocities = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
 predictions = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
 truth = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
 
