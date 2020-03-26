@@ -55,7 +55,8 @@ n_epochs = int(n_epochs / 4)
 
 # Load the model's file
 client = mlflow.tracking.MlflowClient()
-model_file = client.download_artifacts(model_run.run_id, 'trained_model.pth')
+model_file = client.download_artifacts(model_run.run_id,
+                                       'models/trained_model.pth')
 
 # Test dataset
 mlflow.set_experiment('forcingdata')
