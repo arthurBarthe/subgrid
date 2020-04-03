@@ -452,6 +452,6 @@ if __name__ == '__main__':
     # print(s.item())
     # s.backward()
     
-    net = Model3(2, 2*15*10, 15, 10)
+    net = Model4(2, 2*15*10, 15, 10)
     input_ = torch.randint(0, 10, (17, 2, 15, 10)).to(dtype=torch.float)
     output = net(input_)    

@@ -9,7 +9,6 @@ In this module we define custom loss functions
 import torch
 from torch.nn.modules.loss import _Loss
 from torch.distributions.normal import Normal
-from torch.nn.functional import relu
 
 class HeteroskedasticGaussianLoss(_Loss):
     def __init__(self, size_average=None, reduce=None, reduction='mean'):
@@ -20,7 +19,7 @@ class HeteroskedasticGaussianLoss(_Loss):
     def forward(self, input : torch.Tensor, target : torch.Tensor):
         # Split the target into mean (first two channels) and scale
         mean, scale = torch.split(target, 2, dim=1)
-        scale = scale**2 + 0.2
+        scale = torch.log(1 + torch.exp(scale))
         m = Normal(mean, scale)
         return -m.log_prob(input).mean()
 
