@@ -16,6 +16,7 @@ from analysis.utils import select_run
 from train.utils import learning_rates_from_string
 from data.datasets import RawDataFromXrDataset
 from train.base import Trainer
+from train.losses import HeteroskedasticGaussianLoss
 
 import os.path
 import importlib
@@ -121,6 +122,7 @@ net.load_state_dict(torch.load(model_file))
 
 # Train the linear layer only
 criterion = torch.nn.MSELoss()
+criterion = HeteroskedasticGaussianLoss()
 print('width: {}, height: {}'.format(width, height))
 optimizer = torch.optim.Adam(net.linear_layer.parameters(), lr=learning_rate,
                              weight_decay=weight_decay)
