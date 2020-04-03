@@ -299,7 +299,7 @@ net.cuda(device)
 
 # CORRELATION MAP ----
 u_v_surf = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
-pred = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
+pred = np.zeros((len(test_dataset), 4, dataset.height, dataset.width))
 truth = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
 
 # Predictions on the test set using the trained model
@@ -330,9 +330,15 @@ s_x_pred = xr.DataArray(data=pred[:, 0, ...], dims = new_dims,
                       coords = new_coords)
 s_y_pred = xr.DataArray(data=pred[:, 1, ...], dims = new_dims, 
                       coords = new_coords)
+s_x_pred_scale = xr.DataArray(data=pred[:, 2, ...], dims = new_dims, 
+                      coords = new_coords)
+s_y_pred_scale = xr.DataArray(data=pred[:, 3, ...], dims = new_dims, 
+                      coords = new_coords)
 output_dataset = xr.Dataset({'u_surf' : u_surf, 'v_surf' : v_surf,
                                     'S_x': s_x, 'S_y' : s_y,
                                     'S_xpred' : s_x_pred,
+                                    'S_xpred_scale' : s_x_pred_scale,
+                                    'S_ypred_scale' : s_y_pred_scale,
                                     'S_ypred' : s_y_pred})
 
 # Save dataset
@@ -340,6 +346,7 @@ output_dataset.to_zarr(os.path.join(data_location, model_output_dir,
                                     'test_output'))
 
 # Correlation map, shape (2, dataset.width, dataset.height)
+pred = pred[:, :2, ...]
 correlation_map = np.mean(truth * pred, axis=0)
 correlation_map -= np.mean(truth, axis=0) * np.mean(pred, axis=0)
 correlation_map /= np.maximum(np.std(truth, axis=0) * np.std(pred, axis=0),
