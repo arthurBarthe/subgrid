@@ -146,7 +146,7 @@ mlflow.log_param('model_run_id', model_run.run_id)
 mlflow.log_param('data_run_id', data_run.run_id)
 # Do the predictions for that dataset using the loaded model
 velocities = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
-predictions = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
+predictions = np.zeros((len(test_dataset), 4, dataset.height, dataset.width))
 truth = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
 
 net.eval()
@@ -178,10 +178,16 @@ s_x_pred = xr.DataArray(data=predictions[:, 0, ...], dims = new_dims,
                       coords = new_coords)
 s_y_pred = xr.DataArray(data=predictions[:, 1, ...], dims = new_dims, 
                       coords = new_coords)
+s_x_pred_scale = xr.DataArray(data=predictions[:, 2, ...], dims = new_dims, 
+                      coords = new_coords)
+s_y_pred_scale = xr.DataArray(data=predictions[:, 3, ...], dims = new_dims, 
+                      coords = new_coords)
 output_dataset = xr.Dataset({'u_surf' : u_surf, 'v_surf' : v_surf,
                                     'S_x': s_x, 'S_y' : s_y,
                                     'S_xpred' : s_x_pred,
-                                    'S_ypred' : s_y_pred})
+                                    'S_ypred' : s_y_pred,
+                                    'S_xscale' : s_x_pred_scale,
+                                    'S_yscale' : s_y_pred_scale})
 
 # Save dataset
 file_path = os.path.join(data_location, 'test_output')
