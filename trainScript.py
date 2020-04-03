@@ -52,6 +52,7 @@ from train.utils import DEVICE_TYPE, learning_rates_from_string
 
 # import training class
 from train.base import Trainer
+from train.losses import HeteroskedasticGaussianLoss
 
 # import to parse CLI arguments
 import argparse
@@ -222,6 +223,7 @@ with open(os.path.join(data_location, models_directory,
 # Training------------
 # MSE criterion + Adam optimizer
 criterion = torch.nn.MSELoss()
+criterion = HeteroskedasticGaussianLoss()
 linear_layer = net.linear_layer
 conv_layers = net.conv_layers
 params = [{'params' : layer.parameters()} for layer in conv_layers]

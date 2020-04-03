@@ -365,7 +365,42 @@ class Model3(MLFlowNN):
                                      do_not_load=True)
         self.add_final_activation('identity')
 
+class Model4(MLFlowNN):
+    """This model is identical to Model3 except for the fact that it 
+    allows for heteroscedasticity (haven't checked spelling sorry).
+    Hence 4 output layers: 2 per velocity component, one for the 
+    conditional mean and another one for the conditional variance"""
+    def __init__(self, input_depth: int, output_size: int, height : int = None,
+                 width : int = None, do_not_load_linear : bool = False):
+        super().__init__(input_depth, output_size, height, width)
+        self.do_not_load_linear = do_not_load_linear
+        self.build()
 
+    def build(self):
+        self.add_conv2d_layer(self.input_depth, 128, 5, padding=2+0)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(128)
+        self.add_conv2d_layer(128, 64, 3, padding=1+0)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(64)
+        self.add_conv2d_layer(64, 32, 3, padding=1+0)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32, 32, 3, padding=1+0)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32, 32, 3, padding=1+(0))
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32, 32, 3, padding=1)
+        self.add_activation('relu')
+        self.add_batch_norm_layer(32)
+        self.add_conv2d_layer(32, 32, 3, padding=1)
+        self.add_batch_norm_layer(32)
+        self.add_locally_connected2d(self.height, self.width, 32, 4, 
+                                     kernel_size=5, padding=2,
+                                     do_not_load=True)
+        self.add_final_activation('identity')
 
 class FullyCNN(MLFlowNN):
     def __init__(self, input_depth: int, output_size: int, width : int = None,
