@@ -224,12 +224,14 @@ with open(os.path.join(data_location, models_directory,
 # MSE criterion + Adam optimizer
 criterion = torch.nn.MSELoss()
 criterion = HeteroskedasticGaussianLoss()
-linear_layer = net.linear_layer
+
 conv_layers = net.conv_layers
 params = [{'params' : layer.parameters()} for layer in conv_layers]
-params.append({'params' : linear_layer.parameters(),
-               'weight_decay' : weight_decay,
-               'lr' : learning_rates[0] / 100})
+linear_layer = net.linear_layer
+if linear_layer is not None:
+    params.append({'params' : linear_layer.parameters(),
+                   'weight_decay' : weight_decay,
+                   'lr' : learning_rates[0] / 100})
 optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0) 
               for (i, v) in learning_rates.items()}
 
