@@ -245,7 +245,8 @@ for i_epoch in range(n_epochs):
         optimizer = optimizers[i_epoch]
         print('Switching to new optimizer:\n', optimizer)
     print('Epoch number {}.'.format(i_epoch))
-    train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
+    train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer,
+                                             clip=1e2)
     test_loss = trainer.test(test_dataloader)
     # Log the training loss
     print('Train loss for this epoch is ', train_loss)

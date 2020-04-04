@@ -7,6 +7,7 @@ Created on Tue Feb  4 20:56:02 2020
 
 import torch
 from torch.nn import Module, MSELoss
+from torch.nn.utils import clip_grad_norm_
 from torch.utils.data import DataLoader
 
 from .utils import print_every, RunningAverage
@@ -62,7 +63,8 @@ class Trainer:
     def print_loss_every(self, value: int):
         self._print_loss_every = value
 
-    def train_for_one_epoch(self, dataloader: DataLoader, optimizer) -> float:
+    def train_for_one_epoch(self, dataloader: DataLoader, optimizer, 
+                            clip=None) -> float:
         """Trains the neural network for one epoch using the data provided
         through the dataloader passed as an argument, and the optimizer
         passed as an argument.
@@ -103,8 +105,11 @@ class Trainer:
                 # Every time we print we reset the running average
                 running_loss_.reset()
             # Backpropagate
+            if clip:
+                clip_grad_norm_(self.net.parameters(), clip)
             loss.backward()
             # Update parameters
+            
             optimizer.step()
         return running_loss.value
 
