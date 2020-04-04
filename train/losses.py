@@ -17,9 +17,9 @@ class HeteroskedasticGaussianLoss(_Loss):
                                                           reduction)
 
     def forward(self, input : torch.Tensor, target : torch.Tensor):
-        # Split the target into mean (first two channels) and scale
+        # Split the target into mean (first half of channels) and scale
         mean, precision = torch.split(target, 2, dim=1)
-        precision = torch.log(1 + torch.exp(precision))
-        m = Normal(mean, 1 / precision)
+        precision = precision**2
+        m = Normal(mean, 1 / precision + 0.0)
         return -m.log_prob(input).mean()
 
