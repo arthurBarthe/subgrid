@@ -112,7 +112,7 @@ class MLFlowNN(Module):
         self.layers = torch.nn.ModuleList()
         self._n_layers = 0
         self.conv_layers = []
-        self.linear_layer = []
+        self.linear_layer = None
         self.activation_choices = {'relu': torch.nn.ReLU(),
                                    'selu': torch.nn.SELU(),
                                    'tanh': torch.nn.Tanh(),
