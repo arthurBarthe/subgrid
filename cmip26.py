@@ -36,31 +36,34 @@ parser.add_argument('--CO2', type=int, default=0, choices=[0,1])
 if len(sys.argv) > 1:
     params = parser.parse_args()
 else:
-    params = parser.parse_args('15 35 50 -48 -22 --ntimes 2000'.split())
+    params = parser.parse_args('32.6 20 35 -30 -15 --ntimes 1'.split())
 
 # Retrieve the patch of data specified in the command-line args
 patch_data, grid_data = get_patch(catalog_url, params.ntimes, params.bounds,
-                                  0, 'usurf', 'vsurf')
+                                  params.CO2, 'usurf', 'vsurf')
 patch_data = patch_data.chunk({'time' : 50})
 
-# Convert to x-y coordinates
 print(patch_data)
 print(grid_data)
 
 # Calculate eddy-forcing dataset for that particular patch
 scale_m = params.scale * 1e3
 forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean')
-pbar = ProgressBar()
-pbar.register()
+
+# Progress bar
+ProgressBar().register()
+
 # Specify input vs output type for each variable of the dataset. Might
 # be used later on for training or testing.
 forcing['S_x'].attrs['type'] = 'output'
 forcing['S_y'].attrs['type'] = 'output'
 forcing['usurf'].attrs['type'] = 'input'
 forcing['vsurf'].attrs['type'] = 'input'
-forcing = forcing.compute()
+
 # export data
+# forcing = forcing.compute()
 forcing.to_zarr('forcing', mode='w')
+
 # Log as an artifact the forcing data
 mlflow.log_artifact('forcing')
-print('Completed...')   
+print('Completed...')
