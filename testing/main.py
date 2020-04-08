@@ -53,7 +53,7 @@ weight_decay = float(model_run['params.weight_decay'])
 
 learning_rate = learning_rates[0] / 100
 # n_epochs = int(n_epochs / 3)
-n_epochs = 0
+n_epochs = 5
 
 # Load the model's file
 client = mlflow.tracking.MlflowClient()
