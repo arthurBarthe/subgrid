@@ -124,7 +124,13 @@ net.load_state_dict(torch.load(model_file))
 criterion = torch.nn.MSELoss()
 criterion = HeteroskedasticGaussianLoss()
 print('width: {}, height: {}'.format(width, height))
-optimizer = torch.optim.Adam(net.linear_layer.parameters(), lr=learning_rate,
+# If the model has defined a linear layer we train that only. Otherwise
+# we train all the parameters for now
+if net.linear_layer is not None:
+    parameters = net.linear_layer.parameters()
+else:
+    parameters = net.parameters()
+optimizer = torch.optim.Adam(parameters, lr=learning_rate,
                              weight_decay=weight_decay)
 print('Training the last layer only...')
 net.to(device)
