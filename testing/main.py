@@ -77,17 +77,17 @@ data_run = select_run(sort_by=None, cols=cols)
 client = mlflow.tracking.MlflowClient()
 data_file = client.download_artifacts(data_run.run_id, 'forcing')
 
+# Set the experiment to 'multiscale'
+print('Logging to experiment multiscale')
+mlflow.set_experiment('multiregion')
+mlflow.start_run()
+
 # Log the run_id of the loaded model (useful to recover info
 # about the scale that was used to train this model for
 # instance.
 mlflow.log_param('model_run_id', model_run.run_id)
 # Log the run_id for the data
 mlflow.log_param('data_run_id', data_run.run_id)
-
-# Set the experiment to 'multiscale'
-print('Logging to experiment multiscale')
-mlflow.set_experiment('multiregion')
-mlflow.start_run()
 
 # Generate the dataset
 xr_dataset = xr.open_zarr(data_file).load()
