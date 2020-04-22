@@ -3,26 +3,7 @@
 Created on Wed Dec 11 16:13:28 2019
 
 @author: Arthur
-Torch implementation of a similar form of NN as in Bolton et al
-
-TODO list
-- check that the divergence layer works as expected, i.e. check sum of 
-output layer is zero.
-- analyze the importance of memory 
-- train on one scale (e.g. 30 km) and test on a range of different
-scales (e.g 10km, 20km, 40km, 50km, 60km). For that I need to write 
-a new file in analysis/ that does testing on a specific dataset.
-Additionally any dataset should have some info about its scale. During the 
-training we need to log on which dataset / scale we train.
 """
-
-# This is required to avoid some issue with matplotlib when running on NYU's 
-# prince server
-import os
-if os.environ.get('DISPLAY', '') == '':
-    import matplotlib
-    matplotlib.use('agg')
-# --------------------------------------------------------------------
 
 import numpy as np
 import xarray as xr
@@ -61,15 +42,25 @@ import argparse
 # before logging through MLFlow
 import tempfile
 
+# import to import the module containing the model
+import importlib
+
+# This is required to avoid some issue with matplotlib when running on NYU's
+# prince server
+if os.environ.get('DISPLAY', '') == '':
+    import matplotlib
+    matplotlib.use('agg')
+
 
 # PARAMETERS ---------
 def negative_int(value: str):
     return -int(value)
 
+
 description = 'Trains a model on a chosen dataset from the store. Allows \
     to set training parameters via the CLI.'
 parser = argparse.ArgumentParser(description=description)
-parser.add_argument('exp_id', type=int, 
+parser.add_argument('exp_id', type=int,
                     help='Experiment id of the source dataset')
 parser.add_argument('run_id', type=str,
                     help='Run id of the source dataset')
@@ -109,6 +100,7 @@ indices = params.time_indices
 
 # Other parameters
 print_loss_every = params.printevery
+model_name = 'trained_model.pth'
 
 # Directories where temporary data will be saved
 data_location = tempfile.mkdtemp(dir='/scratch/ag7531/temp/')
@@ -117,10 +109,13 @@ print('Created temporary dir at  ', data_location)
 figures_directory = 'figures'
 models_directory = 'models'
 model_output_dir = 'model_output'
+
+
 def _check_dir(dir_path):
     """Tries to create the directory if it does not already exists"""
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
+
 
 _check_dir(os.path.join(data_location, figures_directory))
 _check_dir(os.path.join(data_location, models_directory))
@@ -143,7 +138,9 @@ mlflow_client = mlflow.tracking.MlflowClient()
 data_file = mlflow_client.download_artifacts(params.run_id, 'forcing')
 xr_dataset = xr.open_zarr(data_file).load()
 
-# Rescale 
+# Rescale
+# TODO normalization should be logged as well as its inverse. Should only be
+# based on the training data.
 xr_dataset = xr_dataset / xr_dataset.std()
 
 # Convert to a pytorch dataset and specify which variables are input/output
@@ -160,7 +157,8 @@ train_index = int(train_split * n_indices)
 test_index = int(test_split * n_indices)
 train_dataset = Subset(dataset, np.arange(train_index))
 test_dataset = Subset(dataset, np.arange(test_index, n_indices))
- 
+
+
 def function_used_to_toggle_in_spyder():
     pass
     # Apply basic normalization transforms (using the training data only)
@@ -168,13 +166,14 @@ def function_used_to_toggle_in_spyder():
     # s.fit(train_dataset)
     # train_dataset = s.transform(train_dataset)
     # test_dataset = s.transform(test_dataset)
-    
+
     # Specifies which time indices to use for the prediction
     # train_dataset = MultipleTimeIndices(train_dataset)
     # train_dataset.time_indices = indices
     # test_dataset = MultipleTimeIndices(test_dataset)
     # test_dataset.time_indices = indices
     pass
+
 
 # Dataloaders are responsible for sending batches of data to the NN
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
@@ -193,7 +192,6 @@ height = dataset.height
 width = dataset.width
 
 # Recover the model's class
-import importlib
 try:
     models_module = importlib.import_module(model_module_name)
     model_cls = getattr(models_module, model_cls_name)
@@ -204,7 +202,7 @@ except AttributeError as e:
     e.msg = 'Could not find the specified model\'s class (' + e.msg + ')'
 
 net = model_cls(len(indices)*2, dataset.n_output_targets(),
-               height, width)
+                height, width)
 print('----------*----------')
 print(net)
 print('--------------------')
@@ -226,13 +224,13 @@ criterion = torch.nn.MSELoss()
 criterion = HeteroskedasticGaussianLoss()
 
 conv_layers = net.conv_layers
-params = [{'params' : layer.parameters()} for layer in conv_layers]
+params = [{'params': layer.parameters()} for layer in conv_layers]
 linear_layer = net.linear_layer
 if linear_layer is not None:
-    params.append({'params' : linear_layer.parameters(),
-                   'weight_decay' : weight_decay,
-                   'lr' : learning_rates[0] / 100})
-optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0) 
+    params.append({'params': linear_layer.parameters(),
+                   'weight_decay': weight_decay,
+                   'lr': learning_rates[0] / 100})
+optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0)
               for (i, v) in learning_rates.items()}
 
 trainer = Trainer(net, device)
@@ -290,7 +288,6 @@ for i_epoch in range(n_epochs):
 print('Moving the network to the CPU before saving...')
 net.cpu()
 print('Saving the neural network learnt parameters to disk...')
-model_name = 'trained_model.pth'
 full_path = os.path.join(data_location, models_directory, model_name)
 torch.save(net.state_dict(), full_path)
 print('Logging the neural network model...')
@@ -309,7 +306,7 @@ truth = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
 net.eval()
 with torch.no_grad():
     for i, data in enumerate(test_dataloader):
-        u_v_surf[i * batch_size : (i+1) * batch_size] = data[0].numpy()
+        u_v_surf[i * batch_size: (i+1) * batch_size] = data[0].numpy()
         truth[i * batch_size:(i+1) * batch_size] = data[1].numpy()
         X = data[0].to(device, dtype=torch.float)
         Y_hat = net(X)
@@ -318,31 +315,27 @@ with torch.no_grad():
 # Convert to dataset
 new_dims = ('time', 'latitude', 'longitude')
 coords = xr_dataset.coords
-new_coords = {'time' : coords['time'][test_index:],
-                                'latitude' : coords['yu_ocean'].data,
-                                'longitude' : coords['xu_ocean'].data}
-u_surf = xr.DataArray(data=u_v_surf[:, 0, ...], dims = new_dims, 
-                      coords = new_coords)
-v_surf = xr.DataArray(data=u_v_surf[:, 1, ...], dims = new_dims,
-                      coords = new_coords)
-s_x = xr.DataArray(data=truth[:, 0, ...], dims = new_dims, 
-                      coords = new_coords)
-s_y = xr.DataArray(data=truth[:, 1, ...], dims = new_dims, 
-                      coords = new_coords)
-s_x_pred = xr.DataArray(data=pred[:, 0, ...], dims = new_dims, 
-                      coords = new_coords)
-s_y_pred = xr.DataArray(data=pred[:, 1, ...], dims = new_dims, 
-                      coords = new_coords)
-s_x_pred_scale = xr.DataArray(data=pred[:, 2, ...], dims = new_dims, 
-                      coords = new_coords)
-s_y_pred_scale = xr.DataArray(data=pred[:, 3, ...], dims = new_dims, 
-                      coords = new_coords)
-output_dataset = xr.Dataset({'u_surf' : u_surf, 'v_surf' : v_surf,
-                                    'S_x': s_x, 'S_y' : s_y,
-                                    'S_xpred' : s_x_pred,
-                                    'S_xpred_scale' : s_x_pred_scale,
-                                    'S_ypred_scale' : s_y_pred_scale,
-                                    'S_ypred' : s_y_pred})
+new_coords = {'time': coords['time'][test_index:],
+              'latitude': coords['yu_ocean'].data,
+              'longitude': coords['xu_ocean'].data}
+u_surf = xr.DataArray(data=u_v_surf[:, 0, ...], dims=new_dims,
+                      coords=new_coords)
+v_surf = xr.DataArray(data=u_v_surf[:, 1, ...], dims=new_dims,
+                      coords=new_coords)
+s_x = xr.DataArray(data=truth[:, 0, ...], dims=new_dims, coords=new_coords)
+s_y = xr.DataArray(data=truth[:, 1, ...], dims=new_dims, coords=new_coords)
+s_x_pred = xr.DataArray(data=pred[:, 0, ...], dims=new_dims, coords=new_coords)
+s_y_pred = xr.DataArray(data=pred[:, 1, ...], dims=new_dims, coords=new_coords)
+s_x_pred_scale = xr.DataArray(data=pred[:, 2, ...], dims=new_dims,
+                              coords=new_coords)
+s_y_pred_scale = xr.DataArray(data=pred[:, 3, ...], dims=new_dims,
+                              coords=new_coords)
+output_dataset = xr.Dataset({'u_surf': u_surf, 'v_surf': v_surf,
+                             'S_x': s_x, 'S_y': s_y,
+                             'S_xpred': s_x_pred,
+                             'S_xpred_scale': s_x_pred_scale,
+                             'S_ypred_scale': s_y_pred_scale,
+                             'S_ypred': s_y_pred})
 
 # Save dataset
 output_dataset.to_zarr(os.path.join(data_location, model_output_dir,
@@ -374,7 +367,7 @@ file_path = os.path.join(data_location, figures_directory, f_name)
 plt.savefig(file_path)
 plt.close(fig)
 
-# FIN CORRELATION MAP 
+# FIN CORRELATION MAP
 
 # Log artifacts
 print('Logging artifacts...')
