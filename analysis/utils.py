@@ -11,6 +11,7 @@ import matplotlib.animation as animation
 import pandas as pd
 import sys
 from analysis.analysis import TimeSeriesForPoint
+import xarray as xr
 
 from enum import Enum
 
@@ -49,15 +50,16 @@ def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
         cols.append(sort_by)
     cols = list(set(cols))
     if merge is not None:
-        cols[0] = 'run_id_x'
-        cols[1] = 'experiment_id_x'
+        cols[cols.index('run_id')] = 'run_id_x'
+        cols[cols.index('experiment_id')] = 'experiment_id_x'
         for name, key_left, key_right in merge:
             experiment = mlflow.get_experiment_by_name(name)
             df2 = mlflow.search_runs(experiment_ids=experiment.experiment_id)
             mlflow_runs = pd.merge(mlflow_runs, df2, left_on=key_left,
                                    right_on=key_right)
     if len(mlflow_runs) == 0:
-        raise Exception('No data found. Check that you set correctly the store')
+        raise Exception('No data found. Check that you correctly set \
+                        the store')
     print(mlflow_runs[cols])
     id_ = int(input('Run id?'))
     if id_ < 0:
@@ -138,7 +140,44 @@ def sample(data : np.ndarray, step_time : int = 1, nb_per_time: int = 5):
     sample = data[selection]
     return sample
 
-def play_movie(predictions: np.ndarray, title : str = ''):
+
+def plot_dataset(dataset : xr.Dataset, plot_type = None, *args, **kargs):
+    """Calls the plot function of each variable in the dataset"""
+    plt.figure(figsize = (20, 5 * int(len(dataset) / 2)))
+    for i, variable in enumerate(dataset):
+        plt.subplot(int(len(dataset) / 2), 2, i + 1)
+        if plot_type is None:
+            dataset[variable].plot(*args, **kargs)
+        else:
+            plt_func = getattr(dataset[variable], plot_type)
+            plt_func(*args, **args)
+
+
+def dataset_to_movie(dataset : xr.Dataset, interval : int = 50):
+    """Generates animations for all the variables in the dataset"""
+    fig = plt.figure(figsize = (20, 5 * int(len(dataset) / 2)))
+    axes = list()
+    ims = list()
+    for i, variable in enumerate(dataset.keys()):
+        axes.append(fig.add_subplot(int(len(dataset) / 2), 2, i + 1))
+    for i, t in enumerate(dataset['time']):
+        im = list()
+        for axis, variable in zip(axes, dataset.keys()):
+            plt.sca(axis)
+            img = dataset[variable].isel(time=i).plot(vmin=-2, vmax=2)
+            cb = img.colorbar
+            cb.remove()
+            im.append(img)
+        ims.append(im)
+    ani = animation.ArtistAnimation(fig, ims, 
+                                    interval=interval, blit=True,
+                                    repeat_delay=1000)
+    return ani
+    
+            
+
+def play_movie(predictions: np.ndarray, title : str = '', 
+               interval : int = 500):
     fig = plt.figure()
     ims = list()
     mean = np.mean(predictions)
@@ -149,7 +188,7 @@ def play_movie(predictions: np.ndarray, title : str = ''):
                                cmap='YlOrRd',
                                origin='lower', animated=True)])
     ani = animation.ArtistAnimation(fig, ims, 
-                                    interval=25, blit=True,
+                                    interval=interval, blit=True,
                                     repeat_delay=1000)
     plt.title(title)
     plt.show()
