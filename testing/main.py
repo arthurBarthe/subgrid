@@ -30,7 +30,7 @@ import argparse
 # Parse arguments
 # n_epochs : Number of epochs we fine-tune the model on the new data
 parser = argparse.ArgumentParser()
-parser.add_argument('--n_epochs', default=0)
+parser.add_argument('--n_epochs', type=int, default=0)
 script_params = parser.parse_args()
 
 n_epochs = script_params.n_epochs
