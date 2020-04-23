@@ -48,7 +48,12 @@ def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
     if sort_by is not None:
         mlflow_runs.sort_values(by=sort_by)
         cols.append(sort_by)
-    cols = list(set(cols))
+    # Remove possible duplicate columns
+    new_cols = list()
+    for e in cols:
+        if e not in new_cols:
+            new_cols.append(e)
+    cols = new_cols
     if merge is not None:
         cols[cols.index('run_id')] = 'run_id_x'
         cols[cols.index('experiment_id')] = 'experiment_id_x'
