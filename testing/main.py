@@ -88,6 +88,7 @@ mlflow.start_run()
 mlflow.log_param('model_run_id', model_run.run_id)
 # Log the run_id for the data
 mlflow.log_param('data_run_id', data_run.run_id)
+mlflow.log_param('n_epochs', n_epochs)
 
 # Generate the dataset
 xr_dataset = xr.open_zarr(data_file).load()
