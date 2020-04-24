@@ -143,12 +143,20 @@ xr_dataset = xr.open_zarr(data_file).load()
 # TODO normalization should be logged as well as its inverse. Should only be
 # based on the training data.
 # xr_dataset = xr_dataset / xr_dataset.std()
+
+
 def arctan_normalize(x, max_value):
     return np.arctan(x / max_value)
+
+
+def inv_arctan_normalize(x, max_value):
+    return torch.tan(x) * max_value
+
+
 xr_dataset['usurf'] = arctan_normalize(xr_dataset['usurf'], 3)
 xr_dataset['vsurf'] = arctan_normalize(xr_dataset['vsurf'], 3)
-xr_dataset['S_x'] = arctan_normalize(xr_dataset['S_x'], 1e-7)
-xr_dataset['S_y'] = arctan_normalize(xr_dataset['S_y'], 1e-7)
+xr_dataset['S_x'] = xr_dataset['S_x'] / 1e-6
+xr_dataset['S_y'] = xr_dataset['S_y'] / 1e-6
 
 # Convert to a pytorch dataset and specify which variables are input/output
 dataset = RawDataFromXrDataset(xr_dataset)
