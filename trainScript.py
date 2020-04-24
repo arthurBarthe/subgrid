@@ -142,7 +142,7 @@ xr_dataset = xr.open_zarr(data_file).load()
 # TODO normalization should be logged as well as its inverse. Should only be
 # based on the training data.
 # xr_dataset = xr_dataset / xr_dataset.std()
-xr_dataset = np.arctan(xr_dataset)
+xr_dataset = np.arctan(xr_dataset / xr_dataset.max() * 10)
 
 # Convert to a pytorch dataset and specify which variables are input/output
 dataset = RawDataFromXrDataset(xr_dataset)
