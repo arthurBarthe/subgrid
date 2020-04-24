@@ -3,6 +3,9 @@
 Created on Wed Dec 11 16:13:28 2019
 
 @author: Arthur
+Ideas:
+    - data augmentation by *lambda -> *lambda**2 forcing
+    - 
 """
 # This is required to avoid some issue with matplotlib when running on NYU's
 # prince server
@@ -155,8 +158,8 @@ def inv_arctan_normalize(x, max_value):
 
 xr_dataset['usurf'] = arctan_normalize(xr_dataset['usurf'], 3)
 xr_dataset['vsurf'] = arctan_normalize(xr_dataset['vsurf'], 3)
-xr_dataset['S_x'] = xr_dataset['S_x'] / 1e-6
-xr_dataset['S_y'] = xr_dataset['S_y'] / 1e-6
+xr_dataset['S_x'] = xr_dataset['S_x'] / 1e-5
+xr_dataset['S_y'] = xr_dataset['S_y'] / 1e-5
 
 # Convert to a pytorch dataset and specify which variables are input/output
 dataset = RawDataFromXrDataset(xr_dataset)
