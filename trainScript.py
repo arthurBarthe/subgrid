@@ -147,8 +147,8 @@ def arctan_normalize(x, max_value):
     return np.arctan(x / max_value)
 xr_dataset['usurf'] = arctan_normalize(xr_dataset['usurf'], 3)
 xr_dataset['vsurf'] = arctan_normalize(xr_dataset['vsurf'], 3)
-xr_dataset['S_x'] = arctan_normalize(xr_dataset['S_x'], 1e-5)
-xr_dataset['S_y'] = arctan_normalize(xr_dataset['S_y'], 1e-5)
+xr_dataset['S_x'] = arctan_normalize(xr_dataset['S_x'], 1e-7)
+xr_dataset['S_y'] = arctan_normalize(xr_dataset['S_y'], 1e-7)
 
 # Convert to a pytorch dataset and specify which variables are input/output
 dataset = RawDataFromXrDataset(xr_dataset)
