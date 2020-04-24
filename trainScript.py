@@ -6,6 +6,7 @@ Created on Wed Dec 11 16:13:28 2019
 """
 # This is required to avoid some issue with matplotlib when running on NYU's
 # prince server
+import os
 if os.environ.get('DISPLAY', '') == '':
     import matplotlib
     matplotlib.use('agg')
@@ -14,7 +15,6 @@ import numpy as np
 import xarray as xr
 import mlflow
 import os.path
-import os
 
 # For pre-processing
 # from sklearn.preprocessing import StandardScaler, RobustScaler
