@@ -4,6 +4,11 @@ Created on Wed Dec 11 16:13:28 2019
 
 @author: Arthur
 """
+# This is required to avoid some issue with matplotlib when running on NYU's
+# prince server
+if os.environ.get('DISPLAY', '') == '':
+    import matplotlib
+    matplotlib.use('agg')
 
 import numpy as np
 import xarray as xr
@@ -45,11 +50,7 @@ import tempfile
 # import to import the module containing the model
 import importlib
 
-# This is required to avoid some issue with matplotlib when running on NYU's
-# prince server
-if os.environ.get('DISPLAY', '') == '':
-    import matplotlib
-    matplotlib.use('agg')
+
 
 
 # PARAMETERS ---------
