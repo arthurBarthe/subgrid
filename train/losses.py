@@ -23,7 +23,7 @@ class HeteroskedasticGaussianLoss(_Loss):
         if not torch.all(precision_ > 0):
             raise ValueError('Got a non-positive precision value. \
                              Pre-processed precision tensor was: \
-                                 {}'.format(precision))
+                                 {}'.format(torch.min(precision))
         term1 = -torch.log(precision_)
         term2 = 1 / 2 * (input - mean)**2 * precision_**2
         return (term1 + term2).mean()
