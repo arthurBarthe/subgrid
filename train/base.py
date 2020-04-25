@@ -16,19 +16,23 @@ from .utils import print_every, RunningAverage
 class Trainer:
     """Training object for a neural network on a specific device. Defines
     a training method that trains for one epoch.
-    
+
     Properties
     ----------
-    
+
     :net: Module,
         Neural network that is trained
-    
+
     :criterion: Loss,
         Criterion used in the objective function.
-    
+
     :print_loss_every: int,
         Sets the number of batches that the average loss is printed.
+
+    :metrics: list,
+        List of metrics reported on the test data
     """
+
     def __init__(self, net: Module, device: torch.device):
         self._net = net
         self._device = device
@@ -63,22 +67,22 @@ class Trainer:
     def print_loss_every(self, value: int):
         self._print_loss_every = value
 
-    def train_for_one_epoch(self, dataloader: DataLoader, optimizer, 
+    def train_for_one_epoch(self, dataloader: DataLoader, optimizer,
                             clip=None) -> float:
         """Trains the neural network for one epoch using the data provided
         through the dataloader passed as an argument, and the optimizer
         passed as an argument.
-        
+
         Parameters
         ----------
-        
+
         :dataloader: DataLoader,
             The Pytorch DataLoader object used to provide training data.
-        
+
         :optimizer: Optimizer,
             The Pytorch Optimizer used to update the parameters after each
             forward-backward pass.
-        
+
         Returns
         -------
         float
@@ -109,21 +113,20 @@ class Trainer:
                 clip_grad_norm_(self.net.parameters(), clip)
             loss.backward()
             # Update parameters
-            
             optimizer.step()
         return running_loss.value
 
     def test(self, dataloader) -> float:
         """Returns the validation loss on the provided data. The criterion
         used is the same as the one used for the training.
-        
+
         Parameters
         ----------
-        
+
         :dataloader: Dataloader,
             The Pytorch dataloader providing the data for validation.
-        
-        
+
+
         Returns
         ----------
         float
