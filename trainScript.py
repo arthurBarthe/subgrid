@@ -156,12 +156,14 @@ def inv_arctan_normalize(x, max_value):
     return torch.tan(x) * max_value
 
 
-max_input = max(xr_dataset[['usurf', 'vsurf']].max()).item()
-max_output = max(xr_dataset[['S_x', 'S_y']].max()).item()
-xr_dataset['usurf'] = xr_dataset['usurf'] / max_input
-xr_dataset['vsurf'] = xr_dataset['vsurf'] / max_input
-xr_dataset['S_x'] = xr_dataset['S_x'] / max_output
-xr_dataset['S_y'] = xr_dataset['S_y'] / max_output
+# max_input = max(xr_dataset[['usurf', 'vsurf']].max()).item()
+# max_output = max(xr_dataset[['S_x', 'S_y']].max()).item()
+# xr_dataset['usurf'] = xr_dataset['usurf'] / xr_dataset
+# xr_dataset['vsurf'] = xr_dataset['vsurf'] / max_input
+# xr_dataset['S_x'] = xr_dataset['S_x'] / max_output
+# xr_dataset['S_y'] = xr_dataset['S_y'] / max_output
+
+xr_dataset = xr_dataset / xr_dataset.max()
 
 # Convert to a pytorch dataset and specify which variables are input/output
 dataset = RawDataFromXrDataset(xr_dataset)
