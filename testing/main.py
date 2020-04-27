@@ -101,14 +101,16 @@ mlflow.log_param('n_epochs', n_epochs)
 
 # Generate the dataset
 xr_dataset = xr.open_zarr(data_file).load()
-# Normalization step
-# xr_dataset = xr_dataset / xr_dataset.std()
-# TODO
-xr_dataset['usurf'] = arctan_normalize(xr_dataset['usurf'], 3)
-xr_dataset['vsurf'] = arctan_normalize(xr_dataset['vsurf'], 3)
-xr_dataset['S_x'] = xr_dataset['S_x'] / 1e-7
-xr_dataset['S_y'] = xr_dataset['S_y'] / 1e-7
 
+# We transform the forcing
+xr_dataset['S_x'] = (np.sign(xr_dataset['S_x']) *
+                     np.sqrt(abs(xr_dataset['S_x'])))
+xr_dataset['S_y'] = (np.sign(xr_dataset['S_y']) *
+                     np.sqrt(abs(xr_dataset['S_y'])))
+
+# Normalization step
+
+xr_dataset = xr_dataset / xr_dataset.std()
 
 dataset = RawDataFromXrDataset(xr_dataset)
 dataset.index = 'time'
