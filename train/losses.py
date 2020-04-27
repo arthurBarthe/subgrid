@@ -17,13 +17,13 @@ class HeteroskedasticGaussianLoss(_Loss):
 
     def forward(self, input: torch.Tensor, target: torch.Tensor):
         # Split the target into mean (first half of channels) and scale
-        mean, variance = torch.split(target, 2, dim=1)
-        variance_ = variance**2 + 0.001
+        mean, precision = torch.split(target, 2, dim=1)
+        precision_ = torch.log(1 + torch.exp(precision)) + 1e-3
         # precision = precision**2 + 1e-3
-        if not torch.all(variance_ > 0):
+        if not torch.all(precision_ > 0):
             raise ValueError('Got a non-positive variance value. \
                              Pre-processed variance tensor was: \
-                                 {}'.format(torch.min(variance)))
-        term1 = 1 / 2 * torch.log(variance_)
-        term2 = 1 / 2 * (input - mean)**2 / variance_
+                                 {}'.format(torch.min(precision)))
+        term1 = - 1 / 2 * torch.log(precision_)
+        term2 = 1 / 2 * (input - mean)**2 * precision_
         return (term1 + term2).mean()
