@@ -163,6 +163,13 @@ def inv_arctan_normalize(x, max_value):
 # xr_dataset['S_x'] = xr_dataset['S_x'] / max_output
 # xr_dataset['S_y'] = xr_dataset['S_y'] / max_output
 
+# We transform the forcing by taking its square root (while conserving sign)
+xr_dataset['S_x'] = (np.sign(xr_dataset['S_x']) *
+                     np.sqrt(abs(xr_dataset['S_x'])))
+xr_dataset['S_y'] = (np.sign(xr_dataset['S_y']) *
+                     np.sqrt(abs(xr_dataset['S_y'])))
+
+
 xr_dataset = xr_dataset / xr_dataset.std()
 
 # Convert to a pytorch dataset and specify which variables are input/output
