@@ -110,7 +110,11 @@ xr_dataset['S_y'] = (np.sign(xr_dataset['S_y']) *
 
 # Normalization step
 
-xr_dataset = xr_dataset / xr_dataset.std()
+# xr_dataset = xr_dataset / xr_dataset.std()
+xr_dataset['usurf'] = xr_dataset['usurf'] / 0.06908
+xr_dataset['vsurf'] = xr_dataset['vsurf'] / 0.05694
+xr_dataset['S_x'] = xr_dataset['S_x'] / 0.0001572
+xr_dataset['S_y'] = xr_dataset['S_y'] / 0.0001626
 
 dataset = RawDataFromXrDataset(xr_dataset)
 dataset.index = 'time'
