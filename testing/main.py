@@ -103,10 +103,10 @@ mlflow.log_param('n_epochs', n_epochs)
 xr_dataset = xr.open_zarr(data_file).load()
 
 # We transform the forcing
-xr_dataset['S_x'] = (np.sign(xr_dataset['S_x']) *
-                     np.sqrt(abs(xr_dataset['S_x'])))
-xr_dataset['S_y'] = (np.sign(xr_dataset['S_y']) *
-                     np.sqrt(abs(xr_dataset['S_y'])))
+# xr_dataset['S_x'] = (np.sign(xr_dataset['S_x']) *
+#                      np.sqrt(abs(xr_dataset['S_x'])))
+# xr_dataset['S_y'] = (np.sign(xr_dataset['S_y']) *
+#                      np.sqrt(abs(xr_dataset['S_y'])))
 
 # Normalization step
 
