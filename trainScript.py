@@ -262,9 +262,10 @@ net = model_cls(len(indices)*2, dataset.n_output_targets(),
                 height, width)
 # We only log the structure when the net is used in the training script
 net.log_structure = True
+
 try:
     transformation = getattr(models.transforms, transformation_cls_name)
-    net.transformation = transformation
+    net.transformation = transformation()
 except AttributeError as e:
     raise type(e)('Could not find the specified transformation class: ' +
                   str(e))
@@ -285,7 +286,7 @@ with open(os.path.join(data_location, models_directory,
 
 # Training------------
 # MSE criterion + Adam optimizer
-criterion = getattr(train.losses, loss_cls_name)
+criterion = getattr(train.losses, loss_cls_name)()
 
 # metrics saved independently of the training criterion
 metrics = {'mse': F.mse_loss}
