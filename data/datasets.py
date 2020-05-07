@@ -119,6 +119,10 @@ class DatasetTransformer:
         new_targets = self.transformers['targets'].transform(targets)
         return FeaturesTargetsDataset(new_features, new_targets)
 
+    def fit_transform(self, X: Dataset):
+        self.fit(X)
+        return self.transform(X)
+
     def inverse_transform(self, X: Dataset):
         features, targets = X[:]
         new_features = self.transformers['features'].inverse_transform(features)
