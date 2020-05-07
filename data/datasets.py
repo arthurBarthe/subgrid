@@ -93,7 +93,7 @@ class DatasetTransformer:
     def __init__(self, transformer_class: type, apply_both: bool = True):
         # TODO apply_both
         self.transformer_class = transformer_class
-        self.apply_both = True
+        self.apply_both = apply_both
         self.transformers = {'features': None, 'targets': None}
         # TODO add the possibility to include transfomer params
         features_transformer = LoggedTransformer(transformer_class(),
@@ -124,6 +124,26 @@ class DatasetTransformer:
         new_features = self.transformers['features'].inverse_transform(features)
         new_targets = self.transformers['targets'].transform(targets)
         return FeaturesTargetsDataset(new_features, new_targets)
+
+
+class UniformScaler:
+    def __init__(self):
+        self._std = None
+
+    @property
+    def std(self):
+        return self._std
+
+    def fit(self, X: np.ndarray):
+        self._std = np.std(X)
+
+    def transform(self, X: np.ndarray):
+        assert(self._std is not None)
+        return X / self.std
+
+    def fit_transform(self, X: np.ndarray):
+        self.fit(X)
+        return self.transform(X)
 
 
 class DatasetClippedScaler(DatasetTransformer):
@@ -218,9 +238,9 @@ class RawDataFromXrDataset(Dataset):
 
     def __getitem__(self, index):
         try:
-            features = self.xr_dataset[self.input_arrays].isel({self._index : index})
+            features = self.xr_dataset[self.input_arrays].isel({self._index: index})
             features = features.to_array().data
-            targets = self.xr_dataset[self.output_arrays].isel({self._index : index})
+            targets = self.xr_dataset[self.output_arrays].isel({self._index: index})
             targets = targets.to_array().data
         except KeyError as e:
             e.msg = e.msg + '\n Make sure you have defined the index, inputs,\
@@ -229,7 +249,9 @@ class RawDataFromXrDataset(Dataset):
         return features, targets
 
     def n_output_targets(self):
-        logging.warning('Depreciated. To be removed.')
+        logging.warning('Depreciated call to \
+                        RawDataFromXrDataset.n_output_targets(). \
+                        To be removed.')
         t = self[0][1]
         return t.shape[0]
     
@@ -475,17 +497,17 @@ if __name__ == '__main__':
     from xarray import DataArray
     from xarray import Dataset as xrDataset
     from torch.utils.data import DataLoader
-    da = DataArray(data=np.zeros((20, 3, 3)), dims=('time', 'x', 'y'))
-    da2 = DataArray(data=np.ones((20, 3, 3)), dims=('time', 'x', 'y'))
-    da3 = DataArray(data=np.ones((20, 3, 3)) * 10, dims=('time', 'x', 'y'))
-    da4 = DataArray(data=np.ones((20, 3, 3)) * 20, dims=('time', 'x', 'y'))
+    da = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'y', 'x'))
+    da2 = DataArray(data=np.ones((20, 3, 4)), dims=('time', 'y', 'x'))
+    da3 = DataArray(data=np.ones((20, 3, 4)) * 10, dims=('time', 'y', 'x'))
+    da4 = DataArray(data=np.ones((20, 3, 4)) * 20, dims=('time', 'y', 'x'))
     ds = xrDataset({'in0': da, 'in1': da2,
                     'out0': da3, 'out1': da4}, 
                    coords={'time': np.arange(20),
-                           'x': [0, 5, 10], 
+                           'x': [0, 5, 10, 15], 
                            'y': [0, 5, 10]})
     dataset = RawDataFromXrDataset(ds)
-    dataset.index = 'tim'
+    dataset.index = 'time'
     dataset.add_input('in0')
     dataset.add_input('in1')
     dataset.add_output('out0')
