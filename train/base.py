@@ -73,6 +73,10 @@ class Trainer:
     def print_loss_every(self, value: int):
         self._print_loss_every = value
 
+    @property
+    def metrics(self):
+        return self._metrics
+
     def register_metric(self, metric_name, metric_func):
         self._metrics[metric_name] = metric_func
 
