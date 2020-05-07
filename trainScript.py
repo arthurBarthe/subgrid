@@ -266,7 +266,8 @@ net.log_structure = True
 try:
     transformation_cls = getattr(models.transforms, transformation_cls_name)
     transformation = transformation_cls()
-    net.transformation = transformation
+    # TODO use the property here
+    net._final_transformation = transformation
 except AttributeError as e:
     raise type(e)('Could not find the specified transformation class: ' +
                   str(e))
