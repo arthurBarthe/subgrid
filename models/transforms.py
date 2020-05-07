@@ -50,7 +50,6 @@ class PrecisionTransform(Transform):
         # Split in sections of size 2 along channel dimension
         # Careful: the split argument is the size of the sections, not the
         # number of them (although does not matter for 4 channels)
-        print(input_.size())
         mean, precision = torch.split(input_, 2, dim=1)
         precision = self.transform_precision(precision)
         precision.add_(self.min_value)

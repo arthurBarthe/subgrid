@@ -151,7 +151,6 @@ class MLFlowNN(Module):
 
     @transformation.setter
     def transformation(self, transformation):
-        print('hello')
         self._final_transformation = transformation
 
     @property
@@ -273,7 +272,6 @@ class MLFlowNN(Module):
         output = input
         for i_layer,  layer in enumerate(self.layers):
             output = layer(output)
-        print('a')
         output = self.transformation(output)
         return output
 
