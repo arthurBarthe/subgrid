@@ -292,6 +292,8 @@ criterion = getattr(train.losses, loss_cls_name)()
 
 # metrics saved independently of the training criterion
 metrics = {'mse': F.mse_loss}
+# TODO temporary fix
+metrics = {}
 
 conv_layers = net.conv_layers
 params = [{'params': layer.parameters()} for layer in conv_layers]
