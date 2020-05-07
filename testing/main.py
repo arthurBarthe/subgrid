@@ -26,6 +26,9 @@ import tempfile
 import logging
 
 import argparse
+import pickle
+
+from sys import modules
 
 
 def arctan_normalize(x, max_value):
@@ -67,6 +70,7 @@ batch_size = int(model_run['params.batchsize'])
 source_data_id = model_run['params.source.run_id']
 model_module_name = model_run['params.model_module_name']
 model_cls_name = model_run['params.model_cls_name']
+loss_cls_name = model_run['params.loss_cls_name']
 learning_rates = learning_rates_from_string(model_run['params.learning_rate'])
 weight_decay = float(model_run['params.weight_decay'])
 
@@ -76,6 +80,15 @@ learning_rate = learning_rates[0] / 100
 client = mlflow.tracking.MlflowClient()
 model_file = client.download_artifacts(model_run.run_id,
                                        'models/trained_model.pth')
+transformation_file = client.download_artifacts(model_run.run_id,
+                                                'models/transformation')
+data_transform_file = client.download_artifacts(model_run.run_id,
+                                                'model/data_transform')
+with open(transformation_file, 'rb') as f:
+    transformation = pickle.load(f)
+with open(data_transform_file, 'rb') as f:
+    data_transform = pickle.load(f)
+
 
 # Prompt user to select the test dataset
 mlflow.set_experiment('forcingdata')
@@ -109,13 +122,6 @@ xr_dataset = xr.open_zarr(data_file).load()
 #                      np.sqrt(abs(xr_dataset['S_y'])))
 
 # Normalization step
-
-# xr_dataset = xr_dataset / xr_dataset.std()
-xr_dataset['usurf'] = xr_dataset['usurf'] / 0.313
-xr_dataset['vsurf'] = xr_dataset['vsurf'] / 0.1979
-xr_dataset['S_x'] = xr_dataset['S_x'] / 4.061e-07
-xr_dataset['S_y'] = xr_dataset['S_y'] / 3.26e-07
-
 dataset = RawDataFromXrDataset(xr_dataset)
 dataset.index = 'time'
 dataset.add_input('usurf')
@@ -152,14 +158,20 @@ except AttributeError as e:
     e.msg = 'Could not retrieve the model\'s class. ' + e.msg
 net = model_cls(2 * len(time_indices), dataset.n_output_targets(),
                 height, width, True)
+net._final_transformation = transformation
+
 net.to(device=device)
 logging.info('Loading the neural net parameters')
 # Load parameters of pre-trained model
 net.load_state_dict(torch.load(model_file))
 
 # Set up training criterion and select parameters to train
-criterion = torch.nn.MSELoss()
-criterion = HeteroskedasticGaussianLoss()
+try:
+    criterion = getattr(modules['__main__'], loss_cls_name)()
+except AttributeError as e:
+    raise type(e)('Could not find the loss class used for training.')
+
+
 print('width: {}, height: {}'.format(width, height))
 # If the model has defined a linear layer we train that only. Otherwise
 # we train all the parameters for now
