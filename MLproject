@@ -28,5 +28,9 @@ entry_points:
       weight_decay : {type : float, default : 0.1}
       model_module_name : {type : string, default : models.models1}
       model_cls_name : {type : string, default : FullyCNN}
-    command: "python trainScript.py {exp_id} {run_id} --batchsize {batchsize} --learning_rate {learning_rate} --n_epochs {n_epochs} --train_split {train_split} --test_split {test_split} --time_indices {time_indices} --printevery {print_every} --weight_decay {weight_decay} --model_module_name {model_module_name} --model_cls_name {model_cls_name}"
+      loss_cls_name : {type : string, default : HeteroskedasticGaussianLoss}
+      transformation_cls_name : {type : string, default : SquareTransform}
+      data_transform_cls_name : {type : string, default : UniformScaler}
+    command: "python trainScript.py {exp_id} {run_id} --batchsize {batchsize} --learning_rate {learning_rate} --n_epochs {n_epochs} --train_split {train_split} --test_split {test_split} --time_indices {time_indices} --printevery {print_every} --weight_decay {weight_decay} --model_module_name {model_module_name} --model_cls_name {model_cls_name} --loss_cls_name {loss_cls_name}
+    --transformation_cls_name {transformation_cls_name} --data_transform_cls_name {data_transform_cls_name}"
     
