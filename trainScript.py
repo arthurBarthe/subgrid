@@ -303,7 +303,7 @@ optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0)
 trainer = Trainer(net, device)
 trainer.criterion = criterion
 trainer.print_loss_every = print_loss_every
-for metric_name, metric_func in metrics:
+for metric_name, metric_func in metrics.items():
     trainer.register_metric(metric_name, metric_func)
 
 for i_epoch in range(n_epochs):
