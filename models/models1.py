@@ -132,6 +132,7 @@ class MLFlowNN(Module):
             self.width = width
             self.height = height
         self._log_structure = False
+        self._final_transformation = lambda x: x
 
     @property
     def n_layers(self) -> int:
@@ -145,14 +146,12 @@ class MLFlowNN(Module):
         self._n_layers = value
 
     @property
-    def final_transformation(self):
-        if hasattr(self, '_final_transformation'):
-            return self._final_transformation
-        else:
-            return lambda x: x
+    def transformation(self):
+        return self._final_transformation
 
-    @final_transformation.setter
-    def final_transformation(self, transformation):
+    @transformation.setter
+    def transformation(self, transformation):
+        print('hello')
         self._final_transformation = transformation
 
     @property
@@ -274,7 +273,8 @@ class MLFlowNN(Module):
         output = input
         for i_layer,  layer in enumerate(self.layers):
             output = layer(output)
-        output = self.final_transformation(output)
+        print('a')
+        output = self.transformation(output)
         return output
 
 
@@ -479,7 +479,9 @@ if __name__ == '__main__':
     # s = torch.sum(output)
     # print(s.item())
     # s.backward()
+    from transforms import SquareTransform
     
     net = Model4(2, 2*15*10, 15, 10)
+    net._final_transformation = SquareTransform()
     input_ = torch.randint(0, 10, (17, 2, 15, 10)).to(dtype=torch.float)
-    output = net(input_)    
+    output = net(input_)

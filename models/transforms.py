@@ -19,7 +19,7 @@ class Transform(Module, ABC):
     """Abstract Base Class for all transforms"""
 
     def __init__(self):
-        super(Transform).__init__()
+        super().__init__()
 
     @abstractmethod
     def transform(self, input):
