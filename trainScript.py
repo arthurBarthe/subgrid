@@ -264,8 +264,9 @@ net = model_cls(len(indices)*2, dataset.n_output_targets(),
 net.log_structure = True
 
 try:
-    transformation = getattr(models.transforms, transformation_cls_name)
-    net.transformation = transformation()
+    transformation_cls = getattr(models.transforms, transformation_cls_name)
+    transformation = transformation_cls()
+    net.transformation = transformation
 except AttributeError as e:
     raise type(e)('Could not find the specified transformation class: ' +
                   str(e))

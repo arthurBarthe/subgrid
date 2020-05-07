@@ -17,9 +17,16 @@ import torch
 
 class Transform(Module, ABC):
     """Abstract Base Class for all transforms"""
+
+    def __init__(self):
+        super(Transform).__init__()
+
     @abstractmethod
     def transform(self, input):
         pass
+
+    def forward(self, input_):
+        return self.transform(input_)
 
     @abstractmethod
     def __repr__(self):
@@ -29,6 +36,7 @@ class Transform(Module, ABC):
 class PrecisionTransform(Transform):
     def __init__(self, min_value=0.):
         self._min_value = min_value
+        super().__init__()
 
     @property
     def min_value(self):
