@@ -74,4 +74,4 @@ class SquareTransform(PrecisionTransform):
         return precision**2
 
     def __repr__(self):
-        return ''.join('SquareTransform(', str(self.min_value), ')')
+        return ''.join(('SquareTransform(', str(self.min_value), ')'))
