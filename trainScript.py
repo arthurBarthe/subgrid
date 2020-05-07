@@ -46,6 +46,8 @@ from train.base import Trainer
 # import losses
 import train.losses
 
+import models.transforms
+
 # import to parse CLI arguments
 import argparse
 
@@ -261,7 +263,7 @@ net = model_cls(len(indices)*2, dataset.n_output_targets(),
 # We only log the structure when the net is used in the training script
 net.log_structure = True
 try:
-    transformation = getattr(models_module, transformation_cls_name)
+    transformation = getattr(models.transforms, transformation_cls_name)
     net.transformation = transformation
 except AttributeError as e:
     raise type(e)('Could not find the specified transformation class: ' +
