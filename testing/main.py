@@ -83,7 +83,7 @@ model_file = client.download_artifacts(model_run.run_id,
 transformation_file = client.download_artifacts(model_run.run_id,
                                                 'models/transformation')
 data_transform_file = client.download_artifacts(model_run.run_id,
-                                                'model/data_transform')
+                                                'models/data_transform')
 with open(transformation_file, 'rb') as f:
     transformation = pickle.load(f)
 with open(data_transform_file, 'rb') as f:
