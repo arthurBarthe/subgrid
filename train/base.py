@@ -152,7 +152,7 @@ class Trainer:
         running_loss = RunningAverage()
         metrics_results = dict()
         for metric_name in self.metrics:
-            metrics_results = RunningAverage()
+            metrics_results[metric_name] = RunningAverage()
         for i_batch, batch in enumerate(dataloader):
             # Move batch to GPU
             X = batch[0].to(self._device, dtype=torch.float)
