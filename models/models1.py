@@ -131,6 +131,7 @@ class MLFlowNN(Module):
             self.image_size = width * height
             self.width = width
             self.height = height
+        self._log_structure = False
 
     @property
     def n_layers(self) -> int:
@@ -142,6 +143,25 @@ class MLFlowNN(Module):
     @n_layers.setter
     def n_layers(self, value: int) -> None:
         self._n_layers = value
+
+    @property
+    def final_transformation(self):
+        if hasattr(self, '_final_transformation'):
+            return self._final_transformation
+        else:
+            return lambda x: x
+
+    @final_transformation.setter
+    def final_transformation(self, transformation):
+        self._final_transformation = transformation
+
+    @property
+    def log_structure(self):
+        return self._log_structure
+
+    @log_structure.setter
+    def log_structure(self, value: bool):
+        self._log_structure = value
 
     def add_activation(self, activation: str) -> None:
         self.layers.append(self.activation_choices[activation])
@@ -248,15 +268,15 @@ class MLFlowNN(Module):
     def forward(self, input: torch.Tensor):
         """Overwrites the abstract method of the Module class."""
         # Log the params if it has not been done already.
-        if not self.logged_params:
+        if not self.logged_params and self.log_structure:
             self.log_params()
-        # Go through the layers
+        # Propagate through the layers
         output = input
         for i_layer,  layer in enumerate(self.layers):
             output = layer(output)
-        # Old version
-        # return output.reshape(-1, self.output_size)
+        output = self.final_transformation(output)
         return output
+
 
 class Divergence2d(Module):
     """Class that defines a fixed layer that produces the divergence of the
@@ -311,6 +331,7 @@ class Divergence2d(Module):
         res =  torch.stack((output1, output2), dim=1)
         res = res[:,:, 0, :, :]
         return res
+
 
 class Model2(MLFlowNN):
     def __init__(self, input_depth: int, output_size: int, 
