@@ -27,21 +27,24 @@ import torch
 from torch.utils.data import DataLoader, Subset
 import torch.optim as optim
 import torch.nn
+import torch.nn.functional as F
 
 # For plots
 import matplotlib.pyplot as plt
 
 
 # Import our Dataset class and neural network
-from data.datasets import RawData, MultipleTimeIndices, DatasetClippedScaler
-from data.datasets import RawDataFromXrDataset
+from data.datasets import RawDataFromXrDataset, DatasetTransformer
+import data.datasets
 
 # Import some utils functions
 from train.utils import DEVICE_TYPE, learning_rates_from_string
 
 # import training class
 from train.base import Trainer
-from train.losses import HeteroskedasticGaussianLoss
+
+# import losses
+import train.losses
 
 # import to parse CLI arguments
 import argparse
@@ -52,6 +55,7 @@ import tempfile
 
 # import to import the module containing the model
 import importlib
+import pickle
 
 
 
@@ -76,10 +80,16 @@ parser.add_argument('--train_split', type=float, default=0.8)
 parser.add_argument('--test_split', type=float, default=0.8)
 parser.add_argument('--time_indices', type=negative_int, nargs='*')
 parser.add_argument('--printevery', type=int, default=20)
-parser.add_argument('--weight_decay', type=float, default=0.1,
+parser.add_argument('--weight_decay', type=float, default=0.05,
                     help="Controls the weight decay on the linear layer")
 parser.add_argument('--model_module_name', type=str, default='models.models1')
 parser.add_argument('--model_cls_name', type=str, default='FullyCNN')
+parser.add_argument('--loss_cls_name', type=str,
+                    default='HeteroskedasticGaussianLoss')
+parser.add_argument('--transformation_cls_name', type=str,
+                    default='SquareTransform')
+parser.add_argument('--data_transform_cls_name', type=str,
+                    default='UniformScaler')
 params = parser.parse_args()
 
 # Log the experiment_id and run_id of the source dataset
@@ -97,6 +107,9 @@ train_split = params.train_split
 test_split = params.test_split
 model_module_name = params.model_module_name
 model_cls_name = params.model_cls_name
+loss_cls_name = params.loss_cls_name
+transformation_cls_name = params.transformation_cls_name
+data_transform_cls_name = params.data_transform_cls_name
 
 # Parameters specific to the input data
 # past specifies the indices from the past that are used for prediction
@@ -170,7 +183,7 @@ def inv_arctan_normalize(x, max_value):
 #                      np.sqrt(abs(xr_dataset['S_y'])))
 
 
-xr_dataset = xr_dataset / xr_dataset.std()
+# xr_dataset = xr_dataset / xr_dataset.std()
 
 # Convert to a pytorch dataset and specify which variables are input/output
 dataset = RawDataFromXrDataset(xr_dataset)
@@ -186,6 +199,18 @@ train_index = int(train_split * n_indices)
 test_index = int(test_split * n_indices)
 train_dataset = Subset(dataset, np.arange(train_index))
 test_dataset = Subset(dataset, np.arange(test_index, n_indices))
+
+# Apply some normalization
+try:
+    data_transform = getattr(data.datasets, data_transform_cls_name)
+except AttributeError as e:
+    raise type(e)('Could not find the dataset transform class: ' +
+                  str(e))
+# The following line allows to apply the transformation separately to
+# features and targets.
+dataset_transform = DatasetTransformer(data_transform)
+train_dataset = dataset_transform.fit_transform(train_dataset)
+test_dataset = dataset_transform.transform(test_dataset)
 
 
 def function_used_to_toggle_in_spyder():
@@ -225,14 +250,23 @@ try:
     models_module = importlib.import_module(model_module_name)
     model_cls = getattr(models_module, model_cls_name)
 except ModuleNotFoundError as e:
-    e.msg = 'Coud not find the specified model\'s module (' + e.msg + ')'
-    raise e
+    raise type(e)('Could not find the specified model class: ' +
+                  str(e))
 except AttributeError as e:
-    e.msg = 'Could not find the specified model\'s class (' + e.msg + ')'
+    raise type(e)('Could not find the specified model class: ' +
+                  str(e))
 
 net = model_cls(len(indices)*2, dataset.n_output_targets(),
                 height, width)
-print('----------*----------')
+# We only log the structure when the net is used in the training script
+net.log_structure = True
+try:
+    transformation = getattr(models_module, transformation_cls_name)
+    net.transformation = transformation
+except AttributeError as e:
+    raise type(e)('Could not find the specified transformation class: ' +
+                  str(e))
+print('--------------------')
 print(net)
 print('--------------------')
 print('***')
@@ -249,8 +283,10 @@ with open(os.path.join(data_location, models_directory,
 
 # Training------------
 # MSE criterion + Adam optimizer
-criterion = torch.nn.MSELoss()
-criterion = HeteroskedasticGaussianLoss()
+criterion = getattr(train.losses, loss_cls_name)
+
+# metrics saved independently of the training criterion
+metrics = {'mse': F.mse_loss}
 
 conv_layers = net.conv_layers
 params = [{'params': layer.parameters()} for layer in conv_layers]
@@ -265,6 +301,8 @@ optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0)
 trainer = Trainer(net, device)
 trainer.criterion = criterion
 trainer.print_loss_every = print_loss_every
+for metric_name, metric_func in metrics:
+    trainer.register_metric(metric_name, metric_func)
 
 for i_epoch in range(n_epochs):
     # Set to training mode
@@ -275,12 +313,16 @@ for i_epoch in range(n_epochs):
     # TODO remove clipping?
     train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer,
                                              clip=None)
-    test_loss = trainer.test(test_dataloader)
+    test_loss, metrics_results = trainer.test(test_dataloader)
     # Log the training loss
     print('Train loss for this epoch is ', train_loss)
     print('Test loss for this epoch is ', test_loss)
-    mlflow.log_metric('train mse', train_loss, i_epoch)
-    mlflow.log_metric('test mse', test_loss, i_epoch)
+    for metric_name, metric_value in metrics_results:
+        print('Test {} for this epoch is {}'.format(metric_name, metric_value))
+    mlflow.log_metric('train loss', train_loss, i_epoch)
+    mlflow.log_metric('test loss', test_loss, i_epoch)
+    mlflow.log_metrics(metrics_results)
+        
 
     # We also save a snapshot figure to the disk and log it
     # TODO rewrite this bit, looks confusing for now
@@ -314,6 +356,8 @@ for i_epoch in range(n_epochs):
     mlflow.log_param('n_epochs', i_epoch + 1)
 
 
+# FIN TRAINING ----------------------------------------------------------------
+
 # Save the trained model to disk
 print('Moving the network to the CPU before saving...')
 net.cpu()
@@ -322,10 +366,18 @@ full_path = os.path.join(data_location, models_directory, model_name)
 torch.save(net.state_dict(), full_path)
 print('Logging the neural network model...')
 print('Neural network saved and logged in the artifacts.')
-print('Now putting it back on the gpu')
 net.cuda(device)
 
-# FIN TRAINING -------
+# Save other parts of the model
+print('Saving other parts of the model')
+full_path = os.path.join(data_location, models_directory, 'data_transform')
+with open(full_path, 'wb') as f:
+    pickle.dump(data_transform, f)
+full_path = os.path.join(data_location, models_directory, 'transformation')
+with open(full_path, 'wb') as f:
+    pickle.dump(transformation, f)
+
+# DEBUT TEST ------------------------------------------------------------------
 
 # CORRELATION MAP ----
 u_v_surf = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
@@ -367,7 +419,7 @@ output_dataset = xr.Dataset({'u_surf': u_surf, 'v_surf': v_surf,
                              'S_ypred_scale': s_y_pred_scale,
                              'S_ypred': s_y_pred})
 
-# Save dataset
+# Save model output on the test dataset
 output_dataset.to_zarr(os.path.join(data_location, model_output_dir,
                                     'test_output'))
 

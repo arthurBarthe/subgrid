@@ -30,13 +30,19 @@ class Trainer:
         Sets the number of batches that the average loss is printed.
 
     :metrics: list,
-        List of metrics reported on the test data
+        List of metrics reported on the test data. These are distinct from
+        the criterion in the sense that they are not use for backpropagation,
+        they are only reported on the test dataset (although this might
+        change in the future).
+        Note: for now the passed metric are expected to be linear as we use
+        a running average to compute them.
     """
 
     def __init__(self, net: Module, device: torch.device):
         self._net = net
         self._device = device
         self._criterion = MSELoss()
+        self._metrics = dict()
         self._print_loss_every = 20
         self._locked = False
 
@@ -66,6 +72,9 @@ class Trainer:
     @print_loss_every.setter
     def print_loss_every(self, value: int):
         self._print_loss_every = value
+
+    def register_metric(self, metric_name, metric_func):
+        self._metrics[metric_name] = metric_func
 
     def train_for_one_epoch(self, dataloader: DataLoader, optimizer,
                             clip=None) -> float:
@@ -129,13 +138,17 @@ class Trainer:
 
         Returns
         ----------
-        float
+        (float, dict)
             The validation loss calculated over the provided data.
+            A dictionary of the computed metrics over the test dataset.
         """
         # TODO add something to check that the dataloader is different from
         # that used for the training
         self.net.eval()
         running_loss = RunningAverage()
+        metrics_results = dict()
+        for metric_name in self.metrics:
+            metrics_results = RunningAverage()
         for i_batch, batch in enumerate(dataloader):
             # Move batch to GPU
             X = batch[0].to(self._device, dtype=torch.float)
@@ -144,4 +157,10 @@ class Trainer:
             # Compute loss
             loss = self.criterion(Y, Y_hat)
             running_loss.update(loss.item(), X.size(0))
-        return running_loss.value
+            # Compute metrics
+            for metric_name, metric_func in self.metrics:
+                metrics_results[metric_name].update(metric_func(Y, Y_hat),
+                                                    X.size(0))
+        return running_loss.value, {metric_name: running_avg.value for
+                                    metric_name, running_avg in
+                                    metrics_results.items()}
