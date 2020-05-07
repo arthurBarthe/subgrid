@@ -246,6 +246,10 @@ class RawDataFromXrDataset(Dataset):
             features = features.to_array().data
             targets = self.xr_dataset[self.output_arrays].isel({self._index: index})
             targets = targets.to_array().data
+            # to_array method stacks variables along first dim, hence next line
+            if not isinstance(index, int):
+                features = features.swapaxes(0, 1)
+                targets = targets.swapaxes(0, 1)
         except KeyError as e:
             e.msg = e.msg + '\n Make sure you have defined the index, inputs,\
                 and outputs.'
@@ -502,7 +506,7 @@ if __name__ == '__main__':
     from xarray import Dataset as xrDataset
     from torch.utils.data import DataLoader
     da = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'y', 'x'))
-    da2 = DataArray(data=np.ones((20, 3, 4)), dims=('time', 'y', 'x'))
+    da2 = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'y', 'x'))
     da3 = DataArray(data=np.ones((20, 3, 4)) * 10, dims=('time', 'y', 'x'))
     da4 = DataArray(data=np.ones((20, 3, 4)) * 20, dims=('time', 'y', 'x'))
     ds = xrDataset({'in0': da, 'in1': da2,
