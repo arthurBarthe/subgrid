@@ -34,7 +34,7 @@ class Transform(Module, ABC):
 
 
 class PrecisionTransform(Transform):
-    def __init__(self, min_value=0.):
+    def __init__(self, min_value=0.01):
         self._min_value = min_value
         super().__init__()
 
