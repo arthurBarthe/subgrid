@@ -78,12 +78,7 @@ class LoggedTransformer:
             X = X.reshape((-1, prod(X.shape[1:])))
         mlflow.log_param(self.name, 'True')
         return self.transformer.inverse_transform(X).reshape(initial_shape)
-
-    def __getattr__(self, attr):
-        try:
-            return getattr(self.transformer, attr)
-        except AttributeError as e:
-            raise e(f'Attribute {attr} not found')
+    # TODO implement __getattr__ that uses self.transformer
 
 
 class DatasetTransformer:
