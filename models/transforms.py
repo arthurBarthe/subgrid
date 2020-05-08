@@ -70,7 +70,7 @@ class SoftPlusTransform(PrecisionTransform):
         return torch.log(1 + torch.exp(precision))
 
     def __repr__(self):
-        return ''.join('SoftPlusTransform(', str(self.min_value), ')')
+        return ''.join(('SoftPlusTransform(', str(self.min_value), ')'))
 
 
 class SquareTransform(PrecisionTransform):
