@@ -182,7 +182,7 @@ trainer.criterion = criterion
 
 # Training itself
 for i_epoch in range(n_epochs):
-    train_loss, metrics_results = trainer.train_for_one_epoch(train_dataloader, optimizer)
+    train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
     test_loss, metrics_results = trainer.test(test_dataloader)
     print('Epoch {}'.format(i_epoch))
     print('Train loss for this epoch is {}'.format(train_loss))
