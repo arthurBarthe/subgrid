@@ -129,7 +129,7 @@ train_dataset = Subset(dataset, np.arange(train_index))
 test_dataset = Subset(dataset, np.arange(test_index, len(dataset)))
 
 train_dataset = dataset_transformer.transform(train_dataset)
-test_dataset = dataset_transformer.transfom(test_dataset)
+test_dataset = dataset_transformer.transform(test_dataset)
 
 # TODO Allow multiple time indices.
 # test_dataset = MultipleTimeIndices(test_dataset)
