@@ -15,7 +15,7 @@ import numpy as np
 import xarray as xr
 from analysis.utils import select_run
 from train.utils import learning_rates_from_string
-from data.datasets import RawDataFromXrDataset
+from data.datasets import RawDataFromXrDataset, DatasetTransformer
 from train.base import Trainer
 from train.losses import HeteroskedasticGaussianLoss
 
@@ -136,6 +136,11 @@ train_index = int(train_split * len(dataset))
 test_index = int(test_split * len(dataset))
 train_dataset = Subset(dataset, np.arange(train_index))
 test_dataset = Subset(dataset, np.arange(test_index, len(dataset)))
+
+dataset_transformer = DatasetTransformer(data_transform)
+train_dataset = dataset_transformer.transform(train_dataset)
+test_dataset = dataset_transformer.transfom(test_dataset)
+
 # TODO Allow multiple time indices.
 # test_dataset = MultipleTimeIndices(test_dataset)
 test_dataset.time_indices = time_indices
