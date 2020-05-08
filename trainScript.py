@@ -149,43 +149,13 @@ device_type = DEVICE_TYPE.GPU if torch.cuda.is_available() \
 print('Selected device type: ', device_type.value)
 
 
-# FIN PARAMETERS -----
+# FIN PARAMETERS --------------------------------------------------------------
 
-# DATA----------------
+# DATA-------------------------------------------------------------------------
 # Load data from the store, according to experiment id and run id
 mlflow_client = mlflow.tracking.MlflowClient()
 data_file = mlflow_client.download_artifacts(params.run_id, 'forcing')
 xr_dataset = xr.open_zarr(data_file).load()
-
-# Rescale
-# TODO normalization should be logged as well as its inverse. Should only be
-# based on the training data.
-# xr_dataset = xr_dataset / xr_dataset.std()
-
-
-def arctan_normalize(x, max_value):
-    return np.arctan(x / max_value)
-
-
-def inv_arctan_normalize(x, max_value):
-    return torch.tan(x) * max_value
-
-
-# max_input = max(xr_dataset[['usurf', 'vsurf']].max()).item()
-# max_output = max(xr_dataset[['S_x', 'S_y']].max()).item()
-# xr_dataset['usurf'] = xr_dataset['usurf'] / xr_dataset
-# xr_dataset['vsurf'] = xr_dataset['vsurf'] / max_input
-# xr_dataset['S_x'] = xr_dataset['S_x'] / max_output
-# xr_dataset['S_y'] = xr_dataset['S_y'] / max_output
-
-# We transform the forcing by taking its square root (while conserving sign)
-# xr_dataset['S_x'] = (np.sign(xr_dataset['S_x']) *
-#                      np.sqrt(abs(xr_dataset['S_x'])))
-# xr_dataset['S_y'] = (np.sign(xr_dataset['S_y']) *
-#                      np.sqrt(abs(xr_dataset['S_y'])))
-
-
-# xr_dataset = xr_dataset / xr_dataset.std()
 
 # Convert to a pytorch dataset and specify which variables are input/output
 dataset = RawDataFromXrDataset(xr_dataset)
@@ -214,24 +184,6 @@ dataset_transform = DatasetTransformer(data_transform)
 train_dataset = dataset_transform.fit_transform(train_dataset)
 test_dataset = dataset_transform.transform(test_dataset)
 
-
-def function_used_to_toggle_in_spyder():
-    pass
-    # Apply basic normalization transforms (using the training data only)
-    # s = DatasetClippedScaler()
-    # s.fit(train_dataset)
-    # train_dataset = s.transform(train_dataset)
-    # test_dataset = s.transform(test_dataset)
-
-    # Specifies which time indices to use for the prediction
-    # train_dataset = MultipleTimeIndices(train_dataset)
-    # train_dataset.time_indices = indices
-    # test_dataset = MultipleTimeIndices(test_dataset)
-    # test_dataset.time_indices = indices
-    pass
-
-
-# Dataloaders are responsible for sending batches of data to the NN
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
                               shuffle=True)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
@@ -239,10 +191,10 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
 
 print('Size of training data: {}'.format(len(train_dataset)))
 print('Size of validation data : {}'.format(len(test_dataset)))
-# FIN DATA------------
+# FIN DATA---------------------------------------------------------------------
 
 
-# NEURAL NETWORK------
+# NEURAL NETWORK---------------------------------------------------------------
 # Remove *2 and make this to adapt to the dataset
 height = dataset.height
 width = dataset.width
@@ -283,10 +235,10 @@ with open(os.path.join(data_location, models_directory,
                        'nn_architecture.txt'), 'w') as f:
     print('Writing neural net architecture into txt file.')
     f.write(str(net))
-# FIN NEURAL NETWORK -
+# FIN NEURAL NETWORK ---------------------------------------------------------
 
 
-# Training------------
+# Training---------------------------------------------------------------------
 # MSE criterion + Adam optimizer
 criterion = getattr(train.losses, loss_cls_name)()
 
@@ -379,7 +331,7 @@ net.cuda(device)
 print('Saving other parts of the model')
 full_path = os.path.join(data_location, models_directory, 'data_transform')
 with open(full_path, 'wb') as f:
-    pickle.dump(data_transform, f)
+    pickle.dump(dataset_transform, f)
 full_path = os.path.join(data_location, models_directory, 'transformation')
 with open(full_path, 'wb') as f:
     pickle.dump(transformation, f)

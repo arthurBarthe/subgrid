@@ -30,15 +30,6 @@ import pickle
 
 from sys import modules
 
-
-def arctan_normalize(x, max_value):
-    return np.arctan(x / max_value)
-
-
-def inv_arctan_normalize(x, max_value):
-    return torch.tan(x) * max_value
-
-
 # Parse arguments
 # n_epochs : Number of epochs we fine-tune the model on the new data
 parser = argparse.ArgumentParser()
@@ -87,7 +78,7 @@ data_transform_file = client.download_artifacts(model_run.run_id,
 with open(transformation_file, 'rb') as f:
     transformation = pickle.load(f)
 with open(data_transform_file, 'rb') as f:
-    data_transform = pickle.load(f)
+    dataset_transformer = pickle.load(f)
 
 
 # Prompt user to select the test dataset
@@ -137,7 +128,7 @@ test_index = int(test_split * len(dataset))
 train_dataset = Subset(dataset, np.arange(train_index))
 test_dataset = Subset(dataset, np.arange(test_index, len(dataset)))
 
-dataset_transformer = DatasetTransformer(data_transform)
+dataset_transformer = dataset_transformer
 train_dataset = dataset_transformer.transform(train_dataset)
 test_dataset = dataset_transformer.transfom(test_dataset)
 
