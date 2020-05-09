@@ -38,7 +38,7 @@ parser.add_argument('--n_epochs', type=int, default=0)
 parser.add_argument('--lr_ratio', type=float, default=1)
 script_params = parser.parse_args()
 n_epochs = script_params.n_epochs
-lr_ratio = script_params.n_epochs
+lr_ratio = script_params.lr_ratio
 
 # Location used to write generated data before it is logged through MLFlow
 data_location = tempfile.mkdtemp(dir='/scratch/ag7531/temp/')
