@@ -195,9 +195,6 @@ print('Size of validation data : {}'.format(len(test_dataset)))
 
 
 # NEURAL NETWORK---------------------------------------------------------------
-# Remove *2 and make this to adapt to the dataset
-height = dataset.height
-width = dataset.width
 
 # Recover the model's class
 try:
@@ -210,8 +207,8 @@ except AttributeError as e:
     raise type(e)('Could not find the specified model class: ' +
                   str(e))
 
-net = model_cls(len(indices)*2, dataset.n_output_targets(),
-                height, width)
+net = model_cls(dataset.n_features, dataset.n_targets, dataset.height, 
+                dataset.width)
 # We only log the structure when the net is used in the training script
 net.log_structure = True
 
