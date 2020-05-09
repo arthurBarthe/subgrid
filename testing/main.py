@@ -152,7 +152,8 @@ except ModuleNotFoundError as e:
         defined.' + e.msg
 except AttributeError as e:
     e.msg = 'Could not retrieve the model\'s class. ' + e.msg
-net = model_cls(2 * len(time_indices), dataset.n_output_targets(),
+
+net = model_cls(dataset.n_features, dataset.n_targets,
                 height, width, True)
 net._final_transformation = transformation
 
