@@ -35,9 +35,10 @@ from sys import modules
 # n_epochs : Number of epochs we fine-tune the model on the new data
 parser = argparse.ArgumentParser()
 parser.add_argument('--n_epochs', type=int, default=0)
+parser.add_argument('--lr_ratio', type=float, default=1)
 script_params = parser.parse_args()
-
 n_epochs = script_params.n_epochs
+lr_ratio = script_params.n_epochs
 
 # Location used to write generated data before it is logged through MLFlow
 data_location = tempfile.mkdtemp(dir='/scratch/ag7531/temp/')
@@ -66,7 +67,7 @@ loss_cls_name = model_run['params.loss_cls_name']
 learning_rates = learning_rates_from_string(model_run['params.learning_rate'])
 weight_decay = float(model_run['params.weight_decay'])
 
-learning_rate = learning_rates[0] / 100
+learning_rate = learning_rates[0] * lr_ratio
 
 # Load the model's file
 client = mlflow.tracking.MlflowClient()
