@@ -60,17 +60,13 @@ class LoggedTransformer:
     def fit(self, X: np.ndarray):
         """Fit method. Note that we allow for more general shapes of data
         compared to standard sklearn transformers."""
-        if X.ndim > 2:
-            X = X.reshape((-1, prod(X.shape[1:])))
+        # if X.ndim > 2:
+        #     X = X.reshape((-1, prod(X.shape[1:])))
         return self.transformer.fit(X)
 
     def transform(self, X: np.ndarray):
         """Transform method. Logs some info through mlflow."""
-        initial_shape = X.shape
-        if X.ndim > 2:
-            X = X.reshape((-1, prod(X.shape[1:])))
-        mlflow.log_param(self.name, 'True')
-        return self.transformer.transform(X).reshape(initial_shape)
+        return self.transformer.transform(X)
 
     def inverse_transform(self, X: np.ndarray):
         initial_shape = X.shape
@@ -78,7 +74,15 @@ class LoggedTransformer:
             X = X.reshape((-1, prod(X.shape[1:])))
         mlflow.log_param(self.name, 'True')
         return self.transformer.inverse_transform(X).reshape(initial_shape)
-    # TODO implement __getattr__ that uses self.transformer
+
+    def __getattr__(self, attr):
+        if 'transformer' in self.__dict__:
+            try:
+                return getattr(self.transformer, attr)
+            except AttributeError as e:
+                raise e
+        else:
+            raise AttributeError()
 
 
 class DatasetTransformer:
@@ -97,10 +101,6 @@ class DatasetTransformer:
                                                 'targets')
         self.transformers['features'] = features_transformer
         self.transformers['targets'] = targets_transformer
-
-    @property
-    def targets_transformer(self):
-        return self.transformers['targets']
 
     def fit(self, X: Dataset):
         features, targets = X[:]
@@ -139,6 +139,25 @@ class UniformScaler:
     def transform(self, X: np.ndarray):
         assert(self._std is not None)
         return X / self.std
+
+    def fit_transform(self, X: np.ndarray):
+        self.fit(X)
+        return self.transform(X)
+
+
+class PerChannelNormalizer:
+    def __init__(self):
+        self._std = None
+        self._mean = None
+
+    def fit(self, X: np.ndarray):
+        print(X.shape)
+        self._mean = np.mean(X, axis=(0, 2, 3), keepdims=True)
+        self._std = np.std(X, axis=(0, 2, 3), keepdims=True)
+
+    def transform(self, X: np.ndarray):
+        assert(self._mean is not None)
+        return (X - self._mean) / self._std
 
     def fit_transform(self, X: np.ndarray):
         self.fit(X)
@@ -223,9 +242,37 @@ class RawDataFromXrDataset(Dataset):
     def output_arrays(self):
         return self._output_arrays
 
+    @output_arrays.setter
+    def output_arrays(self, str_list: list):
+        for array_name in str_list:
+            self._check_varname(array_name)
+        self._output_arrays = str_list
+
     @property
     def input_arrays(self):
         return self._input_arrays
+
+    @input_arrays.setter
+    def input_arrays(self, str_list):
+        for array_name in str_list:
+            self._check_varname(array_name)
+        self._input_arrays = str_list
+
+    @property
+    def features(self):
+        return self.xr_dataset[self.input_arrays]
+
+    @property
+    def targets(self):
+        return self.xr_dataset[self.output_arrays]
+
+    @property
+    def n_targets(self):
+        return len(self.targets)
+
+    @property
+    def n_features(self):
+        return len(self.features)
 
     def add_output(self, varname):
         self._check_varname(varname)
@@ -250,28 +297,42 @@ class RawDataFromXrDataset(Dataset):
                 and outputs.'
             raise e
         return features, targets
-
-    def n_output_targets(self):
-        logging.warning('Depreciated call to \
-                        RawDataFromXrDataset.n_output_targets(). \
-                        To be removed.')
-        t = self[0][1]
-        return t.shape[0]
     
     @property
     def width(self):
-        return len(self.xr_dataset['xu_ocean'])
+        candidates = []
+        for dim_name in self.xr_dataset.dims:
+            if dim_name.startswith('x'):
+                candidates.append(dim_name)
+        if len(candidates) == 1:
+            x_dim_name = candidates[0]
+        elif 'x' in candidates:
+            x_dim_name = 'x'
+        else:
+            raise Exception('Could not determine width axis according \
+                            to convention')
+        return len(self.xr_dataset[x_dim_name])
 
     @property
     def height(self):
-        return len(self.xr_dataset['yu_ocean'])
+        candidates = []
+        for dim_name in self.xr_dataset.dims:
+            if dim_name.startswith('y'):
+                candidates.append(dim_name)
+        if len(candidates) == 1:
+            y_dim_name = candidates[0]
+        elif 'y' in candidates:
+            y_dim_name = 'y'
+        else:
+            raise Exception('Could not determine width axis according \
+                            to convention')
+        return len(self.xr_dataset[y_dim_name])
 
     def __len__(self):
         try:
             return len(self.xr_dataset[self._index])
         except KeyError as e:
-            e.msg = e.msg + '\n Make sure you have defined the index.'
-            raise e
+            raise type(e)('Make sure you have defined the index: ' + str(e))
 
     def _check_varname(self, var_name: str):
         if var_name not in self.xr_dataset:
@@ -500,15 +561,15 @@ if __name__ == '__main__':
     from xarray import DataArray
     from xarray import Dataset as xrDataset
     from torch.utils.data import DataLoader
-    da = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'y', 'x'))
-    da2 = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'y', 'x'))
-    da3 = DataArray(data=np.ones((20, 3, 4)) * 10, dims=('time', 'y', 'x'))
-    da4 = DataArray(data=np.ones((20, 3, 4)) * 20, dims=('time', 'y', 'x'))
+    da = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'y', 'xu'))
+    da2 = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'y', 'xu'))
+    da3 = DataArray(data=np.ones((20, 3, 4)) * 10, dims=('time', 'y', 'xu'))
+    da4 = DataArray(data=np.ones((20, 3, 4)) * 20, dims=('time', 'y', 'xu'))
     ds = xrDataset({'in0': da, 'in1': da2,
                     'out0': da3, 'out1': da4}, 
                    coords={'time': np.arange(20),
-                           'x': [0, 5, 10, 15], 
-                           'y': [0, 5, 10]})
+                           'xu': [0, 5, 10, 15], 
+                           'yu': [0, 5, 10]})
     dataset = RawDataFromXrDataset(ds)
     dataset.index = 'time'
     dataset.add_input('in0')
