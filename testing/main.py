@@ -87,7 +87,7 @@ with open(data_transform_file, 'rb') as f:
 mlflow.set_experiment('forcingdata')
 cols = ['params.lat_min', 'params.lat_max', 'params.long_min',
         'params.long_max', 'params.scale']
-data_run = select_run(sort_by=None, cols=cols)
+data_run = select_run(cols=cols)
 # TODO check that the run_id is different from source_data_id
 client = mlflow.tracking.MlflowClient()
 data_file = client.download_artifacts(data_run.run_id, 'forcing')
@@ -105,25 +105,16 @@ mlflow.log_param('model_run_id', model_run.run_id)
 mlflow.log_param('data_run_id', data_run.run_id)
 mlflow.log_param('n_epochs', n_epochs)
 
-# Generate the dataset
+# Read the dataset file
 xr_dataset = xr.open_zarr(data_file).load()
 
-# We transform the forcing
-# xr_dataset['S_x'] = (np.sign(xr_dataset['S_x']) *
-#                      np.sqrt(abs(xr_dataset['S_x'])))
-# xr_dataset['S_y'] = (np.sign(xr_dataset['S_y']) *
-#                      np.sqrt(abs(xr_dataset['S_y'])))
-
-# Normalization step
+# To PyTorch Dataset
 dataset = RawDataFromXrDataset(xr_dataset)
 dataset.index = 'time'
 dataset.add_input('usurf')
 dataset.add_input('vsurf')
 dataset.add_output('S_x')
 dataset.add_output('S_y')
-
-width = dataset.width
-height = dataset.height
 
 train_index = int(train_split * len(dataset))
 test_index = int(test_split * len(dataset))
@@ -154,8 +145,8 @@ except ModuleNotFoundError as e:
 except AttributeError as e:
     e.msg = 'Could not retrieve the model\'s class. ' + e.msg
 
-net = model_cls(dataset.n_features, dataset.n_targets,
-                height, width, True)
+net = model_cls(dataset.n_features, dataset.n_targets, dataset.height,
+                dataset.width, True)
 net._final_transformation = transformation
 
 net.to(device=device)
@@ -170,15 +161,17 @@ except AttributeError as e:
     raise type(e)('Could not find the loss class used for training.')
 
 
-print('width: {}, height: {}'.format(width, height))
+print('width: {}, height: {}'.format(dataset.width, dataset.height))
 # If the model has defined a linear layer we train that only. Otherwise
 # we train all the parameters for now
 if net.linear_layer is not None:
+    print('Training final layer only')
     parameters = net.linear_layer.parameters()
 else:
+    print('Fine-tuning whole network')
     parameters = net.parameters()
 optimizer = torch.optim.Adam(parameters, lr=learning_rate,
-                             weight_decay=weight_decay)
+                             weight_decay=0)
 net.to(device)
 trainer = Trainer(net, device)
 trainer.criterion = criterion
