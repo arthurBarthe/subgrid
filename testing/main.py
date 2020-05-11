@@ -186,6 +186,11 @@ for i_epoch in range(n_epochs):
     mlflow.log_metric('train mse', train_loss, i_epoch)
     mlflow.log_metric('test mse', test_loss, i_epoch)
 
+# Final test
+train_loss = trainer.test(train_dataloader)
+test_loss, metrics_results = trainer.test(test_dataloader)
+print(f'Final train loss is {train_loss}')
+print(f'Final test loss is {test_loss}')
 
 # Do the predictions for that dataset using the loaded model
 velocities = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
