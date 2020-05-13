@@ -36,7 +36,8 @@ import matplotlib.pyplot as plt
 
 # Import our Dataset class and neural network
 from data.datasets import (MixedDataFromXrDataset, DatasetTransformer,
-                           RawDataFromXrDataset, ConcatDatasetWithTransforms)
+                           RawDataFromXrDataset, ConcatDatasetWithTransforms,
+                           Subset_)
 import data.datasets
 
 # Import some utils functions
@@ -179,8 +180,8 @@ for dataset in xr_datasets:
     datasets.append(dataset)
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
-    train_dataset = Subset(dataset, np.arange(train_index))
-    test_dataset = Subset(dataset, np.arange(test_index, len(dataset)))
+    train_dataset = Subset_(dataset, np.arange(train_index))
+    test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
     transform = DatasetTransformer(data_transform_cls)
     transform.fit(train_dataset)
     transforms.append(transform)

@@ -343,6 +343,14 @@ class RawDataFromXrDataset(Dataset):
             raise ValueError('Variable already added as input or output.')
 
 
+class Subset_(Subset):
+    def __init__(self, dataset, indices):
+        super(Subset_).__init__(dataset, indices)
+
+    def __getattr__(self, attr):
+        if hasattr(self.dataset, attr):
+            return self.dataset.attr
+
 
 class ConcatDatasetWithTransforms(ConcatDataset):
     def __init__(self, datasets, transforms, enforce_same_dims=True):
