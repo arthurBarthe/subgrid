@@ -171,6 +171,11 @@ except AttributeError as e:
                   str(e))
 for dataset in xr_datasets:
     dataset = RawDataFromXrDataset(dataset)
+    datasets.index = 'time'
+    datasets.add_input('usurf')
+    datasets.add_input('vsurf')
+    datasets.add_output('S_x')
+    datasets.add_output('S_y')
     datasets.append(dataset)
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
