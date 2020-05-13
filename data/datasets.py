@@ -345,15 +345,23 @@ class RawDataFromXrDataset(Dataset):
 
 
 class ConcatDatasetWithTransforms(ConcatDataset):
-    def __init__(self, datasets, transforms):
+    def __init__(self, datasets, transforms, enforce_same_dims=True):
         super().__init__(datasets)
         self.transforms = transforms
+        self.enforce_same_dims = enforce_same_dims
+        if enforce_same_dims:
+            heights = [dataset.height for dataset in self.datasets]
+            widths = [dataset.width for dataset in self.datasets]
+        self.height = min(heights)
+        self.width = min(widths)
         
     def _get_dataset_idx(self, index: int):
         return bisect.bisect_right(self.cumulative_sizes, index)
 
     def __getitem__(self, index: int):
         result = super().__getitem__(index)
+        if self.enforce_same_dims:
+            result = result[:, :self.height, :self.width]
         dataset_idx = self._get_dataset_idx(index)
         return self.transforms[dataset_idx].transform(result)
 
