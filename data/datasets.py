@@ -353,7 +353,7 @@ class ConcatDatasetWithTransforms(ConcatDataset):
     def __getitem__(self, index: int):
         result = super().__getitem__(index)
         dataset_idx = self._get_dataset_idx(index)
-        return self.transforms[dataset_idx](result)
+        return self.transforms[dataset_idx].transform(result)
 
 
 class LensDescriptor:
