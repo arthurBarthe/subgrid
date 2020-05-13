@@ -5,7 +5,7 @@ Created on Wed Jan 29 18:38:40 2020
 @author: Arthur
 """
 from torch.utils.data import Dataset, DataLoader, ConcatDataset
-    import numpy as np
+import numpy as np
 import os.path
 import matplotlib.pyplot as plt
 import mlflow
@@ -477,7 +477,7 @@ class MixedDataFromXrDataset(MixedDatasets):
 
     @property
     def n_targets(self):
-        n_tragets = [d.n_targets for d in self.datasets]
+        n_targets = [d.n_targets for d in self.datasets]
         if not self.all_equal(n_targets):
             raise ValueError('All datasets do not have the same number of \
                              targets')
