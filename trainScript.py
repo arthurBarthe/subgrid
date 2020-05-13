@@ -176,7 +176,7 @@ for dataset in xr_datasets:
     dataset.add_input('vsurf')
     dataset.add_output('S_x')
     dataset.add_output('S_y')
-    dataset.append(datasets)
+    datasets.append(dataset)
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
     train_dataset = Subset(dataset, np.arange(train_index))
