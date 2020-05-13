@@ -152,8 +152,10 @@ class PerChannelNormalizer:
         self._mean = None
 
     def fit(self, X: np.ndarray):
-        self._mean = np.mean(X, axis=(0, 2, 3), keepdims=True)
-        self._std = np.std(X, axis=(0, 2, 3), keepdims=True)
+        mean = np.mean(X, axis=(0, 2, 3), keepdims=True)
+        std = np.std(X, axis=(0, 2, 3), keepdims=True)
+        self._mean = mean.reshape(mean.shape[1:])
+        self._std = std.reshape(std.shape[1:])
 
     def transform(self, X: np.ndarray):
         assert(self._mean is not None)
@@ -753,4 +755,4 @@ if __name__ == '__main__':
     dataset.add_output('out0')
     dataset.add_output('out1')
     
-    loader = DataLoader(dataset, batch_size=3, drop_last=True)
+    loader = DataLoader(dataset, batch_size=7, drop_last=True)
