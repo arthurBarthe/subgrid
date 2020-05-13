@@ -4,7 +4,7 @@ Created on Wed Jan 29 18:38:40 2020
 
 @author: Arthur
 """
-from torch.utils.data import Dataset, DataLoader, ConcatDataset
+from torch.utils.data import Dataset, DataLoader, ConcatDataset, Subset
 import numpy as np
 import os.path
 import matplotlib.pyplot as plt
@@ -321,7 +321,7 @@ class RawDataFromXrDataset(Dataset):
             targets = self.targets.isel({self._index: index})
             targets = targets.to_array().data
             # to_array method stacks variables along first dim, hence next line
-            if not isinstance(index, int):
+            if not isinstance(index, (int, np.int64, np.int_)):
                 features = features.swapaxes(0, 1)
                 targets = targets.swapaxes(0, 1)
         except KeyError as e:
@@ -739,10 +739,11 @@ if __name__ == '__main__':
     from xarray import DataArray
     from xarray import Dataset as xrDataset
     from torch.utils.data import DataLoader
-    da = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'yu', 'xu'))
-    da2 = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'yu', 'xu'))
-    da3 = DataArray(data=np.ones((20, 3, 4)) * 10, dims=('time', 'yu', 'xu'))
-    da4 = DataArray(data=np.ones((20, 3, 4)) * 20, dims=('time', 'yu', 'xu'))
+    from numpy.random import randint
+    da = DataArray(data=randint(0, 10, (20, 3, 4)), dims=('time', 'yu', 'xu'))
+    da2 = DataArray(data=randint(0, 3, (20, 3, 4)), dims=('time', 'yu', 'xu'))
+    da3 = DataArray(data=randint(0, 100, (20, 3, 4)) * 10, dims=('time', 'yu', 'xu'))
+    da4 = DataArray(data=randint(0, 2, (20, 3, 4)) * 20, dims=('time', 'yu', 'xu'))
     ds = xrDataset({'in0': da, 'in1': da2,
                     'out0': da3, 'out1': da4}, 
                    coords={'time': np.arange(20),
@@ -756,3 +757,9 @@ if __name__ == '__main__':
     dataset.add_output('out1')
     
     loader = DataLoader(dataset, batch_size=7, drop_last=True)
+    dataset2 = dataset
+    t = DatasetTransformer(PerChannelNormalizer)
+    train_dataset = Subset(dataset, np.arange(5))
+    t.fit(train_dataset)
+    datasets = [dataset, dataset2]
+    c = ConcatDatasetWithTransforms([train_dataset, train_dataset], [t, t])
