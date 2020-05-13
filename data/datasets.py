@@ -371,7 +371,8 @@ class ConcatDatasetWithTransforms(ConcatDataset):
     def __getitem__(self, index: int):
         result = super().__getitem__(index)
         if self.enforce_same_dims:
-            result = result[:, :self.height, :self.width]
+            result = (result[0][:, :self.height, :self.width],
+                      result[1][:, :self.height, :self.width])
         dataset_idx = self._get_dataset_idx(index)
         return self.transforms[dataset_idx].transform(result)
 
