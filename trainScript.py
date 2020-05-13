@@ -25,7 +25,6 @@ import os.path
 # For neural networks
 import torch
 from torch.utils.data import DataLoader, Subset
-from torchvision.transforms import Normalize
 
 import torch.optim as optim
 import torch.nn
