@@ -345,7 +345,7 @@ class RawDataFromXrDataset(Dataset):
 
 class Subset_(Subset):
     def __init__(self, dataset, indices):
-        super(Subset_).__init__(dataset, indices)
+        super(Subset_, self).__init__(dataset, indices)
 
     def __getattr__(self, attr):
         if hasattr(self.dataset, attr):
