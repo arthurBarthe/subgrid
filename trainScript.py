@@ -171,12 +171,12 @@ except AttributeError as e:
                   str(e))
 for dataset in xr_datasets:
     dataset = RawDataFromXrDataset(dataset)
-    datasets.index = 'time'
-    datasets.add_input('usurf')
-    datasets.add_input('vsurf')
-    datasets.add_output('S_x')
-    datasets.add_output('S_y')
-    datasets.append(dataset)
+    dataset.index = 'time'
+    dataset.add_input('usurf')
+    dataset.add_input('vsurf')
+    dataset.add_output('S_x')
+    dataset.add_output('S_y')
+    dataset.append(datasets)
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
     train_dataset = Subset(dataset, np.arange(train_index))
@@ -189,45 +189,7 @@ for dataset in xr_datasets:
 train_dataset = ConcatDatasetWithTransforms(train_datasets, transforms)
 test_dataset = ConcatDatasetWithTransforms(test_datasets, transforms)
 
-#---------
-# n_indices = len(datasets)
-# train_index = int(train_split * n_indices)
-# test_index = int(test_split * n_indices)
-# # Extract the run ids for the datasets to use in training
-# run_ids_str = params.run_id
-# run_ids = run_ids_from_string(run_ids_str)
-# # Load data from the store, according to experiment id and run id
-# xr_datasets = load_data_from_runs(run_ids) 
-# transforms = list()
-# for dataset in xr_datasets:
-#     mean = dataset.isel(time=slice(0, train_index)).mean()
-#     std = dataset.isel(time=slice(0, train_index)).std()
-#     transforms.append(Normalize(mean, std))
-
-# # Convert to a pytorch dataset and specify which variables are input/output
-# datasets = MixedDataFromXrDataset(xr_datasets, 'time', transforms)
-# datasets.index = 'time'
-# datasets.add_input('usurf')
-# datasets.add_input('vsurf')
-# datasets.add_output('S_x')
-# datasets.add_output('S_y')
-
-# # Split train/test
-# train_dataset = Subset(datasets, np.arange(train_index))
-# test_dataset = Subset(datasets, np.arange(test_index, n_indices))
-
-# # Apply some normalization
-# try:
-#     data_transform = getattr(data.datasets, data_transform_cls_name)
-# except AttributeError as e:
-#     raise type(e)('Could not find the dataset transform class: ' +
-#                   str(e))
-# # The following line allows to apply the transformation separately to
-# # features and targets.
-# dataset_transform = DatasetTransformer(data_transform)
-# train_dataset = dataset_transform.fit_transform(train_dataset_raw)
-# test_dataset = dataset_transform.transform(test_dataset_raw)
-
+# Dataloaders
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
                               shuffle=True)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
