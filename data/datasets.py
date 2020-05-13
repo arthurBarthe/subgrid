@@ -348,7 +348,7 @@ class ConcatDatasetWithTransforms(ConcatDataset):
         self.transforms = transforms
         
     def _get_dataset_idx(self, index: int):
-        return bisect.bisect_right(self.cumulative_sizes, idx)
+        return bisect.bisect_right(self.cumulative_sizes, index)
 
     def __getitem__(self, index: int):
         result = super().__getitem__(index)
