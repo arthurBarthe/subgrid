@@ -4,14 +4,15 @@ Created on Wed Jan 29 18:38:40 2020
 
 @author: Arthur
 """
-from torch.utils.data import Dataset, DataLoader
-import numpy as np
+from torch.utils.data import Dataset, DataLoader, ConcatDataset
+    import numpy as np
 import os.path
 import matplotlib.pyplot as plt
 import mlflow
 # from sklearn.preprocessing import StandardScaler
 import xarray as xr
 import logging
+import bisect
 
 
 def call_only_once(f):
@@ -108,11 +109,11 @@ class DatasetTransformer:
         self.transformers['targets'].fit(targets)
         return self
 
-    def transform(self, X: Dataset):
-        features, targets = X[:]
+    def transform(self, X):
+        features, targets = X
         new_features = self.transformers['features'].transform(features)
         new_targets = self.transformers['targets'].transform(targets)
-        return FeaturesTargetsDataset(new_features, new_targets)
+        return new_features, new_targets
 
     def fit_transform(self, X: Dataset):
         self.fit(X)
@@ -151,7 +152,6 @@ class PerChannelNormalizer:
         self._mean = None
 
     def fit(self, X: np.ndarray):
-        print(X.shape)
         self._mean = np.mean(X, axis=(0, 2, 3), keepdims=True)
         self._std = np.std(X, axis=(0, 2, 3), keepdims=True)
 
@@ -223,7 +223,7 @@ class MLFLowPreprocessing(Dataset):
 
 class RawDataFromXrDataset(Dataset):
     """This class allows to define a Pytorch Dataset based on an xarray 
-    dataset easily."""
+    dataset easily, specifying features and targets."""
     def __init__(self, dataset: xr.Dataset):
         self.xr_dataset = dataset
         self._input_arrays = list()
@@ -282,22 +282,6 @@ class RawDataFromXrDataset(Dataset):
         self._check_varname(varname)
         self._input_arrays.append(varname)
 
-    def __getitem__(self, index):
-        try:
-            features = self.xr_dataset[self.input_arrays].isel({self._index: index})
-            features = features.to_array().data
-            targets = self.xr_dataset[self.output_arrays].isel({self._index: index})
-            targets = targets.to_array().data
-            # to_array method stacks variables along first dim, hence next line
-            if not isinstance(index, int):
-                features = features.swapaxes(0, 1)
-                targets = targets.swapaxes(0, 1)
-        except KeyError as e:
-            e.msg = e.msg + '\n Make sure you have defined the index, inputs,\
-                and outputs.'
-            raise e
-        return features, targets
-    
     @property
     def width(self):
         candidates = []
@@ -328,6 +312,22 @@ class RawDataFromXrDataset(Dataset):
                             to convention')
         return len(self.xr_dataset[y_dim_name])
 
+    def __getitem__(self, index):
+        try:
+            features = self.features.isel({self._index: index})
+            features = features.to_array().data
+            targets = self.targets.isel({self._index: index})
+            targets = targets.to_array().data
+            # to_array method stacks variables along first dim, hence next line
+            if not isinstance(index, int):
+                features = features.swapaxes(0, 1)
+                targets = targets.swapaxes(0, 1)
+        except KeyError as e:
+            e.msg = e.msg + '\n Make sure you have defined the index, inputs,\
+                and outputs.'
+            raise e
+        return features, targets
+
     def __len__(self):
         try:
             return len(self.xr_dataset[self._index])
@@ -339,6 +339,182 @@ class RawDataFromXrDataset(Dataset):
             raise KeyError('Variable not in the xarray dataset.')
         if var_name in self._input_arrays or var_name in self._output_arrays:
             raise ValueError('Variable already added as input or output.')
+
+
+
+class ConcatDatasetWithTransforms(ConcatDataset):
+    def __init__(self, datasets, transforms):
+        super().__init__(datasets)
+        self.transforms = transforms
+        
+    def _get_dataset_idx(self, index: int):
+        return bisect.bisect_right(self.cumulative_sizes, idx)
+
+    def __getitem__(self, index: int):
+        result = super().__getitem__(index)
+        dataset_idx = self._get_dataset_idx(index)
+        return self.transforms[dataset_idx](result)
+
+
+class LensDescriptor:
+    def __get__(self, obj, type=None):
+        lens = np.array([len(dataset) for dataset in obj.datasets])
+        obj.__dict__[self.name] = lens
+        return lens
+
+    def __set_name__(self, owner, name):
+        self.name = name
+
+
+class RatiosDescriptor:
+    def __get__(self, obj, type=None):
+        if not obj.balanced:
+            ratios = (obj.lens * obj.precision) // np.min(obj.lens)
+        else:
+            ratios = np.ones((len(obj.lens),))
+        obj.__dict__[self.name] = ratios
+        return ratios
+
+    def __set_name__(self, owner, name):
+        self.name = name
+
+
+class MixedDatasets(Dataset):
+    """Similar to the ConcatDataset from pytorch, with the difference that 
+    the datasets are not concatenated one after another, but instead mixed.
+    For instance if we mix two datasets d1 and d2 that have the same size,
+    and d = MixedDatasets((d1, d2)), then d[0] returns the first element of 
+    d1, d[1] returns the first element of d2, d[2] returns the second element
+    of d1, and so on. In the case where the two datasets do not have the same
+    size, see the __getitem__ documentation for more information of selection
+    behaviour."""
+    lens = LensDescriptor()
+    ratios = RatiosDescriptor()
+
+    def __init__(self, datasets, transforms=None, balanced=True):
+        self.datasets = datasets
+        self.precision = 1
+        self.transforms = transforms
+        self.balanced = balanced
+
+    @property
+    def datasets(self):
+        return self._datasets
+
+    @datasets.setter
+    def datasets(self, datasets):
+        self._datasets = datasets
+        # Delete instance attribute lens if it exists so that the descriptor
+        # is called on next access to re-compute
+        self.__dict__.pop('lens', None)
+        self.__dict__.pop('ratios', None)
+
+    @property
+    def precision(self):
+        return self._precision
+
+    @precision.setter
+    def precision(self, value: int):
+        self._precision = value
+        self.__dict__.pop('ratios', None)
+
+    @property
+    def balanced(self):
+        return self._balanced
+
+    @balanced.setter
+    def balanced(self, balanced):
+        self._balanced = balanced
+        self.__dict__.pop('ratios', None)
+
+    def __len__(self):
+        return min(self.lens // self.ratios) * np.sum(self.ratios)
+
+    def __getitem__(self, index):
+        cum_sum = np.cumsum(self.ratios)
+        remainer = index % cum_sum[-1]
+        dataset_idx = bisect.bisect_right(cum_sum, remainer)
+        sub_idx = index // cum_sum[-1]
+        if self.transforms is not None:
+            transform = self.transforms[dataset_idx]
+        else:
+            transform = lambda x: x
+        return transform(self.datasets[dataset_idx][sub_idx * cum_sum[-1]])
+
+
+class MixedDataFromXrDataset(MixedDatasets):
+    def __init__(self, datasets, index: str, transforms):
+        self.datasets = list(map(RawDataFromXrDataset, datasets))
+        self.index = index
+        super().__init__(self.datasets, transforms)
+
+    @staticmethod
+    def all_equal(l):
+        v = l[0]
+        for value in l:
+            if value != v:
+                return False
+        return True
+
+    @property
+    def features(self):
+        for dataset in self.datasets:
+            yield dataset.features
+
+    @property
+    def targets(self):
+        for dataset in self.datasets:
+            yield dataset.targets
+
+    @property
+    def n_features(self):
+        n_features = [d.n_features for d in self.datasets]
+        if not self.all_equal(n_features):
+            raise ValueError('All datasets do not have the same number of \
+                             features')
+        else:
+            return n_features[0]
+
+    @property
+    def n_targets(self):
+        n_tragets = [d.n_targets for d in self.datasets]
+        if not self.all_equal(n_targets):
+            raise ValueError('All datasets do not have the same number of \
+                             targets')
+        else:
+            return n_targets[0]
+
+    @property
+    def height(self):
+        heights = [dataset.height for dataset in self.datasets]
+        if not self.all_equal(heights):
+            logging.warn('Concatenated datasets do not have the same height')
+        return heights[0]
+
+    @property
+    def width(self):
+        widths = [dataset.width for dataset in self.datasets]
+        if not self.all_equal(widths):
+            logging.warn('Concatenated datasets do not have the same height')
+        return widths[0]
+
+    def add_input(self, var_name: str) -> None:
+        for dataset in self.datasets:
+            dataset.add_input(var_name)
+
+    def add_output(self, var_name: str) -> None:
+        for dataset in self.datasets:
+            dataset.add_output(var_name)
+
+    @property
+    def index(self):
+        for dataset in self.datasets:
+            yield dataset.index
+
+    @index.setter
+    def index(self, index: str):
+        for dataset in self.datasets:
+            dataset.index = index
 
 
 class RawData(Dataset):
@@ -561,10 +737,10 @@ if __name__ == '__main__':
     from xarray import DataArray
     from xarray import Dataset as xrDataset
     from torch.utils.data import DataLoader
-    da = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'y', 'xu'))
-    da2 = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'y', 'xu'))
-    da3 = DataArray(data=np.ones((20, 3, 4)) * 10, dims=('time', 'y', 'xu'))
-    da4 = DataArray(data=np.ones((20, 3, 4)) * 20, dims=('time', 'y', 'xu'))
+    da = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'yu', 'xu'))
+    da2 = DataArray(data=np.zeros((20, 3, 4)), dims=('time', 'yu', 'xu'))
+    da3 = DataArray(data=np.ones((20, 3, 4)) * 10, dims=('time', 'yu', 'xu'))
+    da4 = DataArray(data=np.ones((20, 3, 4)) * 20, dims=('time', 'yu', 'xu'))
     ds = xrDataset({'in0': da, 'in1': da2,
                     'out0': da3, 'out1': da4}, 
                    coords={'time': np.arange(20),

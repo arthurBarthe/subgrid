@@ -96,3 +96,7 @@ def learning_rates_from_string(rates_string: str) -> dict:
     for i in range(int(len(temp) / 2)):
         rates[int(temp[2*i])] = float(temp[2*i+1])
     return rates
+
+
+def run_ids_from_string(run_ids_str: str) -> list:
+    return run_ids_str.split('/')

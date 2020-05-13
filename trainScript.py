@@ -25,6 +25,8 @@ import os.path
 # For neural networks
 import torch
 from torch.utils.data import DataLoader, Subset
+from torchvision.transforms import Normalize
+
 import torch.optim as optim
 import torch.nn
 import torch.nn.functional as F
@@ -34,11 +36,14 @@ import matplotlib.pyplot as plt
 
 
 # Import our Dataset class and neural network
-from data.datasets import RawDataFromXrDataset, DatasetTransformer
+from data.datasets import (MixedDataFromXrDataset, DatasetTransformer,
+                           RawDataFromXrDataset, ConcatDatasetWithTransforms)
 import data.datasets
 
 # Import some utils functions
-from train.utils import DEVICE_TYPE, learning_rates_from_string
+from train.utils import (DEVICE_TYPE, learning_rates_from_string,
+                         run_ids_from_string)
+from data.utils import load_data_from_runs
 
 # import training class
 from train.base import Trainer
@@ -152,42 +157,77 @@ print('Selected device type: ', device_type.value)
 # FIN PARAMETERS --------------------------------------------------------------
 
 # DATA-------------------------------------------------------------------------
+# Extract the run ids for the datasets to use in training
+run_ids_str = params.run_id
+run_ids = run_ids_from_string(run_ids_str)
 # Load data from the store, according to experiment id and run id
-mlflow_client = mlflow.tracking.MlflowClient()
-data_file = mlflow_client.download_artifacts(params.run_id, 'forcing')
-xr_dataset = xr.open_zarr(data_file).load()
-
-# Convert to a pytorch dataset and specify which variables are input/output
-dataset = RawDataFromXrDataset(xr_dataset)
-dataset.index = 'time'
-dataset.add_input('usurf')
-dataset.add_input('vsurf')
-dataset.add_output('S_x')
-dataset.add_output('S_y')
-
-# Split train/test
-n_indices = len(dataset)
-train_index = int(train_split * n_indices)
-test_index = int(test_split * n_indices)
-train_dataset = Subset(dataset, np.arange(train_index))
-test_dataset = Subset(dataset, np.arange(test_index, n_indices))
-
-# Apply some normalization
+xr_datasets = load_data_from_runs(run_ids) 
+# Split into train and test datasets
+datasets, train_datasets, test_datasets = list(), list(), list()
+transforms = list()
 try:
-    data_transform = getattr(data.datasets, data_transform_cls_name)
+    data_transform_cls = getattr(data.datasets, data_transform_cls_name)
 except AttributeError as e:
     raise type(e)('Could not find the dataset transform class: ' +
                   str(e))
-# The following line allows to apply the transformation separately to
-# features and targets.
-dataset_transform = DatasetTransformer(data_transform)
-train_dataset = dataset_transform.fit_transform(train_dataset)
-test_dataset = dataset_transform.transform(test_dataset)
+for dataset in xr_datasets:
+    dataset = RawDataFromXrDataset(dataset)
+    datasets.append(dataset)
+    train_index = int(train_split * len(dataset))
+    test_index = int(test_split * len(dataset))
+    train_dataset = Subset(dataset, np.arange(train_index))
+    test_dataset = Subset(dataset, np.arange(test_index, len(dataset)))
+    transform = DatasetTransformer(data_transform_cls)
+    transform.fit(train_dataset)
+    transforms.append(transform)
+    train_datasets.append(train_dataset)
+    test_datasets.append(test_dataset)
+train_dataset = ConcatDatasetWithTransforms(train_datasets, transforms)
+test_dataset = ConcatDatasetWithTransforms(test_datasets, transforms)
+
+#---------
+# n_indices = len(datasets)
+# train_index = int(train_split * n_indices)
+# test_index = int(test_split * n_indices)
+# # Extract the run ids for the datasets to use in training
+# run_ids_str = params.run_id
+# run_ids = run_ids_from_string(run_ids_str)
+# # Load data from the store, according to experiment id and run id
+# xr_datasets = load_data_from_runs(run_ids) 
+# transforms = list()
+# for dataset in xr_datasets:
+#     mean = dataset.isel(time=slice(0, train_index)).mean()
+#     std = dataset.isel(time=slice(0, train_index)).std()
+#     transforms.append(Normalize(mean, std))
+
+# # Convert to a pytorch dataset and specify which variables are input/output
+# datasets = MixedDataFromXrDataset(xr_datasets, 'time', transforms)
+# datasets.index = 'time'
+# datasets.add_input('usurf')
+# datasets.add_input('vsurf')
+# datasets.add_output('S_x')
+# datasets.add_output('S_y')
+
+# # Split train/test
+# train_dataset = Subset(datasets, np.arange(train_index))
+# test_dataset = Subset(datasets, np.arange(test_index, n_indices))
+
+# # Apply some normalization
+# try:
+#     data_transform = getattr(data.datasets, data_transform_cls_name)
+# except AttributeError as e:
+#     raise type(e)('Could not find the dataset transform class: ' +
+#                   str(e))
+# # The following line allows to apply the transformation separately to
+# # features and targets.
+# dataset_transform = DatasetTransformer(data_transform)
+# train_dataset = dataset_transform.fit_transform(train_dataset_raw)
+# test_dataset = dataset_transform.transform(test_dataset_raw)
 
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
                               shuffle=True)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
-                             shuffle=False)
+                              shuffle=False)
 
 print('Size of training data: {}'.format(len(train_dataset)))
 print('Size of validation data : {}'.format(len(test_dataset)))
@@ -207,8 +247,8 @@ except AttributeError as e:
     raise type(e)('Could not find the specified model class: ' +
                   str(e))
 
-net = model_cls(dataset.n_features, dataset.n_targets, dataset.height, 
-                dataset.width)
+net = model_cls(datasets[0].n_features, datasets[0].n_targets, datasets[0].height, 
+                datasets[0].width)
 # We only log the structure when the net is used in the training script
 net.log_structure = True
 
@@ -328,82 +368,84 @@ net.cuda(device)
 print('Saving other parts of the model')
 full_path = os.path.join(data_location, models_directory, 'data_transform')
 with open(full_path, 'wb') as f:
-    pickle.dump(dataset_transform, f)
+    pickle.dump(data_transform_cls, f)
 full_path = os.path.join(data_location, models_directory, 'transformation')
 with open(full_path, 'wb') as f:
     pickle.dump(transformation, f)
 
 # DEBUT TEST ------------------------------------------------------------------
 
-# CORRELATION MAP ----
-u_v_surf = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
-pred = np.zeros((len(test_dataset), 4, dataset.height, dataset.width))
-truth = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
-
-# Predictions on the test set using the trained model
-net.eval()
-with torch.no_grad():
-    for i, data in enumerate(test_dataloader):
-        u_v_surf[i * batch_size: (i+1) * batch_size] = data[0].numpy()
-        truth[i * batch_size:(i+1) * batch_size] = data[1].numpy()
-        X = data[0].to(device, dtype=torch.float)
-        Y_hat = net(X)
-        Y_hat = Y_hat.cpu().numpy()
-        pred[i * batch_size:(i+1) * batch_size] = Y_hat
-# Convert to dataset
-new_dims = ('time', 'latitude', 'longitude')
-coords = xr_dataset.coords
-new_coords = {'time': coords['time'][test_index:],
-              'latitude': coords['yu_ocean'].data,
-              'longitude': coords['xu_ocean'].data}
-u_surf = xr.DataArray(data=u_v_surf[:, 0, ...], dims=new_dims,
-                      coords=new_coords)
-v_surf = xr.DataArray(data=u_v_surf[:, 1, ...], dims=new_dims,
-                      coords=new_coords)
-s_x = xr.DataArray(data=truth[:, 0, ...], dims=new_dims, coords=new_coords)
-s_y = xr.DataArray(data=truth[:, 1, ...], dims=new_dims, coords=new_coords)
-s_x_pred = xr.DataArray(data=pred[:, 0, ...], dims=new_dims, coords=new_coords)
-s_y_pred = xr.DataArray(data=pred[:, 1, ...], dims=new_dims, coords=new_coords)
-s_x_pred_scale = xr.DataArray(data=pred[:, 2, ...], dims=new_dims,
-                              coords=new_coords)
-s_y_pred_scale = xr.DataArray(data=pred[:, 3, ...], dims=new_dims,
-                              coords=new_coords)
-output_dataset = xr.Dataset({'u_surf': u_surf, 'v_surf': v_surf,
-                             'S_x': s_x, 'S_y': s_y,
-                             'S_xpred': s_x_pred,
-                             'S_xpred_scale': s_x_pred_scale,
-                             'S_ypred_scale': s_y_pred_scale,
-                             'S_ypred': s_y_pred})
-
-# Save model output on the test dataset
-output_dataset.to_zarr(os.path.join(data_location, model_output_dir,
-                                    'test_output'))
-
-# Correlation map, shape (2, dataset.width, dataset.height)
-pred = pred[:, :2, ...]
-correlation_map = np.mean(truth * pred, axis=0)
-correlation_map -= np.mean(truth, axis=0) * np.mean(pred, axis=0)
-correlation_map /= np.maximum(np.std(truth, axis=0) * np.std(pred, axis=0),
-                              1e-20)
-
-print('Saving correlation map to disk')
-# Save the correlation map to disk and its plot as well.
-np.save(os.path.join(data_location, model_output_dir, 'correlation_map'),
-        correlation_map)
-
-fig = plt.figure()
-plt.subplot(121)
-plt.imshow(correlation_map[0], vmin=0, vmax=1, origin='lower')
-plt.colorbar()
-plt.title('Correlation map for S_x')
-plt.subplot(122)
-plt.imshow(correlation_map[1], vmin=0, vmax=1, origin='lower')
-plt.colorbar()
-plt.title('Correlation map for S_y')
-f_name = 'Correlation_maps.png'
-file_path = os.path.join(data_location, figures_directory, f_name)
-plt.savefig(file_path)
-plt.close(fig)
+for i_dataset, test_dataset, dataset, xr_dataset in zip(range(len(datasets)),
+                                                        test_datasets, datasets,
+                                                        xr_datasets):
+    u_v_surf = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
+    pred = np.zeros((len(test_dataset), 4, dataset.height, dataset.width))
+    truth = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
+    
+    # Predictions on the test set using the trained model
+    net.eval()
+    with torch.no_grad():
+        for i, data in enumerate(test_dataloader):
+            u_v_surf[i * batch_size: (i+1) * batch_size] = data[0].numpy()
+            truth[i * batch_size:(i+1) * batch_size] = data[1].numpy()
+            X = data[0].to(device, dtype=torch.float)
+            Y_hat = net(X)
+            Y_hat = Y_hat.cpu().numpy()
+            pred[i * batch_size:(i+1) * batch_size] = Y_hat
+    # Convert to dataset
+    new_dims = ('time', 'latitude', 'longitude')
+    coords = xr_dataset.coords
+    new_coords = {'time': coords['time'][test_index:],
+                  'latitude': coords['yu_ocean'].data,
+                  'longitude': coords['xu_ocean'].data}
+    u_surf = xr.DataArray(data=u_v_surf[:, 0, ...], dims=new_dims,
+                          coords=new_coords)
+    v_surf = xr.DataArray(data=u_v_surf[:, 1, ...], dims=new_dims,
+                          coords=new_coords)
+    s_x = xr.DataArray(data=truth[:, 0, ...], dims=new_dims, coords=new_coords)
+    s_y = xr.DataArray(data=truth[:, 1, ...], dims=new_dims, coords=new_coords)
+    s_x_pred = xr.DataArray(data=pred[:, 0, ...], dims=new_dims, coords=new_coords)
+    s_y_pred = xr.DataArray(data=pred[:, 1, ...], dims=new_dims, coords=new_coords)
+    s_x_pred_scale = xr.DataArray(data=pred[:, 2, ...], dims=new_dims,
+                                  coords=new_coords)
+    s_y_pred_scale = xr.DataArray(data=pred[:, 3, ...], dims=new_dims,
+                                  coords=new_coords)
+    output_dataset = xr.Dataset({'u_surf': u_surf, 'v_surf': v_surf,
+                                 'S_x': s_x, 'S_y': s_y,
+                                 'S_xpred': s_x_pred,
+                                 'S_xpred_scale': s_x_pred_scale,
+                                 'S_ypred_scale': s_y_pred_scale,
+                                 'S_ypred': s_y_pred})
+    
+    # Save model output on the test dataset
+    output_dataset.to_zarr(os.path.join(data_location, model_output_dir,
+                                        f'test_output{i_dataset}'))
+    
+    # Correlation map, shape (2, dataset.width, dataset.height)
+    pred = pred[:, :2, ...]
+    correlation_map = np.mean(truth * pred, axis=0)
+    correlation_map -= np.mean(truth, axis=0) * np.mean(pred, axis=0)
+    correlation_map /= np.maximum(np.std(truth, axis=0) * np.std(pred, axis=0),
+                                  1e-20)
+    
+    print('Saving correlation map to disk')
+    # Save the correlation map to disk and its plot as well.
+    np.save(os.path.join(data_location, model_output_dir, 'correlation_map'),
+            correlation_map)
+    
+    fig = plt.figure()
+    plt.subplot(121)
+    plt.imshow(correlation_map[0], vmin=0, vmax=1, origin='lower')
+    plt.colorbar()
+    plt.title('Correlation map for S_x')
+    plt.subplot(122)
+    plt.imshow(correlation_map[1], vmin=0, vmax=1, origin='lower')
+    plt.colorbar()
+    plt.title('Correlation map for S_y')
+    f_name = 'Correlation_maps.png'
+    file_path = os.path.join(data_location, figures_directory, f_name)
+    plt.savefig(file_path)
+    plt.close(fig)
 
 # FIN CORRELATION MAP
 
