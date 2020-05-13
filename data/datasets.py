@@ -349,7 +349,9 @@ class Subset_(Subset):
 
     def __getattr__(self, attr):
         if hasattr(self.dataset, attr):
-            return self.dataset.attr
+            return getattr(self.dataset, attr)
+        else:
+            raise AttributeError()
 
 
 class ConcatDatasetWithTransforms(ConcatDataset):
