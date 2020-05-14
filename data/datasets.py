@@ -115,6 +115,9 @@ class DatasetTransformer:
         new_targets = self.transformers['targets'].transform(targets)
         return new_features, new_targets
 
+    def __call__(self, X):
+        return self.transform(X)
+
     def fit_transform(self, X: Dataset):
         self.fit(X)
         return self.transform(X)
@@ -124,26 +127,6 @@ class DatasetTransformer:
         new_features = self.transformers['features'].inverse_transform(features)
         new_targets = self.transformers['targets'].transform(targets)
         return FeaturesTargetsDataset(new_features, new_targets)
-
-
-class UniformScaler:
-    def __init__(self):
-        self._std = None
-
-    @property
-    def std(self):
-        return self._std
-
-    def fit(self, X: np.ndarray):
-        self._std = np.std(X)
-
-    def transform(self, X: np.ndarray):
-        assert(self._std is not None)
-        return X / self.std
-
-    def fit_transform(self, X: np.ndarray):
-        self.fit(X)
-        return self.transform(X)
 
 
 class PerChannelNormalizer:
@@ -166,6 +149,22 @@ class PerChannelNormalizer:
         return self.transform(X)
 
 
+class PerLocationNormalizer:
+    def __init__(self):
+        self._std = None
+        self._mean = None
+
+    def fit(self, X: np.ndarray):
+        mean = np.mean(X, axis=0, keepdims=True)
+        std = np.std(X, axis=0, keepdims=True)
+        self._mean = mean.reshape(mean.shape[1:])
+        self._std = std.reshape(std.shape[1:])
+
+    def transform(self, X: np.ndarray):
+        assert(self._mean is not None)
+        return (X - self._mean) / self._std
+
+
 class DatasetClippedScaler(DatasetTransformer):
     def __init__(self, apply_both=True):
         super().__init__(transformer_class=StandardScaler)
@@ -178,49 +177,6 @@ class DatasetClippedScaler(DatasetTransformer):
                                 1e-4, np.inf)
         self.transformers['features'].scale_ = scale_features
         self.transformers['targets'].scale_ = scale_targets
-
-
-class MLFLowPreprocessing(Dataset):
-    """Makes some basic processing and automatically logs it through MLFlow."""
-    def __init__(self, raw_data: Dataset):
-        self.new_features = raw_data[:][0]
-        self.new_targets = raw_data[:][1]
-        self.means = dict()
-        self.stds = dict()
-
-    @staticmethod
-    def _normalize(data: np.ndarray, clip_min: float = 0,
-                   clip_max: float = np.inf) -> np.ndarray:
-        std = np.clip(np.std(data), clip_min, clip_max)
-        return data / std, std
-
-    def substract_mean_features(self):
-        # TODO add something to ensure this is called before the normalization
-        self.new_features = self.new_features - np.mean(self.new_features, 0)
-
-    def substract_mean_targets(self):
-        self.new_targets = self.new_targets - np.mean(self.new_targets, 0)
-
-    @call_only_once
-    def normalize_features(self, clip_min: float = 1e-9,
-                           clip_max: float = np.inf):
-        """Normalizes the data, by dividing each componenent by its clipped
-        std, where the clipping parameters are passed to the function.
-        Note that it is particularly important to use a clip_min for components
-        that are close to constant."""
-        features = self._normalize(self.new_features, clip_min, clip_max)
-        self.new_features = features
-        mlflow.log_param('clip_features', str((clip_min, clip_max)))
-
-    @call_only_once
-    def normalize_targets(self, clip_min: float = 1e-9,
-                          clip_max: float = np.inf):
-        targets = self._normalize(self.new_targets, clip_min, clip_max)
-        self.new_targets = targets
-        mlflow.log_param('clip_targets', str((clip_min, clip_max)))
-
-    def __getitem__(self, index: int):
-        return (self.new_features[index], self.new_targets[0])
 
 
 class RawDataFromXrDataset(Dataset):
@@ -343,7 +299,27 @@ class RawDataFromXrDataset(Dataset):
             raise ValueError('Variable already added as input or output.')
 
 
+class DatasetWithTransform:
+    def __init__(self, dataset, transform):
+        self.dataset = dataset
+        self.transform = transform
+
+    def __getitem__(self, index: int):
+        return self.transform(self.dataset[index])
+
+    def __getattr__(self, attr):
+        if hasattr(self.dataset, attr):
+            return getattr(self.dataset, attr)
+        else:
+            raise AttributeError()
+
+    def __len__(self):
+        return len(self.dataset)
+
+
 class Subset_(Subset):
+    """Extends the Pytorch Subset class to allow for attributes of the 
+    dataset to be propagated to the subset dataset"""
     def __init__(self, dataset, indices):
         super(Subset_, self).__init__(dataset, indices)
 
@@ -375,6 +351,31 @@ class ConcatDatasetWithTransforms(ConcatDataset):
                       result[1][:, :self.height, :self.width])
         dataset_idx = self._get_dataset_idx(index)
         return self.transforms[dataset_idx].transform(result)
+
+
+class ConcatDataset_(ConcatDataset):
+    def __init__(self, datasets, enforce_same_dims=True):
+        super(ConcatDataset_, self).__init__(datasets)
+        self.enforce_same_dims = enforce_same_dims
+        if enforce_same_dims:
+            heights = [dataset.height for dataset in self.datasets]
+            widths = [dataset.width for dataset in self.datasets]
+        self.height = min(heights)
+        self.width = min(widths)
+
+    def __getattr__(self, attr):
+        print('Trying ', attr)
+        if hasattr(self.datasets[0], attr):
+            return getattr(self.datasets[0], attr)
+        else:
+            raise AttributeError()
+
+    def __getitem__(self, index: int):
+        result = super().__getitem__(index)
+        if self.enforce_same_dims:
+            result = (result[0][:, :self.height, :self.width],
+                      result[1][:, :self.height, :self.width])
+        return result
 
 
 class LensDescriptor:
@@ -778,7 +779,8 @@ if __name__ == '__main__':
     loader = DataLoader(dataset, batch_size=7, drop_last=True)
     dataset2 = dataset
     t = DatasetTransformer(PerChannelNormalizer)
+    new_dataset = DatasetWithTransform(dataset, t)
     train_dataset = Subset(dataset, np.arange(5))
     t.fit(train_dataset)
-    datasets = [dataset, dataset2]
-    c = ConcatDatasetWithTransforms([train_dataset, train_dataset], [t, t])
+    datasets = (new_dataset, new_dataset)
+    c = ConcatDataset_(datasets)
