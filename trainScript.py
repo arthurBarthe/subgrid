@@ -343,7 +343,7 @@ with open(full_path, 'wb') as f:
 # DEBUT TEST ------------------------------------------------------------------
 
 for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
-                                                        dataset,
+                                                        datasets,
                                                         test_datasets,   
                                                         xr_datasets):
     u_v_surf = np.zeros((len(test_dataset), 2, test_dataset.height, 
