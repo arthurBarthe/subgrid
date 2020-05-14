@@ -342,9 +342,10 @@ with open(full_path, 'wb') as f:
 
 # DEBUT TEST ------------------------------------------------------------------
 
-for i_dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
-                                               test_datasets,
-                                               xr_datasets):
+for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
+                                                        dataset,
+                                                        test_datasets,   
+                                                        xr_datasets):
     u_v_surf = np.zeros((len(test_dataset), 2, test_dataset.height, 
                          test_dataset.width))
     pred = np.zeros((len(test_dataset), 4, test_dataset.height,
@@ -353,7 +354,7 @@ for i_dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
                       test_dataset.width))
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                               shuffle=False)
-    test_index = int(test_split * len(test_dataset))
+    test_index = int(test_split * len(dataset))
     # Predictions on the test set using the trained model
     net.eval()
     with torch.no_grad():
