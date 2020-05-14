@@ -81,7 +81,7 @@ data_transform_file = client.download_artifacts(model_run.run_id,
 with open(transformation_file, 'rb') as f:
     transformation = pickle.load(f)
 with open(data_transform_file, 'rb') as f:
-    transform = pickle.load(f)
+    transform_cls = pickle.load(f)
 
 
 # Prompt user to select the test dataset
@@ -122,6 +122,7 @@ test_index = int(test_split * len(dataset))
 train_dataset = Subset_(dataset, np.arange(train_index))
 test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
 
+transform = DatasetTransformer(transform_cls)
 transform.fit(train_dataset)
 train_dataset = ConcatDatasetWithTransforms((train_dataset,), transform)
 test_dataset = ConcatDatasetWithTransforms((test_dataset,), transform)
