@@ -342,12 +342,15 @@ with open(full_path, 'wb') as f:
 
 # DEBUT TEST ------------------------------------------------------------------
 
-for i_dataset, test_dataset, dataset, xr_dataset in zip(range(len(datasets)),
+for i_dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
                                                         test_datasets, datasets,
                                                         xr_datasets):
-    u_v_surf = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
-    pred = np.zeros((len(test_dataset), 4, dataset.height, dataset.width))
-    truth = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
+    u_v_surf = np.zeros((len(test_dataset), 2, test_dataset.height, 
+                         test_dataset.width))
+    pred = np.zeros((len(test_dataset), 4, test_dataset.height,
+                     test_dataset.width))
+    truth = np.zeros((len(test_dataset), 2, test_dataset.height,
+                      test_dataset.width))
     
     # Predictions on the test set using the trained model
     net.eval()
