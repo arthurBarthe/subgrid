@@ -165,6 +165,16 @@ class PerLocationNormalizer:
         return (X - self._mean) / self._std
 
 
+class PerInputNormalizer:
+    def fit(self, X):
+        pass
+
+    def transform(self, X: np.ndarray):
+        mean = np.mean(X)
+        std = np.std(X)
+        return (X - mean) / std
+
+
 class DatasetClippedScaler(DatasetTransformer):
     def __init__(self, apply_both=True):
         super().__init__(transformer_class=StandardScaler)
