@@ -35,8 +35,8 @@ import matplotlib.pyplot as plt
 
 
 # Import our Dataset class and neural network
-from data.datasets import (MixedDataFromXrDataset, DatasetTransformer,
-                           RawDataFromXrDataset, ConcatDatasetWithTransforms,
+from data.datasets import (DatasetWithTransform, DatasetTransformer,
+                           RawDataFromXrDataset, ConcatDataset_,
                            Subset_)
 import data.datasets
 
@@ -164,7 +164,6 @@ run_ids = run_ids_from_string(run_ids_str)
 xr_datasets = load_data_from_runs(run_ids) 
 # Split into train and test datasets
 datasets, train_datasets, test_datasets = list(), list(), list()
-transforms = list()
 try:
     data_transform_cls = getattr(data.datasets, data_transform_cls_name)
 except AttributeError as e:
@@ -177,18 +176,21 @@ for dataset in xr_datasets:
     dataset.add_input('vsurf')
     dataset.add_output('S_x')
     dataset.add_output('S_y')
-    datasets.append(dataset)
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
+    train_dataset = Subset_(dataset, np.arange(train_index))
+    transform = DatasetTransformer(data_transform_cls)
+    transform.fit(train_dataset)
+    dataset = DatasetWithTransform(dataset, transform)
     train_dataset = Subset_(dataset, np.arange(train_index))
     test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
     transform = DatasetTransformer(data_transform_cls)
     transform.fit(train_dataset)
-    transforms.append(transform)
     train_datasets.append(train_dataset)
     test_datasets.append(test_dataset)
-train_dataset = ConcatDatasetWithTransforms(train_datasets, transforms)
-test_dataset = ConcatDatasetWithTransforms(test_datasets, transforms)
+    datasets.append(dataset)
+train_dataset = ConcatDataset_(train_datasets)
+test_dataset = ConcatDataset_(test_datasets)
 
 # Dataloaders
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
