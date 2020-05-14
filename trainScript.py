@@ -351,6 +351,8 @@ for i_dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
                      test_dataset.width))
     truth = np.zeros((len(test_dataset), 2, test_dataset.height,
                       test_dataset.width))
+    test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
+                              shuffle=False)
     
     # Predictions on the test set using the trained model
     net.eval()
