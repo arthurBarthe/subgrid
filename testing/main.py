@@ -15,7 +15,8 @@ import numpy as np
 import xarray as xr
 from analysis.utils import select_run
 from train.utils import learning_rates_from_string
-from data.datasets import RawDataFromXrDataset, DatasetTransformer
+from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
+                           ConcatDatasetWithTransforms, Subset_)
 from train.base import Trainer
 from train.losses import (HeteroskedasticGaussianLoss, 
                           HeteroskedasticGaussianLossV2)
@@ -80,7 +81,7 @@ data_transform_file = client.download_artifacts(model_run.run_id,
 with open(transformation_file, 'rb') as f:
     transformation = pickle.load(f)
 with open(data_transform_file, 'rb') as f:
-    dataset_transformer = pickle.load(f)
+    transform = pickle.load(f)
 
 
 # Prompt user to select the test dataset
@@ -118,11 +119,12 @@ dataset.add_output('S_y')
 
 train_index = int(train_split * len(dataset))
 test_index = int(test_split * len(dataset))
-train_dataset = Subset(dataset, np.arange(train_index))
-test_dataset = Subset(dataset, np.arange(test_index, len(dataset)))
+train_dataset = Subset_(dataset, np.arange(train_index))
+test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
 
-train_dataset = dataset_transformer.fit_transform(train_dataset)
-test_dataset = dataset_transformer.transform(test_dataset)
+transform.fit(train_dataset)
+train_dataset = ConcatDatasetWithTransforms((train_dataset,), transform)
+test_dataset = ConcatDatasetWithTransforms((test_dataset,), transform)
 
 # TODO Allow multiple time indices.
 # test_dataset = MultipleTimeIndices(test_dataset)
@@ -140,10 +142,10 @@ try:
     module = importlib.import_module(model_module_name)
     model_cls = getattr(module, model_cls_name)
 except ModuleNotFoundError as e:
-    e.msg = 'Could not retrieve the module in which the trained model is \
-        defined.' + e.msg
+    raise type(e)('Could not retrieve the module in which the trained model \
+                  is defined: ' + str(e))
 except AttributeError as e:
-    e.msg = 'Could not retrieve the model\'s class. ' + e.msg
+    raise type(e)('Could not retrieve the model\'s class. ' + str(e))
 
 net = model_cls(dataset.n_features, dataset.n_targets, dataset.height,
                 dataset.width, True)
@@ -183,12 +185,12 @@ for i_epoch in range(n_epochs):
     print('Epoch {}'.format(i_epoch))
     print('Train loss for this epoch is {}'.format(train_loss))
     print('Test loss for this epoch is {}'.format(test_loss))
-    mlflow.log_metric('train mse', train_loss, i_epoch)
-    mlflow.log_metric('test mse', test_loss, i_epoch)
+    mlflow.log_metric('train loss', train_loss, i_epoch)
+    mlflow.log_metric('test loss', test_loss, i_epoch)
 
 # Final test
-train_loss = trainer.test(train_dataloader)
-test_loss, metrics_results = trainer.test(test_dataloader)
+train_loss, train_metrics_results = trainer.test(train_dataloader)
+test_loss, test_metrics_results = trainer.test(test_dataloader)
 print(f'Final train loss is {train_loss}')
 print(f'Final test loss is {test_loss}')
 
