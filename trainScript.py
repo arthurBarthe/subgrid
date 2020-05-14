@@ -353,7 +353,7 @@ for i_dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
                       test_dataset.width))
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                               shuffle=False)
-    
+    test_index = int(test_split * len(test_dataset))
     # Predictions on the test set using the trained model
     net.eval()
     with torch.no_grad():
@@ -392,34 +392,6 @@ for i_dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
     # Save model output on the test dataset
     output_dataset.to_zarr(os.path.join(data_location, model_output_dir,
                                         f'test_output{i_dataset}'))
-    
-    # Correlation map, shape (2, dataset.width, dataset.height)
-    pred = pred[:, :2, ...]
-    correlation_map = np.mean(truth * pred, axis=0)
-    correlation_map -= np.mean(truth, axis=0) * np.mean(pred, axis=0)
-    correlation_map /= np.maximum(np.std(truth, axis=0) * np.std(pred, axis=0),
-                                  1e-20)
-    
-    print('Saving correlation map to disk')
-    # Save the correlation map to disk and its plot as well.
-    np.save(os.path.join(data_location, model_output_dir, 'correlation_map'),
-            correlation_map)
-    
-    fig = plt.figure()
-    plt.subplot(121)
-    plt.imshow(correlation_map[0], vmin=0, vmax=1, origin='lower')
-    plt.colorbar()
-    plt.title('Correlation map for S_x')
-    plt.subplot(122)
-    plt.imshow(correlation_map[1], vmin=0, vmax=1, origin='lower')
-    plt.colorbar()
-    plt.title('Correlation map for S_y')
-    f_name = 'Correlation_maps.png'
-    file_path = os.path.join(data_location, figures_directory, f_name)
-    plt.savefig(file_path)
-    plt.close(fig)
-
-# FIN CORRELATION MAP
 
 # Log artifacts
 print('Logging artifacts...')
