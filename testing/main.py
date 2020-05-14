@@ -124,8 +124,8 @@ test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
 
 transform = DatasetTransformer(transform_cls)
 transform.fit(train_dataset)
-train_dataset = ConcatDatasetWithTransforms((train_dataset,), transform)
-test_dataset = ConcatDatasetWithTransforms((test_dataset,), transform)
+train_dataset = ConcatDatasetWithTransforms((train_dataset,), (transform,))
+test_dataset = ConcatDatasetWithTransforms((test_dataset,), (transform,))
 
 # TODO Allow multiple time indices.
 # test_dataset = MultipleTimeIndices(test_dataset)
