@@ -170,8 +170,8 @@ class PerInputNormalizer:
         pass
 
     def transform(self, X: np.ndarray):
-        mean = np.mean(X)
-        std = np.std(X)
+        mean = np.mean(X, axis=(1, 2), keepdims=True)
+        std = np.std(X, axis=(1, 2), keepdims=True)
         return (X - mean) / std
 
 
