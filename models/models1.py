@@ -437,31 +437,31 @@ class FullyCNN(MLFlowNN):
 
 
     def build(self):
-        self.add_conv2d_layer(self.input_depth, 256, 5, padding=2+0)
+        self.add_conv2d_layer(self.input_depth, 256, 7, padding=3+0)
         self.add_activation('relu')
         self.add_batch_norm_layer(256)
         
-        self.add_conv2d_layer(256, 64, 3, padding=1+0)
+        self.add_conv2d_layer(256, 64, 5, padding=2+0)
         self.add_activation('relu')
         self.add_batch_norm_layer(64)
         
-        self.add_conv2d_layer(64, 32, 3, padding=1+0)
+        self.add_conv2d_layer(64, 64, 3, padding=1+0)
         self.add_activation('relu')
-        self.add_batch_norm_layer(32)
+        self.add_batch_norm_layer(64)
         
-        self.add_conv2d_layer(32, 32, 3, padding=1+0)
+        self.add_conv2d_layer(64, 64, 3, padding=1+0)
         self.add_activation('relu')
-        self.add_batch_norm_layer(32)
+        self.add_batch_norm_layer(64)
         
-        self.add_conv2d_layer(32, 32, 3, padding=1+(0))
+        self.add_conv2d_layer(64, 64, 3, padding=1+(0))
         self.add_activation('relu')
-        self.add_batch_norm_layer(32)
+        self.add_batch_norm_layer(64)
         
-        self.add_conv2d_layer(32, 32, 3, padding=1)
+        self.add_conv2d_layer(64, 64, 3, padding=1)
         self.add_activation('relu')
-        self.add_batch_norm_layer(32)
+        self.add_batch_norm_layer(64)
         
-        self.add_conv2d_layer(32, 4, 3, padding=1)
+        self.add_conv2d_layer(64, 4, 3, padding=1)
         
         self.add_final_activation('identity')
 
