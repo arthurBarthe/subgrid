@@ -153,18 +153,19 @@ class Trainer:
         metrics_results = dict()
         for metric_name in self.metrics:
             metrics_results[metric_name] = RunningAverage()
-        for i_batch, batch in enumerate(dataloader):
-            # Move batch to GPU
-            X = batch[0].to(self._device, dtype=torch.float)
-            Y = batch[1].to(self._device, dtype=torch.float)
-            Y_hat = self.net(X)
-            # Compute loss
-            loss = self.criterion(Y, Y_hat)
-            running_loss.update(loss.item(), X.size(0))
-            # Compute metrics
-            for metric_name, metric_func in self.metrics.items():
-                metrics_results[metric_name].update(metric_func(Y, Y_hat),
-                                                    X.size(0))
-        return running_loss.value, {metric_name: running_avg.value for
-                                    metric_name, running_avg in
-                                    metrics_results.items()}
+        with torch.no_grad():
+            for i_batch, batch in enumerate(dataloader):
+                # Move batch to GPU
+                X = batch[0].to(self._device, dtype=torch.float)
+                Y = batch[1].to(self._device, dtype=torch.float)
+                Y_hat = self.net(X)
+                # Compute loss
+                loss = self.criterion(Y, Y_hat)
+                running_loss.update(loss.item(), X.size(0))
+                # Compute metrics
+                for metric_name, metric_func in self.metrics.items():
+                    metrics_results[metric_name].update(metric_func(Y, Y_hat),
+                                                        X.size(0))
+            return running_loss.value, {metric_name: running_avg.value for
+                                        metric_name, running_avg in
+                                        metrics_results.items()}
