@@ -29,9 +29,10 @@ class Unet(Module):
         self.final_convs = None
         self.conv_layers = []
         self.linear_layer = None
+        self.batch_norm = batch_norm
         self._build_convs()
         self.linear_layer = None
-        self.batch_norm = batch_norm
+        
 
     @property
     def transformation(self):
