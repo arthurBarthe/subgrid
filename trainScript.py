@@ -253,8 +253,7 @@ metrics = {'mse': F.mse_loss}
 # TODO temporary fix
 metrics = {}
 
-conv_layers = net.conv_layers
-params = [{'params': layer.parameters()} for layer in conv_layers]
+params = net.parameters()
 linear_layer = net.linear_layer
 if linear_layer is not None:
     params.append({'params': linear_layer.parameters(),
