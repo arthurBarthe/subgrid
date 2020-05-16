@@ -14,7 +14,6 @@ from torch.nn import functional as F
 from torch.nn.modules.utils import _pair
 from torch.nn.functional import pad
 import torch.nn as nn
-import mlflow
 import numpy as np
 
 class Unet(Module):
@@ -39,9 +38,13 @@ class Unet(Module):
                 x = self.down(x)
         blocks.reverse()
         for i in range(self.n_scales - 1):
+            print(x.size())
             x = self.up(x, i)
+            print(x.size())
             x = torch.cat((x, blocks[i]), 1)
+            print(x.size())
             x = self.up_convs[i](x)
+            print(x.size())
         return self.final_convs(x)
 
     def down(self, x):
@@ -58,11 +61,11 @@ class Unet(Module):
             else:
                 n_in_channels = n_out_channels
                 n_out_channels = 2 * n_out_channels
-            conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, 3, 1)
-            conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, 3, 1)
-            submodule = Sequential(conv1, nn.ReLU, conv2, nn.ReLU)
+            conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, 3, padding=1)
+            conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, 3, padding=1)
+            submodule = Sequential(conv1, nn.ReLU(), conv2, nn.ReLU())
             self.down_convs.append(submodule)
-        for i in range(self.n_scales):
+        for i in range(self.n_scales - 1):
             # Add the upsampler
             up_sampler = Upsample(mode='bilinear', scale_factor=2)
             conv = torch.nn.Conv2d(n_out_channels, n_out_channels // 2, 1)
@@ -70,15 +73,15 @@ class Unet(Module):
             # The up convs
             n_in_channels = n_out_channels
             n_out_channels = n_out_channels // 2
-            conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, 3, 1)
-            conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, 3, 1)
-            submodule = Sequential(conv1, nn.ReLU, conv2, nn.ReLU)
+            conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, 3, padding=1)
+            conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, 3, padding=1)
+            submodule = Sequential(conv1, nn.ReLU(), conv2, nn.ReLU())
             self.up_convs.append(submodule)
         #Final convs
         conv1 = torch.nn.Conv2d(n_out_channels, n_out_channels,
-                                3, 1)
+                                3, padding=1)
         conv2 = torch.nn.Conv2d(n_out_channels, self.n_out_channels,
-                                3, 1)
-        self.final_convs = Sequential(conv1, nn.ReLU, conv2)
+                                3, padding=1)
+        self.final_convs = Sequential(conv1, nn.ReLU(), conv2)
             
             
