@@ -19,7 +19,7 @@ import numpy as np
 
 class Unet(Module):
     def __init__(self, n_in_channels: int = 2, n_out_channels: int = 4,
-                 height, width, n_scales: int = 2):
+                 height=0, width=0, n_scales: int = 2):
         self.n_in_channels = n_in_channels
         self.n_out_channels = n_out_channels
         self.n_scales = n_scales
