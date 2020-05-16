@@ -9,8 +9,7 @@ Implementation of the U-net structure
 
 
 import torch
-from torch.nn import (Module, ModuleList, Parameter, UpSample, MaxPool2d,
-                      Sequential)
+from torch.nn import (Module, ModuleList, Parameter, Upsample, Sequential)
 from torch.nn import functional as F
 from torch.nn.modules.utils import _pair
 from torch.nn.functional import pad
@@ -20,7 +19,7 @@ import numpy as np
 
 class Unet(Module):
     def __init__(self, n_in_channels: int = 2, n_out_channels: int = 4,
-                 n_scales: int = 2):
+                 height, width, n_scales: int = 2):
         self.n_in_channels = n_in_channels
         self.n_out_channels = n_out_channels
         self.n_scales = n_scales
@@ -64,7 +63,7 @@ class Unet(Module):
             self.down_convs.append(submodule)
         for i in range(self.n_scales):
             # Add the upsampler
-            up_sampler = nn.Upsample(mode='bilinear', scale_factor=2)
+            up_sampler = Upsample(mode='bilinear', scale_factor=2)
             conv = torch.nn.Conv2d(n_out_channels, n_out_channels // 2, 1)
             self.up_samplers.append(Sequential(up_sampler, conv))
             # The up convs
