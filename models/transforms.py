@@ -62,7 +62,7 @@ class PrecisionTransform(Transform):
 
 
 class SoftPlusTransform(PrecisionTransform):
-    def __init__(self, min_value=0.01):
+    def __init__(self, min_value=0.1):
         super().__init__(min_value)
 
     @staticmethod
