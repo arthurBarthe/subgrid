@@ -216,7 +216,7 @@ except AttributeError as e:
     raise type(e)('Could not find the specified model class: ' +
                   str(e))
 
-net = model_cls(datasets[0].n_features, datasets[0].n_targets, datasets[0].height, 
+net = model_cls(datasets[0].n_features, 2 * datasets[0].n_targets, datasets[0].height, 
                 datasets[0].width)
 # We only log the structure when the net is used in the training script
 net.log_structure = True
