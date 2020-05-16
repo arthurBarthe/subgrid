@@ -27,7 +27,18 @@ class Unet(Module):
         self.up_convs = ModuleList()
         self.up_samplers = ModuleList()
         self.final_convs = None
+        self.conv_layers = []
+        self.linear_layer = None
         self._build_convs()
+        self.linear_layer = None
+
+    @property
+    def transformation(self):
+        return self._final_transformation
+
+    @transformation.setter
+    def transformation(self, transformation):
+        self._final_transformation = transformation
 
     def forward(self, x : torch.Tensor):
         blocks = list()
@@ -45,7 +56,7 @@ class Unet(Module):
             print(x.size())
             x = self.up_convs[i](x)
             print(x.size())
-        return self.final_convs(x)
+        return self.transformation(self.final_convs(x))
 
     def down(self, x):
         return F.max_pool2d(x, 2)
@@ -65,6 +76,8 @@ class Unet(Module):
             conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, 3, padding=1)
             submodule = Sequential(conv1, nn.ReLU(), conv2, nn.ReLU())
             self.down_convs.append(submodule)
+            self.conv_layers.append(conv1)
+            self.conv_layers.append(conv2)
         for i in range(self.n_scales - 1):
             # Add the upsampler
             up_sampler = Upsample(mode='bilinear', scale_factor=2)
@@ -77,6 +90,8 @@ class Unet(Module):
             conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, 3, padding=1)
             submodule = Sequential(conv1, nn.ReLU(), conv2, nn.ReLU())
             self.up_convs.append(submodule)
+            self.conv_layers.append(conv1)
+            self.conv_layers.append(conv2)
         #Final convs
         conv1 = torch.nn.Conv2d(n_out_channels, n_out_channels,
                                 3, padding=1)
