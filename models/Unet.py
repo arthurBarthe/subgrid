@@ -49,14 +49,11 @@ class Unet(Module):
                 x = self.down(x)
         blocks.reverse()
         for i in range(self.n_scales - 1):
-            print(x.size())
             x = self.up(x, i)
-            print(x.size())
             x = torch.cat((x, blocks[i]), 1)
-            print(x.size())
             x = self.up_convs[i](x)
-            print(x.size())
-        return self.transformation(self.final_convs(x))
+        final = self.final_convs(x)
+        return self.transformation(final)
 
     def down(self, x):
         return F.max_pool2d(x, 2)
