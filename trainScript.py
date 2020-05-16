@@ -253,7 +253,7 @@ metrics = {'mse': F.mse_loss}
 # TODO temporary fix
 metrics = {}
 
-params = net.parameters()
+params = list(net.parameters())
 linear_layer = net.linear_layer
 if linear_layer is not None:
     params.append({'params': linear_layer.parameters(),
