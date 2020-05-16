@@ -149,7 +149,7 @@ except AttributeError as e:
     raise type(e)('Could not retrieve the model\'s class. ' + str(e))
 
 net = model_cls(dataset.n_features, dataset.n_targets, dataset.height,
-                dataset.width, True)
+                dataset.width)
 net._final_transformation = transformation
 
 net.to(device=device)
