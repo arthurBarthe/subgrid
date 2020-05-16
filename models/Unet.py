@@ -60,7 +60,7 @@ class Unet(Module):
                 n_out_channels = 2 * n_out_channels
             conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, 3, 1)
             conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, 3, 1)
-            submodule = Sequential(conv1, F.relu, conv2, F.relu)
+            submodule = Sequential(conv1, nn.ReLU, conv2, nn.ReLU)
             self.down_convs.append(submodule)
         for i in range(self.n_scales):
             # Add the upsampler
@@ -72,13 +72,13 @@ class Unet(Module):
             n_out_channels = n_out_channels // 2
             conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, 3, 1)
             conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, 3, 1)
-            submodule = Sequential(conv1, F.relu, conv2, F.relu)
+            submodule = Sequential(conv1, nn.ReLU, conv2, nn.ReLU)
             self.up_convs.append(submodule)
         #Final convs
         conv1 = torch.nn.Conv2d(n_out_channels, n_out_channels,
                                 3, 1)
         conv2 = torch.nn.Conv2d(n_out_channels, self.n_out_channels,
                                 3, 1)
-        self.final_convs = Sequential(conv1, conv2)
+        self.final_convs = Sequential(conv1, nn.ReLU, conv2)
             
             
