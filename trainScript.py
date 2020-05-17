@@ -37,12 +37,12 @@ import matplotlib.pyplot as plt
 # Import our Dataset class and neural network
 from data.datasets import (DatasetWithTransform, DatasetTransformer,
                            RawDataFromXrDataset, ConcatDataset_,
-                           Subset_)
+                           Subset_, ComposeTransforms)
 import data.datasets
 
 # Import some utils functions
 from train.utils import (DEVICE_TYPE, learning_rates_from_string,
-                         run_ids_from_string)
+                         run_ids_from_string, list_from_string)
 from data.utils import load_data_from_runs
 
 # import training class
@@ -156,6 +156,12 @@ print('Selected device type: ', device_type.value)
 
 # FIN PARAMETERS --------------------------------------------------------------
 
+
+
+
+
+
+
 # DATA-------------------------------------------------------------------------
 # Extract the run ids for the datasets to use in training
 run_ids_str = params.run_id
@@ -165,7 +171,11 @@ xr_datasets = load_data_from_runs(run_ids)
 # Split into train and test datasets
 datasets, train_datasets, test_datasets = list(), list(), list()
 try:
-    data_transform_cls = getattr(data.datasets, data_transform_cls_name)
+    data_transform_cls_names = list_from_string(data_transform_cls_name)
+    data_transform_clss = [getattr(data.datasets, cls_name) for 
+                           cls_name in data_transform_cls_names]
+    array_transform = ComposeTransforms(*[t.__call__() for t in
+                                           data_transform_clss])
 except AttributeError as e:
     raise type(e)('Could not find the dataset transform class: ' +
                   str(e))
@@ -179,7 +189,7 @@ for dataset in xr_datasets:
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
     train_dataset = Subset_(dataset, np.arange(train_index))
-    transform = DatasetTransformer(data_transform_cls)
+    transform = DatasetTransformer(array_transform)
     transform.fit(train_dataset)
     dataset = DatasetWithTransform(dataset, transform)
     train_dataset = Subset_(dataset, np.arange(train_index))
@@ -192,6 +202,11 @@ for dataset in xr_datasets:
 train_dataset = ConcatDataset_(train_datasets)
 test_dataset = ConcatDataset_(test_datasets)
 
+# Saving the array transform object
+full_path = os.path.join(data_location, models_directory, 'data_transform')
+with open(full_path, 'wb') as f:
+    pickle.dump(array_transform, f)
+
 # Dataloaders
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
                               shuffle=True)
@@ -201,6 +216,13 @@ test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
 print('Size of training data: {}'.format(len(train_dataset)))
 print('Size of validation data : {}'.format(len(test_dataset)))
 # FIN DATA---------------------------------------------------------------------
+
+
+
+
+
+
+
 
 
 # NEURAL NETWORK---------------------------------------------------------------
@@ -216,8 +238,8 @@ except AttributeError as e:
     raise type(e)('Could not find the specified model class: ' +
                   str(e))
 
-net = model_cls(datasets[0].n_features, 2 * datasets[0].n_targets, datasets[0].height, 
-                datasets[0].width)
+net = model_cls(datasets[0].n_features, 2 * datasets[0].n_targets, 
+                datasets[0].height, datasets[0].width)
 # We only log the structure when the net is used in the training script
 net.log_structure = True
 
@@ -242,6 +264,15 @@ with open(os.path.join(data_location, models_directory,
     print('Writing neural net architecture into txt file.')
     f.write(str(net))
 # FIN NEURAL NETWORK ---------------------------------------------------------
+
+
+
+
+
+
+
+
+
 
 
 # Training---------------------------------------------------------------------
@@ -319,8 +350,10 @@ for i_epoch in range(n_epochs):
     # log the epoch
     mlflow.log_param('n_epochs', i_epoch + 1)
 
-
 # FIN TRAINING ----------------------------------------------------------------
+
+
+
 
 # Save the trained model to disk
 print('Moving the network to the CPU before saving...')
@@ -334,12 +367,13 @@ net.cuda(device)
 
 # Save other parts of the model
 print('Saving other parts of the model')
-full_path = os.path.join(data_location, models_directory, 'data_transform')
-with open(full_path, 'wb') as f:
-    pickle.dump(data_transform_cls, f)
 full_path = os.path.join(data_location, models_directory, 'transformation')
 with open(full_path, 'wb') as f:
     pickle.dump(transformation, f)
+
+
+
+
 
 # DEBUT TEST ------------------------------------------------------------------
 

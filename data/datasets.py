@@ -4,15 +4,18 @@ Created on Wed Jan 29 18:38:40 2020
 
 @author: Arthur
 """
+import torch
 from torch.utils.data import Dataset, DataLoader, ConcatDataset, Subset
 import numpy as np
 import os.path
 import matplotlib.pyplot as plt
-import mlflow
+# import mlflow
 # from sklearn.preprocessing import StandardScaler
 import xarray as xr
 import logging
 import bisect
+from copy import deepcopy
+from abc import ABC, abstractmethod
 
 
 def call_only_once(f):
@@ -52,84 +55,82 @@ def prod(l):
         return l[0] * prod(l[1:])
 
 
-class LoggedTransformer:
-    """Class that wrapps an sklearn transformer and logs some info about it"""
-    def __init__(self, transformer, data_name: str):
-        self.transformer = transformer
-        self.name = transformer.__class__.__name__ + '_' + data_name
-
-    def fit(self, X: np.ndarray):
-        """Fit method. Note that we allow for more general shapes of data
-        compared to standard sklearn transformers."""
-        # if X.ndim > 2:
-        #     X = X.reshape((-1, prod(X.shape[1:])))
-        return self.transformer.fit(X)
-
-    def transform(self, X: np.ndarray):
-        """Transform method. Logs some info through mlflow."""
-        return self.transformer.transform(X)
-
-    def inverse_transform(self, X: np.ndarray):
-        initial_shape = X.shape
-        if X.ndim > 2:
-            X = X.reshape((-1, prod(X.shape[1:])))
-        mlflow.log_param(self.name, 'True')
-        return self.transformer.inverse_transform(X).reshape(initial_shape)
-
-    def __getattr__(self, attr):
-        if 'transformer' in self.__dict__:
-            try:
-                return getattr(self.transformer, attr)
-            except AttributeError as e:
-                raise e
-        else:
-            raise AttributeError()
-
-
 class DatasetTransformer:
-    """Wrapper class to apply to sklearn-type data transformer to a pytorch
-    Dataset, i.e. the transformation, by default, is applied to both the
-    features and targets, independently though."""
-    def __init__(self, transformer_class: type, apply_both: bool = True):
-        # TODO apply_both
-        self.transformer_class = transformer_class
-        self.apply_both = apply_both
-        self.transformers = {'features': None, 'targets': None}
-        # TODO add the possibility to include transfomer params
-        features_transformer = LoggedTransformer(transformer_class(),
-                                                 'features')
-        targets_transformer = LoggedTransformer(transformer_class(),
-                                                'targets')
-        self.transformers['features'] = features_transformer
-        self.transformers['targets'] = targets_transformer
+    def __init__(self, features_transform, targets_transform=None):
+        self.transforms = dict()
+        self.transforms['features'] = features_transform
+        if targets_transform is None:
+            targets_transform = deepcopy(features_transform)
+        self.transforms['targets'] = targets_transform
 
-    def fit(self, X: Dataset):
-        features, targets = X[:]
-        self.transformers['features'].fit(features)
-        self.transformers['targets'].fit(targets)
+    def fit(self, x: torch.utils.data.Dataset):
+        features, targets = x[:]
+        self.transforms['features'].fit(features)
+        self.transforms['targets'].fit(targets)
         return self
 
-    def transform(self, X):
-        features, targets = X
-        new_features = self.transformers['features'].transform(features)
-        new_targets = self.transformers['targets'].transform(targets)
+    def transform(self, x):
+        features, targets = x
+        new_features = self.transforms['features'].transform(features)
+        new_targets = self.transforms['targets'].transform(targets)
         return new_features, new_targets
 
-    def __call__(self, X):
-        return self.transform(X)
+    def __call__(self, x):
+        return self.transform(x)
 
-    def fit_transform(self, X: Dataset):
-        self.fit(X)
-        return self.transform(X)
-
-    def inverse_transform(self, X: Dataset):
-        features, targets = X[:]
-        new_features = self.transformers['features'].inverse_transform(features)
-        new_targets = self.transformers['targets'].transform(targets)
+    def inverse_transform(self, x: Dataset):
+        features, targets = x
+        new_features = self.transforms['features'].inverse_transform(features)
+        new_targets = self.transforms['targets'].transform(targets)
         return FeaturesTargetsDataset(new_features, new_targets)
 
 
-class PerChannelNormalizer:
+class ArrayTransform(ABC):
+    def __call__(self, x):
+        return self.transform(x)
+
+    @abstractmethod
+    def fit(self, x):
+        pass
+
+    @abstractmethod
+    def transform(self, x):
+        pass
+
+
+class ComposeTransforms(ArrayTransform):
+    def __init__(self, *transforms):
+        self.transforms = transforms
+
+    def fit(self, x):
+        for transform in self.transforms:
+            transform.fit(x)
+            # TODO for something more general the following line should work
+            # x = transform.transform(x)
+
+    def transform(self, x):
+        for transform in self.transforms:
+            x = transform(x)
+        return x
+
+
+class CropToMultipleof(ArrayTransform):
+    def __init__(self, multiple_of: int):
+        self.multiple_of = multiple_of
+
+    def fit(self, x):
+        shape = x.shape
+        new_shape_1 = shape[2] // self.multiple_of * self.multiple_of
+        new_shape_2 = shape[3] // self.multiple_of * self.multiple_of
+        self.new_shape = (shape[1], new_shape_1, new_shape_2)
+
+    def transform(self, x):
+        print(x.shape)
+        print(self.new_shape)
+        return x[:, :self.new_shape[1], :self.new_shape[2]]
+
+
+class PerChannelNormalizer(ArrayTransform):
     def __init__(self):
         self._std = None
         self._mean = None
@@ -144,12 +145,11 @@ class PerChannelNormalizer:
         assert(self._mean is not None)
         return (X - self._mean) / self._std
 
-    def fit_transform(self, X: np.ndarray):
-        self.fit(X)
-        return self.transform(X)
+    def inverse_transform(self, X):
+        return X * self._std + self._mean
 
 
-class PerLocationNormalizer:
+class PerLocationNormalizer(ArrayTransform):
     def __init__(self):
         self._std = None
         self._mean = None
@@ -165,7 +165,7 @@ class PerLocationNormalizer:
         return (X - self._mean) / self._std
 
 
-class PerInputNormalizer:
+class PerInputNormalizer(ArrayTransform):
     def fit(self, X):
         pass
 
@@ -325,6 +325,9 @@ class DatasetWithTransform:
 
     def __len__(self):
         return len(self.dataset)
+
+    def inverse_transform(self, x):
+        return self.transform.inverse_transform(x)
 
 
 class Subset_(Subset):
@@ -770,15 +773,15 @@ if __name__ == '__main__':
     from xarray import Dataset as xrDataset
     from torch.utils.data import DataLoader
     from numpy.random import randint
-    da = DataArray(data=randint(0, 10, (20, 3, 4)), dims=('time', 'yu', 'xu'))
-    da2 = DataArray(data=randint(0, 3, (20, 3, 4)), dims=('time', 'yu', 'xu'))
-    da3 = DataArray(data=randint(0, 100, (20, 3, 4)) * 10, dims=('time', 'yu', 'xu'))
-    da4 = DataArray(data=randint(0, 2, (20, 3, 4)) * 20, dims=('time', 'yu', 'xu'))
+    da = DataArray(data=randint(0, 10, (20, 32, 48)), dims=('time', 'yu', 'xu'))
+    da2 = DataArray(data=randint(0, 3, (20, 32, 48)), dims=('time', 'yu', 'xu'))
+    da3 = DataArray(data=randint(0, 100, (20, 32, 48)) * 10, dims=('time', 'yu', 'xu'))
+    da4 = DataArray(data=randint(0, 2, (20, 32, 48)) * 20, dims=('time', 'yu', 'xu'))
     ds = xrDataset({'in0': da, 'in1': da2,
                     'out0': da3, 'out1': da4}, 
                    coords={'time': np.arange(20),
-                           'xu': [0, 5, 10, 15], 
-                           'yu': [0, 5, 10]})
+                           'xu': np.arange(48) * 5, 
+                           'yu': np.arange(32) * 2})
     dataset = RawDataFromXrDataset(ds)
     dataset.index = 'time'
     dataset.add_input('in0')
@@ -787,8 +790,10 @@ if __name__ == '__main__':
     dataset.add_output('out1')
     
     loader = DataLoader(dataset, batch_size=7, drop_last=True)
+    
     dataset2 = dataset
-    t = DatasetTransformer(PerChannelNormalizer)
+    t = DatasetTransformer(ComposeTransforms(CropToMultipleof(5),
+                                             PerChannelNormalizer()))
     new_dataset = DatasetWithTransform(dataset, t)
     train_dataset = Subset(dataset, np.arange(5))
     t.fit(train_dataset)
