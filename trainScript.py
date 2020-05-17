@@ -174,7 +174,7 @@ try:
     data_transform_cls_names = list_from_string(data_transform_cls_name)
     data_transform_clss = [getattr(data.datasets, cls_name) for 
                            cls_name in data_transform_cls_names]
-    array_transform = ComposeTransforms(*[t.__call__() for t in
+    array_transform = ComposeTransforms(*[t() for t in
                                            data_transform_clss])
 except AttributeError as e:
     raise type(e)('Could not find the dataset transform class: ' +
