@@ -115,7 +115,7 @@ class ComposeTransforms(ArrayTransform):
 
 
 class CropToMultipleof(ArrayTransform):
-    def __init__(self, multiple_of: int = 4):
+    def __init__(self, multiple_of: int = 2):
         self.multiple_of = multiple_of
 
     def fit(self, x):
