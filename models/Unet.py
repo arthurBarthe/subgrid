@@ -104,7 +104,7 @@ class Unet(Module):
         #Final convs
         conv1 = torch.nn.Conv2d(n_out_channels, n_out_channels,
                                 3, padding=1)
-        conv2 = torch.nn.Conv2d(n_out_channels, self.n_out_channels,
+        conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels,
                                 3, padding=1)
         conv3 = torch.nn.Conv2d(n_out_channels, self.n_out_channels,
                                 3, padding=1)
