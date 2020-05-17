@@ -106,7 +106,9 @@ class Unet(Module):
                                 3, padding=1)
         conv2 = torch.nn.Conv2d(n_out_channels, self.n_out_channels,
                                 3, padding=1)
+        conv3 = torch.nn.Conv2d(n_out_channels, self.n_out_channels,
+                                3, padding=1)
         block1 = self._make_subblock(conv1)
         block2 = self._make_subblock(conv2)
-        self.final_convs = Sequential(*block1, *block2)
+        self.final_convs = Sequential(*block1, *block2, conv3)
             
