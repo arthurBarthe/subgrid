@@ -18,7 +18,7 @@ import numpy as np
 
 class Unet(Module):
     def __init__(self, n_in_channels: int = 2, n_out_channels: int = 4,
-                 height=0, width=0, n_scales: int = 3, batch_norm=True):
+                 height=0, width=0, n_scales: int = 2, batch_norm=True):
         super().__init__()
         self.n_in_channels = n_in_channels
         self.n_out_channels = n_out_channels
@@ -106,6 +106,7 @@ class Unet(Module):
                                 3, padding=1)
         conv2 = torch.nn.Conv2d(n_out_channels, self.n_out_channels,
                                 3, padding=1)
-        self.final_convs = Sequential(conv1, nn.ReLU(), conv2)
-            
+        block1 = self.make_subblock(conv1)
+        block2 = self.make_subblock(conv2)
+        self.final_convs = Sequential(*block1, *block2)
             
