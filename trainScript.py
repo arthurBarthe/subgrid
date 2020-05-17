@@ -194,8 +194,6 @@ for dataset in xr_datasets:
     dataset = DatasetWithTransform(dataset, transform)
     train_dataset = Subset_(dataset, np.arange(train_index))
     test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
-    transform = DatasetTransformer(data_transform_cls)
-    transform.fit(train_dataset)
     train_datasets.append(train_dataset)
     test_datasets.append(test_dataset)
     datasets.append(dataset)
