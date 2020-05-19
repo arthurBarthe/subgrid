@@ -95,8 +95,10 @@ parser.add_argument('--loss_cls_name', type=str,
                     default='HeteroskedasticGaussianLoss')
 parser.add_argument('--transformation_cls_name', type=str,
                     default='SquareTransform')
-parser.add_argument('--data_transform_cls_name', type=str,
-                    default='UniformScaler')
+parser.add_argument('--features_transform_cls_name', type=str,
+                    default='PerChannelNormalizer')
+parser.add_argument('--targets_transform_cls_name', type=str,
+                    default='PerChannelNormalizer')
 params = parser.parse_args()
 
 # Log the experiment_id and run_id of the source dataset
@@ -116,7 +118,9 @@ model_module_name = params.model_module_name
 model_cls_name = params.model_cls_name
 loss_cls_name = params.loss_cls_name
 transformation_cls_name = params.transformation_cls_name
-data_transform_cls_name = params.data_transform_cls_name
+features_transform_cls_name = params.features_transform_cls_name
+targets_transform_cls_name = params.targets_transform_cls_name
+
 
 # Parameters specific to the input data
 # past specifies the indices from the past that are used for prediction
@@ -171,11 +175,16 @@ xr_datasets = load_data_from_runs(run_ids)
 # Split into train and test datasets
 datasets, train_datasets, test_datasets = list(), list(), list()
 try:
-    data_transform_cls_names = list_from_string(data_transform_cls_name)
-    data_transform_clss = [getattr(data.datasets, cls_name) for 
-                           cls_name in data_transform_cls_names]
-    array_transform = ComposeTransforms(*[t() for t in
-                                           data_transform_clss])
+    features_transform_cls_names = list_from_string(features_transform_cls_name)
+    features_transform_clss = [getattr(data.datasets, cls_name) for 
+                           cls_name in features_transform_cls_names]
+    features_transform = ComposeTransforms(*[t() for t in
+                                           features_transform_clss])
+    targets_transform_cls_names = list_from_string(targets_transform_cls_name)
+    targets_transform_clss = [getattr(data.datasets, cls_name) for 
+                           cls_name in targets_transform_cls_names]
+    targets_transform = ComposeTransforms(*[t() for t in
+                                           targets_transform_clss])
 except AttributeError as e:
     raise type(e)('Could not find the dataset transform class: ' +
                   str(e))
@@ -189,7 +198,7 @@ for dataset in xr_datasets:
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
     train_dataset = Subset_(dataset, np.arange(train_index))
-    transform = DatasetTransformer(array_transform)
+    transform = DatasetTransformer(features_transform, targets_transform)
     transform.fit(train_dataset)
     dataset = DatasetWithTransform(dataset, transform)
     train_dataset = Subset_(dataset, np.arange(train_index))
@@ -201,9 +210,12 @@ train_dataset = ConcatDataset_(train_datasets)
 test_dataset = ConcatDataset_(test_datasets)
 
 # Saving the array transform object
-full_path = os.path.join(data_location, models_directory, 'data_transform')
+full_path = os.path.join(data_location, models_directory, 'features_transform')
 with open(full_path, 'wb') as f:
-    pickle.dump(array_transform, f)
+    pickle.dump(features_transform, f)
+full_path = os.path.join(data_location, models_directory, 'targets_transform')
+with open(full_path, 'wb') as f:
+    pickle.dump(targets_transform, f)
 
 # Dataloaders
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
