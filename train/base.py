@@ -164,7 +164,8 @@ class Trainer:
                 running_loss.update(loss.item(), X.size(0))
                 # Compute metrics
                 for metric_name, metric_func in self.metrics.items():
-                    metrics_results[metric_name].update(metric_func(Y, Y_hat),
+                    metric_batch = metric_func(Y, Y_hat)
+                    metrics_results[metric_name].update(metric_batch,
                                                         X.size(0))
             return running_loss.value, {metric_name: running_avg.value for
                                         metric_name, running_avg in
