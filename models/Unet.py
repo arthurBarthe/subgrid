@@ -32,7 +32,7 @@ class Unet(Module):
         self.batch_norm = batch_norm
         self._build_convs()
         self.linear_layer = None
-        
+
 
     @property
     def transformation(self):
