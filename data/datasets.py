@@ -3,6 +3,9 @@
 Created on Wed Jan 29 18:38:40 2020
 
 @author: Arthur
+TODO list
+balance the weights when mixing data sets
+
 """
 import torch
 from torch.utils.data import Dataset, DataLoader, ConcatDataset, Subset
@@ -129,15 +132,17 @@ class CropToMultipleof(ArrayTransform):
 
 
 class PerChannelNormalizer(ArrayTransform):
-    def __init__(self):
+    def __init__(self, fit_only_once=True):
+        self.fit_only_once = fit_only_once
         self._std = None
         self._mean = None
 
     def fit(self, X: np.ndarray):
-        mean = np.mean(X, axis=(0, 2, 3), keepdims=True)
-        std = np.std(X, axis=(0, 2, 3), keepdims=True)
-        self._mean = mean.reshape(mean.shape[1:])
-        self._std = std.reshape(std.shape[1:])
+        if (not self.fit_only_once) or (self._mean is None):
+            mean = np.mean(X, axis=(0, 2, 3), keepdims=True)
+            std = np.std(X, axis=(0, 2, 3), keepdims=True)
+            self._mean = mean.reshape(mean.shape[1:])
+            self._std = std.reshape(std.shape[1:])
 
     def transform(self, X: np.ndarray):
         assert(self._mean is not None)
@@ -312,6 +317,17 @@ class DatasetWithTransform:
         self.dataset = dataset
         self.transform = transform
 
+    @property
+    def height(self):
+        """Since the transform can modify the height..."""
+        x = self[0][0]
+        return x.shape[1]
+
+    @property
+    def width(self):
+        x = self[0][0]
+        return x.shape[2]
+
     def __getitem__(self, index: int):
         return self.transform(self.dataset[index])
 
@@ -339,29 +355,6 @@ class Subset_(Subset):
             return getattr(self.dataset, attr)
         else:
             raise AttributeError()
-
-
-class ConcatDatasetWithTransforms(ConcatDataset):
-    def __init__(self, datasets, transforms, enforce_same_dims=True):
-        super().__init__(datasets)
-        self.transforms = transforms
-        self.enforce_same_dims = enforce_same_dims
-        if enforce_same_dims:
-            heights = [dataset.height for dataset in self.datasets]
-            widths = [dataset.width for dataset in self.datasets]
-        self.height = min(heights)
-        self.width = min(widths)
-        
-    def _get_dataset_idx(self, index: int):
-        return bisect.bisect_right(self.cumulative_sizes, index)
-
-    def __getitem__(self, index: int):
-        result = super().__getitem__(index)
-        if self.enforce_same_dims:
-            result = (result[0][:, :self.height, :self.width],
-                      result[1][:, :self.height, :self.width])
-        dataset_idx = self._get_dataset_idx(index)
-        return self.transforms[dataset_idx].transform(result)
 
 
 class ConcatDataset_(ConcatDataset):
@@ -771,6 +764,7 @@ if __name__ == '__main__':
     from xarray import Dataset as xrDataset
     from torch.utils.data import DataLoader
     from numpy.random import randint
+    from copy import deepcopy
     da = DataArray(data=randint(0, 10, (20, 32, 48)), dims=('time', 'yu', 'xu'))
     da2 = DataArray(data=randint(0, 3, (20, 32, 48)), dims=('time', 'yu', 'xu'))
     da3 = DataArray(data=randint(0, 100, (20, 32, 48)) * 10, dims=('time', 'yu', 'xu'))
@@ -789,11 +783,21 @@ if __name__ == '__main__':
     
     loader = DataLoader(dataset, batch_size=7, drop_last=True)
     
-    dataset2 = dataset
+    ds2 = ds.isel(yu=slice(0, 28), xu=slice(0, 37))
+    dataset2 = RawDataFromXrDataset(ds2)
+    dataset2.index = 'time'
+    dataset2.add_input('in0')
+    dataset2.add_input('in1')
+    dataset2.add_output('out0')
+    dataset2.add_output('out1')
     t = DatasetTransformer(ComposeTransforms(CropToMultipleof(5),
                                              PerChannelNormalizer()))
-    new_dataset = DatasetWithTransform(dataset, t)
+    t2 = deepcopy(t)
     train_dataset = Subset(dataset, np.arange(5))
+    train_dataset2 = Subset(dataset2, np.arange(5))
     t.fit(train_dataset)
-    datasets = (new_dataset, new_dataset)
+    t2.fit(train_dataset2)
+    new_dataset = DatasetWithTransform(dataset, t)
+    new_dataset2 = DatasetWithTransform(dataset2, t2)
+    datasets = (new_dataset, new_dataset2)
     c = ConcatDataset_(datasets)
