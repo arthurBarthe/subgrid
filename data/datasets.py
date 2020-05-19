@@ -131,6 +131,15 @@ class CropToMultipleof(ArrayTransform):
         return x[:, :self.new_shape[1], :self.new_shape[2]]
 
 
+class SignedSqrt(ArrayTransform):
+    def fit(self, x):
+        pass
+
+    def transform(self, x):
+        x = np.sign(x) * np.sqrt(np.abs(x))
+        return x
+
+
 class PerChannelNormalizer(ArrayTransform):
     def __init__(self, fit_only_once=True):
         self.fit_only_once = fit_only_once
@@ -791,6 +800,7 @@ if __name__ == '__main__':
     dataset2.add_output('out0')
     dataset2.add_output('out1')
     t = DatasetTransformer(ComposeTransforms(CropToMultipleof(5),
+                                             SignedSqrt(),
                                              PerChannelNormalizer()))
     t2 = deepcopy(t)
     train_dataset = Subset(dataset, np.arange(5))
