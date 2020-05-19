@@ -143,7 +143,7 @@ class SignedSqrt(ArrayTransform):
 
 
 class PerChannelNormalizer(ArrayTransform):
-    def __init__(self, fit_only_once=True):
+    def __init__(self, fit_only_once=False):
         self.fit_only_once = fit_only_once
         self._std = None
         self._mean = None
