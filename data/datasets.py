@@ -108,8 +108,10 @@ class ComposeTransforms(ArrayTransform):
     def fit(self, x):
         for transform in self.transforms:
             transform.fit(x)
-            # TODO for something more general the following line should work
-            # x = transform.transform(x)
+            y = []
+            for i in range(x.shape[0]):
+                y.append(transform(x[i, ...]))
+            x = np.array(y)
 
     def transform(self, x):
         for transform in self.transforms:
