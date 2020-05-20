@@ -153,7 +153,7 @@ print('Height: {}'.format(train_dataset.height))
 print('Width: {}'.format(train_dataset.width))
 print(train_dataset[0][0].shape)
 print(train_dataset[0][1].shape)
-print(transform.transforms[1].transforms)
+print(transform.transforms['features'].transforms)
 
 
 # Load the model itself
