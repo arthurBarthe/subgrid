@@ -83,7 +83,6 @@ try:
                                                     'models/targets_transform')
 except FileNotFoundError:
     targets_transform_file = None
-targets_transform_file = None
 
 with open(transformation_file, 'rb') as f:
     transformation = pickle.load(f)
@@ -92,6 +91,9 @@ with open(features_transform_file, 'rb') as f:
 if targets_transform_file is not None:
     with open(targets_transform_file, 'rb') as f:
         targets_transform = pickle.load(f)
+else:
+    targets_transform = None
+targets_transform = None
 
 
 # Prompt user to select the test dataset
