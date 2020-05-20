@@ -16,7 +16,7 @@ import xarray as xr
 from analysis.utils import select_run
 from train.utils import learning_rates_from_string
 from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
-                           ConcatDatasetWithTransforms, Subset_)
+                            Subset_, ConcatDataset_, DatasetWithTransform)
 from train.base import Trainer
 from train.losses import (HeteroskedasticGaussianLoss, 
                           HeteroskedasticGaussianLossV2)
@@ -130,15 +130,15 @@ dataset.add_output('S_y')
 train_index = int(train_split * len(dataset))
 test_index = int(test_split * len(dataset))
 train_dataset = Subset_(dataset, np.arange(train_index))
-test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
 
 if targets_transform is None:
     transform = DatasetTransformer(features_transform)
 else:
     transform = DatasetTransformer(features_transform, targets_transform)
 transform.fit(train_dataset)
-train_dataset = ConcatDatasetWithTransforms((train_dataset,), (transform,))
-test_dataset = ConcatDatasetWithTransforms((test_dataset,), (transform,))
+dataset = DatasetWithTransform((train_dataset,), (transform,))
+train_dataset = Subset_(dataset, np.arange(train_index))
+test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
 
 # TODO Allow multiple time indices.
 # test_dataset = MultipleTimeIndices(test_dataset)
