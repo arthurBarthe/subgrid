@@ -130,12 +130,11 @@ dataset.add_output('S_y')
 train_index = int(train_split * len(dataset))
 test_index = int(test_split * len(dataset))
 train_dataset = Subset_(dataset, np.arange(train_index))
-
+transform.fit(train_dataset)
 if targets_transform is None:
     transform = DatasetTransformer(features_transform)
 else:
     transform = DatasetTransformer(features_transform, targets_transform)
-transform.fit(train_dataset)
 dataset = DatasetWithTransform(train_dataset, transform)
 train_dataset = Subset_(dataset, np.arange(train_index))
 test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
