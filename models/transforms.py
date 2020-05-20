@@ -11,8 +11,9 @@ transformations that ensure that the precision is positive.
 """
 
 from abc import ABC, abstractmethod
-from torch.nn import Module
+from torch.nn import Module, Parameter
 import torch
+from torch.nn.functional import softplus
 
 
 class Transform(Module, ABC):
@@ -34,8 +35,8 @@ class Transform(Module, ABC):
 
 
 class PrecisionTransform(Transform):
-    def __init__(self, min_value=0.01):
-        self._min_value = min_value
+    def __init__(self, min_value=2.):
+        self._min_value = Parameter(torch.tensor(min_value))
         super().__init__()
 
     @property
@@ -52,7 +53,7 @@ class PrecisionTransform(Transform):
         # number of them (although does not matter for 4 channels)
         mean, precision = torch.split(input_, 2, dim=1)
         precision = self.transform_precision(precision)
-        precision.add_(self.min_value)
+        precision.add_(softplus(self.min_value))
         return torch.cat((mean, precision), dim=1)
 
     @staticmethod
