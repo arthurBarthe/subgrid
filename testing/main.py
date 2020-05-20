@@ -237,7 +237,7 @@ with torch.no_grad():
 new_dims = ('time', 'latitude', 'longitude')
 coords = xr_dataset.coords
 new_coords = {'time': coords['time'][test_index:],
-              'latitude': coords['yu_ocean'].data,
+              'latitude': coords['yu_ocean'].data[:-1],
               'longitude': coords['xu_ocean'].data}
 u_surf = xr.DataArray(data=velocities[:, 0, ...], dims=new_dims,
                       coords=new_coords)
