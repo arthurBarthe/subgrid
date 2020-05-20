@@ -93,7 +93,7 @@ if targets_transform_file is not None:
         targets_transform = pickle.load(f)
 else:
     targets_transform = None
-targets_transform = None
+
 
 
 # Prompt user to select the test dataset
@@ -237,7 +237,7 @@ with torch.no_grad():
 new_dims = ('time', 'latitude', 'longitude')
 coords = xr_dataset.coords
 new_coords = {'time': coords['time'][test_index:],
-              'latitude': coords['yu_ocean'].data[:-1],
+              'latitude': coords['yu_ocean'].data,
               'longitude': coords['xu_ocean'].data}
 u_surf = xr.DataArray(data=velocities[:, 0, ...], dims=new_dims,
                       coords=new_coords)

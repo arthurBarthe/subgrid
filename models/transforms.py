@@ -52,6 +52,8 @@ class PrecisionTransform(Transform):
         # Careful: the split argument is the size of the sections, not the
         # number of them (although does not matter for 4 channels)
         mean, precision = torch.split(input_, 2, dim=1)
+        if (precision != precision).any():
+            raise ValueError('Pre-processed precision contains nan')
         precision = self.transform_precision(precision)
         precision.add_(softplus(self.min_value))
         return torch.cat((mean, precision), dim=1)
@@ -63,7 +65,7 @@ class PrecisionTransform(Transform):
 
 
 class SoftPlusTransform(PrecisionTransform):
-    def __init__(self, min_value=0.01):
+    def __init__(self, min_value=2):
         super().__init__(min_value)
 
     @staticmethod
@@ -75,7 +77,7 @@ class SoftPlusTransform(PrecisionTransform):
 
 
 class SquareTransform(PrecisionTransform):
-    def __init__(self, min_value=0.01):
+    def __init__(self, min_value=2):
         super().__init__(min_value)
 
     @staticmethod

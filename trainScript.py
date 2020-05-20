@@ -11,6 +11,9 @@ TODO:
                                          a lot of training data)
     - tune Adam + keep momemtum
     - when concatenating datasets, weights depending on sizes
+    - multiple time-indexing
+    - make one file per working training procedure
+    - for concat datasets print test loss for each dataset
 To-Done:
     - Early stopping
 """
@@ -185,13 +188,9 @@ try:
     features_transform_cls_names = list_from_string(features_transform_cls_name)
     features_transform_clss = [getattr(data.datasets, cls_name) for 
                            cls_name in features_transform_cls_names]
-    features_transform = ComposeTransforms(*[t() for t in
-                                           features_transform_clss])
     targets_transform_cls_names = list_from_string(targets_transform_cls_name)
     targets_transform_clss = [getattr(data.datasets, cls_name) for 
                            cls_name in targets_transform_cls_names]
-    targets_transform = ComposeTransforms(*[t() for t in
-                                           targets_transform_clss])
 except AttributeError as e:
     raise type(e)('Could not find the dataset transform class: ' +
                   str(e))
@@ -205,6 +204,10 @@ for dataset in xr_datasets:
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
     train_dataset = Subset_(dataset, np.arange(train_index))
+    features_transform = ComposeTransforms(*[t() for t in
+                                           features_transform_clss])
+    targets_transform = ComposeTransforms(*[t() for t in
+                                           targets_transform_clss])
     transform = DatasetTransformer(features_transform, targets_transform)
     transform.fit(train_dataset)
     dataset = DatasetWithTransform(dataset, transform)
