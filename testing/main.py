@@ -151,7 +151,8 @@ print('Size of training data: {}'.format(len(train_dataset)))
 print('Size of validation data : {}'.format(len(test_dataset)))
 print('Height: {}'.format(train_dataset.height))
 print('Width: {}'.format(train_dataset.width))
-print(transform.transforms)
+print(train_dataset[0].shape)
+print(transform.transforms[1].transforms)
 
 
 # Load the model itself
@@ -217,7 +218,7 @@ velocities = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
 predictions = np.zeros((len(test_dataset), 4, dataset.height, dataset.width))
 truth = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
 
-net.eval()
+
 with torch.no_grad():
     for i, data in enumerate(test_dataloader):
         print(i)
