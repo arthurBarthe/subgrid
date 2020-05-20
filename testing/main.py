@@ -151,7 +151,8 @@ print('Size of training data: {}'.format(len(train_dataset)))
 print('Size of validation data : {}'.format(len(test_dataset)))
 print('Height: {}'.format(train_dataset.height))
 print('Width: {}'.format(train_dataset.width))
-print(train_dataset[0].shape)
+print(train_dataset[0][0].shape)
+print(train_dataset[0][1].shape)
 print(transform.transforms[1].transforms)
 
 
