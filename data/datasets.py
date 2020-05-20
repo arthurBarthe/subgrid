@@ -128,6 +128,7 @@ class CropToMultipleof(ArrayTransform):
         new_shape_1 = shape[2] // self.multiple_of * self.multiple_of
         new_shape_2 = shape[3] // self.multiple_of * self.multiple_of
         self.new_shape = (shape[1], new_shape_1, new_shape_2)
+        print('debugging:', self.new_shape)
 
     def transform(self, x):
         return x[:, :self.new_shape[1], :self.new_shape[2]]
