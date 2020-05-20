@@ -83,7 +83,7 @@ try:
                                                     'models/targets_transform')
 except FileNotFoundError:
     targets_transform_file = None
-
+targets_transform_file = None
 
 with open(transformation_file, 'rb') as f:
     transformation = pickle.load(f)
