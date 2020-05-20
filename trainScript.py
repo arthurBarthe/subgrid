@@ -3,9 +3,16 @@
 Created on Wed Dec 11 16:13:28 2019
 
 @author: Arthur
-Ideas:
+TODO:
     - data augmentation by *lambda -> *lambda**2 forcing
-    - 
+    - try not to remove the mean flow in normalizing
+    - Learnable min value of precision started at high value
+    - try again different normalizaiton (including same one everywhere with
+                                         a lot of training data)
+    - tune Adam + keep momemtum
+    - when concatenating datasets, weights depending on sizes
+To-Done:
+    - Early stopping
 """
 # This is required to avoid some issue with matplotlib when running on NYU's
 # prince server
@@ -318,7 +325,11 @@ for i_epoch in range(n_epochs):
     # TODO remove clipping?
     train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer,
                                              clip=None)
-    test_loss, metrics_results = trainer.test(test_dataloader)
+    test = trainer.test(test_dataloader)
+    if test == 'EARLY_STOPPING':
+        print(test)
+        break
+    test_loss, metrics_results = test
     # Log the training loss
     print('Train loss for this epoch is ', train_loss)
     print('Test loss for this epoch is ', test_loss)

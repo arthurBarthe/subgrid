@@ -26,6 +26,10 @@ class Trainer:
     :criterion: Loss,
         Criterion used in the objective function.
 
+    :early_stopping: int,
+        Number of epochs without improvement of the best test loss after
+        which we stop training.
+
     :print_loss_every: int,
         Sets the number of batches that the average loss is printed.
 
@@ -45,6 +49,9 @@ class Trainer:
         self._metrics = dict()
         self._print_loss_every = 20
         self._locked = False
+        self._early_stopping = 4
+        self._best_test_loss = None
+        self._counter = 0
 
     @property
     def net(self):
@@ -167,6 +174,16 @@ class Trainer:
                     metric_batch = metric_func(Y, Y_hat)
                     metrics_results[metric_name].update(metric_batch,
                                                         X.size(0))
-            return running_loss.value, {metric_name: running_avg.value for
-                                        metric_name, running_avg in
-                                        metrics_results.items()}
+        test_loss = running_loss.value
+        # Test early stopping
+        if self._best_test_loss is None or test_loss < self._best_test_loss:
+            self._best_test_loss = test_loss
+            self._counter = 0
+        else:
+            self._counter += 1
+            if self._counter >= self._early_stopping and self._early_stopping:
+                return 'EARLY_STOPPING'
+        # Return loss
+        return running_loss.value, {metric_name: running_avg.value for
+                                    metric_name, running_avg in
+                                    metrics_results.items()}
