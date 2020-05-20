@@ -136,7 +136,7 @@ if targets_transform is None:
 else:
     transform = DatasetTransformer(features_transform, targets_transform)
 transform.fit(train_dataset)
-dataset = DatasetWithTransform((train_dataset,), (transform,))
+dataset = DatasetWithTransform(train_dataset, transform)
 train_dataset = Subset_(dataset, np.arange(train_index))
 test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
 
