@@ -36,8 +36,8 @@ class Transform(Module, ABC):
 
 class PrecisionTransform(Transform):
     def __init__(self, min_value=2.):
-        self._min_value = Parameter(torch.tensor(min_value))
         super().__init__()
+        self._min_value = Parameter(torch.tensor(min_value))
 
     @property
     def min_value(self):
