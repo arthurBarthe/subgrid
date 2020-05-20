@@ -143,10 +143,11 @@ class SignedSqrt(ArrayTransform):
 
 
 class PerChannelNormalizer(ArrayTransform):
-    def __init__(self, fit_only_once=False):
+    def __init__(self, use_mean=False, fit_only_once=False):
         self.fit_only_once = fit_only_once
         self._std = None
         self._mean = None
+        self._use_mean = use_mean
 
     def fit(self, X: np.ndarray):
         if (not self.fit_only_once) or (self._mean is None):
@@ -155,9 +156,11 @@ class PerChannelNormalizer(ArrayTransform):
             self._mean = mean.reshape(mean.shape[1:])
             self._std = std.reshape(std.shape[1:])
 
-    def transform(self, X: np.ndarray):
+    def transform(self, x: np.ndarray):
         assert(self._mean is not None)
-        return (X - self._mean) / self._std
+        if self._use_mean:
+            x = x - self._mean
+        return x / self._std
 
     def inverse_transform(self, X):
         return X * self._std + self._mean
@@ -187,20 +190,6 @@ class PerInputNormalizer(ArrayTransform):
         mean = np.mean(X, axis=(1, 2), keepdims=True)
         std = np.std(X, axis=(1, 2), keepdims=True)
         return (X - mean) / std
-
-
-class DatasetClippedScaler(DatasetTransformer):
-    def __init__(self, apply_both=True):
-        super().__init__(transformer_class=StandardScaler)
-
-    def fit(self, X: Dataset):
-        super().fit(X)
-        scale_features = np.clip(self.transformers['features'].scale_,
-                                 1e-4, np.inf)
-        scale_targets = np.clip(self.transformers['targets'].scale_,
-                                1e-4, np.inf)
-        self.transformers['features'].scale_ = scale_features
-        self.transformers['targets'].scale_ = scale_targets
 
 
 class RawDataFromXrDataset(Dataset):
