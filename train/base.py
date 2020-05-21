@@ -129,12 +129,12 @@ class Trainer:
                 # Every time we print we reset the running average
                 running_loss_.reset()
             # Backpropagate
+            loss.backward()
             if clip:
                 norm = clip_grad_norm_(self.net.parameters(), clip)
-            loss.backward()
+                print('norm: {}'.format(norm))
             # Update parameters
             optimizer.step()
-        print('norm: {}'.format(norm))
         return running_loss.value
 
     def test(self, dataloader) -> float:
