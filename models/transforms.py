@@ -56,7 +56,7 @@ class PrecisionTransform(Transform):
             print(self._min_value)
             raise ValueError('Pre-processed precision contains nan')
         precision = self.transform_precision(precision)
-        precision.add_(softplus(self.min_value))
+        precision = precision + softplus(self.min_value)
         return torch.cat((mean, precision), dim=1)
 
     @staticmethod
