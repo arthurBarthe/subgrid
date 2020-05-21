@@ -132,7 +132,6 @@ class Trainer:
             loss.backward()
             if clip:
                 norm = clip_grad_norm_(self.net.parameters(), clip)
-                print('norm: {}'.format(norm))
             # Update parameters
             optimizer.step()
         return running_loss.value
