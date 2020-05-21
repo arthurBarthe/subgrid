@@ -35,7 +35,7 @@ class Transform(Module, ABC):
 
 
 class PrecisionTransform(Transform):
-    def __init__(self, min_value=2.):
+    def __init__(self, min_value=0.1):
         super().__init__()
         self._min_value = Parameter(torch.tensor(min_value))
 
@@ -65,7 +65,7 @@ class PrecisionTransform(Transform):
 
 
 class SoftPlusTransform(PrecisionTransform):
-    def __init__(self, min_value=2.):
+    def __init__(self, min_value=0.1):
         super().__init__(min_value)
 
     @staticmethod
@@ -77,7 +77,7 @@ class SoftPlusTransform(PrecisionTransform):
 
 
 class SquareTransform(PrecisionTransform):
-    def __init__(self, min_value=2.):
+    def __init__(self, min_value=0.1):
         super().__init__(min_value)
 
     @staticmethod
