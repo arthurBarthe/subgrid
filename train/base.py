@@ -49,7 +49,7 @@ class Trainer:
         self._metrics = dict()
         self._print_loss_every = 20
         self._locked = False
-        self._early_stopping = 4
+        self._early_stopping = 8
         self._best_test_loss = None
         self._counter = 0
 
