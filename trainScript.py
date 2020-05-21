@@ -327,7 +327,7 @@ for i_epoch in range(n_epochs):
     print('Epoch number {}.'.format(i_epoch))
     # TODO remove clipping?
     train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer,
-                                             clip=None)
+                                             clip=1e-1)
     test = trainer.test(test_dataloader)
     if test == 'EARLY_STOPPING':
         print(test)

@@ -130,10 +130,11 @@ class Trainer:
                 running_loss_.reset()
             # Backpropagate
             if clip:
-                clip_grad_norm_(self.net.parameters(), clip)
+                norm = clip_grad_norm_(self.net.parameters(), clip)
             loss.backward()
             # Update parameters
             optimizer.step()
+        print('norm: {}'.format(norm))
         return running_loss.value
 
     def test(self, dataloader) -> float:
