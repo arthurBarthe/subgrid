@@ -84,7 +84,7 @@ class DatasetTransformer:
     def inverse_transform(self, x: Dataset):
         features, targets = x
         new_features = self.transforms['features'].inverse_transform(features)
-        new_targets = self.transforms['targets'].transform(targets)
+        new_targets = self.transforms['targets'].inverse_transform(targets)
         return FeaturesTargetsDataset(new_features, new_targets)
 
 
@@ -116,6 +116,23 @@ class ComposeTransforms(ArrayTransform):
     def transform(self, x):
         for transform in self.transforms:
             x = transform(x)
+        return x
+
+
+class Randommult(ArrayTransform):
+    def __init__(self):
+        self.min = 0.1
+        self.max = 2
+        self.i = 0
+
+    def fit(self, x):
+        size = x.shape[0]
+        self._multipliers = np.random.rand(size) * (self.max - self.min)
+        self._multipliers += self.min
+
+    def transform(self, x):
+        x = x * self._multipliers[self.i]
+        self.i += 1
         return x
 
 
@@ -165,6 +182,17 @@ class PerChannelNormalizer(ArrayTransform):
 
     def inverse_transform(self, X):
         return X * self._std + self._mean
+
+
+class ArctanPerChannelNormalizer(PerChannelNormalizer):
+    def __init__(self, *args, **kargs):
+        super().__init__(*args, **kargs)
+
+    def transform(self, x):
+        assert(self._mean is not None)
+        if self._use_mean:
+            x = x - self._mean
+        return np.arctan(x / self._std)
 
 
 class PerLocationNormalizer(ArrayTransform):
