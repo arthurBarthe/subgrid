@@ -87,7 +87,7 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
     # Convert scale to unitless
     sigma_x, sigma_y = sigma
     step_x, step_y = compute_grid_steps(grid_info)
-    sigma_x = sigma_x / step_x, sigma_y / step_y
+    sigma_x, sigma_y = sigma_x / step_x, sigma_y / step_y
     sigma = (sigma_x, sigma_y)
     return xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
                           dask='parallelized',  output_dtypes=[float, ])
