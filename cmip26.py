@@ -4,44 +4,49 @@
 Created on Mon Feb 17 15:19:16 2020
 
 @author: arthur
-This script allows to select data from the cmip2.6 simulations made 
-available on the Pangeo intake data catalog. Run cmip26 -h to display
-help.
+This script computes the subgrid forcing for a given region, using
+data from cmip2.6 on one of the pangeo data catalogs.
+Command line parameters include region specification.
+Run cmip26 -h to display help.
 """
-print('Starting the script')
-import sys
 
 import argparse
 from dask.diagnostics import ProgressBar
 import mlflow
 
-from data.convert_lat_long import *
-from data.coarse import *
+from data.coarse import eddy_forcing
 from data.pangeo_catalog import get_patch
 
 # Script parameters
-catalog_url = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
+CATALOG_URL = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
 /master/intake-catalogs/master.yaml'
-description = 'Read data from the CMIP2.6 from a particular region and \
+DESCRIPTION = 'Read data from the CMIP2.6 from a particular region and \
     applies coarse graining.'
 
 # Parse the command-line parameters
-parser = argparse.ArgumentParser(description=description)
-parser.add_argument('scale', type=float, default=30,
-                    help='scale in kilometers')
-parser.add_argument('bounds', type=float, nargs=4, 
-                    help='min lat, max_lat, min_long, max_long')
-parser.add_argument('--ntimes', type=int, default=100)
-parser.add_argument('--CO2', type=int, default=0, choices=[0,1])
-if len(sys.argv) > 1:
-    params = parser.parse_args()
-else:
-    params = parser.parse_args('32.6 20 35 -30 -15 --ntimes 1'.split())
+parser = argparse.ArgumentParser(description=DESCRIPTION)
+parser.add_argument('scale', type=float, default=30, help='scale in\
+                    kilometers')
+parser.add_argument('bounds', type=float, nargs=4,
+                    default='32.6 20 35 -30 -15', help='min lat, max_lat,\
+                    min_long, max_long')
+parser.add_argument('--ntimes', type=int, default=100, help='number of days,\
+                    starting from first day.')
+parser.add_argument('--CO2', type=int, default=0, choices=[0, 1], help='CO2\
+                    level, O (control) or 1.')
 
+params = parser.parse_args()
+
+# Use a larger patch to compute the eddy forcing then we will crop
+extra_bounds = params.bounds
+extra_bounds[0] -= 2 * params.scale / 10
+extra_bounds[2] -= 2 * params.scale / 10
+extra_bounds[1] += 2 * params.scale / 10
+extra_bounds[3] += 2 * params.scale / 10
 # Retrieve the patch of data specified in the command-line args
-patch_data, grid_data = get_patch(catalog_url, params.ntimes, params.bounds,
+patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
                                   params.CO2, 'usurf', 'vsurf')
-patch_data = patch_data.chunk({'time' : 50})
+patch_data = patch_data.chunk({'time': 50})
 
 print(patch_data)
 print(grid_data)
@@ -59,6 +64,11 @@ forcing['S_x'].attrs['type'] = 'output'
 forcing['S_y'].attrs['type'] = 'output'
 forcing['usurf'].attrs['type'] = 'input'
 forcing['vsurf'].attrs['type'] = 'input'
+
+# Crop according to bounds
+bounds = params.bounds
+forcing.sel(xu_ocean=slice(bounds[2], bounds[3]),
+            yu_ocean=slice(bounds[0], bounds[1]))
 
 # export data
 # forcing = forcing.compute()
