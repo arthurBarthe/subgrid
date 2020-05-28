@@ -184,6 +184,22 @@ class PerChannelNormalizer(ArrayTransform):
         return X * self._std + self._mean
 
 
+class FixedNormalizer(ArrayTransform):
+    def fit(self, x):
+        pass
+
+    def transform(self, x):
+        return x / self.std
+
+
+class FixedVelocityNormalizer(FixedNormalizer):
+    std = 0.1
+
+
+class FixedForcingNormalizer(FixedNormalizer):
+    std = 1e-7
+
+
 class ArctanPerChannelNormalizer(PerChannelNormalizer):
     def __init__(self, *args, **kargs):
         super().__init__(*args, **kargs)
@@ -572,114 +588,6 @@ class MixedDataFromXrDataset(MixedDatasets):
             dataset.index = index
 
 
-class RawData(Dataset):
-    # TODO This should be made an abstract class.
-    """This class produces a raw dataset by doing the basic transformations,
-    using the psi, s_x and s_y data."""
-    def __init__(self, data_location: str, 
-                 f_name_psi: str = 'psi_coarse.npy',
-                 f_name_sx: str = 'sx_coarse.npy',
-                 f_name_sy: str = 'sy_coarse.npy'):
-        # Load the data from the disk
-        psi = np.load(os.path.join(data_location, f_name_psi))
-        sx = np.load(os.path.join(data_location, f_name_sx))
-        sy = np.load(os.path.join(data_location, f_name_sy))
-        width, height = psi.shape[-2:]
-        # Scale uniformly
-        psi /= np.std(psi)
-        sx /= np.std(sx)
-        sy /= np.std(sy)
-        # Add channel dimension to input
-        psi = self._add_channel(psi)
-        sx = self._flatten(sx)
-        sy = self._flatten(sy)
-        self.psi = psi
-        self.sx = sx
-        self.sy = sy
-        self.features = self.psi
-        self.target = np.hstack((self.sx, self.sy))
-        self.width = width
-        self.height = height
-
-    def __getitem__(self, index):
-        return (self.features[index], self.target[index])
-
-    def _add_channel(self, array: np.ndarray) -> np.ndarray:
-        return np.reshape(array, (-1, 1, array.shape[1], array.shape[2]))
-
-    def _flatten(self, array: np.ndarray) -> np.ndarray:
-        return np.reshape(array, (-1, array.shape[1] * array.shape[2]))
-
-    @property
-    def n_output_targets(self):
-        """Returns the size of the prediction."""
-        return self.sx.shape[1] + self.sy.shape[1]
-
-    @property
-    def data_length(self):
-        return self.psi.shape[0]
-
-    def __len__(self):
-        return self.psi.shape[0]
-
-    def plot_true_vs_pred(self, true: np.ndarray, predicted: np.ndarray):
-        true_sx, true_sy = np.split(true, 2, axis=1)
-        pred_sx, pred_sy = np.split(predicted, 2, axis=1)
-        fig = plt.figure()
-        plt.subplot(231)
-        self._imshow(self.flat_to_2d(true_sx))
-        plt.title('true S_x')
-        plt.subplot(234)
-        self._imshow(self.flat_to_2d(true_sy))
-        plt.title('true S_y')
-        plt.subplot(232)
-        self._imshow(self.flat_to_2d(pred_sx))
-        plt.title('predicted S_x')
-        plt.subplot(235)
-        self._imshow(self.flat_to_2d(pred_sy))
-        plt.title('predicted S_y')
-        plt.subplot(233)
-        self._imshow(self.flat_to_2d(pred_sx - true_sx))
-        plt.title('relative difference')
-        plt.subplot(236)
-        self._imshow(self.flat_to_2d(pred_sy - true_sy))
-        plt.title('relative difference')
-        plt.subplots_adjust(wspace=0.4, hspace=0.4)
-        return fig
-
-    def plot_features(self, features: np.ndarray):
-        """Plots the passed features, accounting for the shape of the data.
-        This only plots one feature sample (possibly having different
-        channels though)."""
-        assert(features.ndim == 3)
-        features = self.inv_pre_process(features)
-        plt.figure()
-        n_channels = features.shape[0]
-        for i_channel in range(n_channels):
-            plt.subplot(1, n_channels, i_channel + 1)
-            self._imshow(features[i_channel, ...])
-
-    def plot_targets(self, targets: np.ndarray):
-        assert(targets.ndim == 1)
-        targets = self.inv_pre_process(None, targets)
-        sx, sy = np.split(targets, 2)
-        plt.subplot(121)
-        self._imshow(self.flat_to_2d(sx))
-        plt.subplot(122)
-        self._imshow(self.flat_to_2d(sy))
-
-    def _imshow(self, data: np.ndarray, *args, **kargs):
-        """Wrapper function for the imshow function that normalizes the data
-        beforehand."""
-        data = data / np.std(data)
-        plt.imshow(data, origin='lower', cmap='jet',
-                   vmin=-1.96, vmax=1.96, *args, **kargs)
-        plt.colorbar()
-
-    def flat_to_2d(self, data: np.ndarray):
-        return data.reshape(self.width, self.height)
-
-
 class MultipleTimeIndices(Dataset):
     """Class to create a dataset based on an existing dataset where we
     concatenate multiple time indices along the channel dimension to create a
@@ -739,52 +647,6 @@ class MultipleTimeIndices(Dataset):
         if self.indices contains values other than 0, i.e. if we are
         using some data from the past to make predictions"""
         return len(self.dataset) - self.shift
-
-
-class Dataset_psi_s(Dataset):
-    """Loads the data from the disk into memory and produces data items on
-    demand."""
-    def __init__(self, data_location, file_name_psi, file_name_sx,
-                 file_name_sy):
-        # Load the data from the disk
-        self.psi = np.load(os.path.join(data_location, file_name_psi))
-        self.sx = np.load(os.path.join(data_location, file_name_sx))
-        self.sy = np.load(os.path.join(data_location, file_name_sy))
-        assert self.psi.shape[0] == self.sx.shape[0] == self.sy.shape[0], \
-            'Error: the lengths of the arrays differ'
-        self.indices = [0, ]
-        self.shift = 0
-        self.clip_psi_std = (1e-9, np.inf)
-        self.clip_target_std = (1e-9, np.inf)
-        # TODO implement this in the parent class
-        mlflow.log_param('clip_features', str(self.clip_psi_std))
-        mlflow.log_param('clip_targets', str(self.clip_target_std))
-
-    def pre_process(self, train_index):
-        """Operates some basic pre-processing on the data, such as
-        rescaling."""
-        self.width, self.height = self.psi.shape[-2:]
-        # input: add channel dimension
-        self.psi = self.psi.reshape(-1, 1, self.width, self.height)
-        # input: remove mean, normalize
-        self.mean_psi = np.mean(self.psi[:train_index], axis=0)
-        self.std_psi = np.std(self.psi[:train_index], axis=0)
-        clip_min, clip_max = self.clip_psi_std
-        self.std_psi = np.clip(self.std_psi, clip_min, clip_max)
-        self.psi = (self.psi - self.mean_psi) / self.std_psi
-        # output: flatten
-        self.sx = self.sx.reshape(self.sx.shape[0], -1)
-        self.sy = self.sy.reshape(self.sy.shape[0], -1)
-        mlflow.log_param('output_mean_removal', 'False')
-        # output: divide by std
-        clip_min, clip_max = self.clip_target_std
-        self.std_sx = np.std(self.sx[:train_index], axis=0)
-        self.std_sy = np.std(self.sy[:train_index], axis=0)
-        self.std_sx = np.clip(self.std_sx, clip_min, clip_max)
-        self.std_sy = np.clip(self.std_sy, clip_min, clip_max)
-        self.std_targets = np.concatenate((self.std_sx, self.std_sy))
-        self.sx /= self.std_sx
-        self.sy /= self.std_sy
 
 
 if __name__ == '__main__':
