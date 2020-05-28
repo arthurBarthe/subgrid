@@ -39,10 +39,10 @@ params = parser.parse_args()
 
 # Use a larger patch to compute the eddy forcing then we will crop
 extra_bounds = params.bounds
-# extra_bounds[0] -= 2 * params.scale / 10
-# extra_bounds[2] -= 2 * params.scale / 10
-# extra_bounds[1] += 2 * params.scale / 10
-# extra_bounds[3] += 2 * params.scale / 10
+extra_bounds[0] -= 2 * params.scale / 10
+extra_bounds[2] -= 2 * params.scale / 10
+extra_bounds[1] += 2 * params.scale / 10
+extra_bounds[3] += 2 * params.scale / 10
 # Retrieve the patch of data specified in the command-line args
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
                                   params.CO2, 'usurf', 'vsurf')

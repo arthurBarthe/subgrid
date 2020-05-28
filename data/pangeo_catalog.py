@@ -10,7 +10,7 @@ import intake
 
 from intake.config import conf
 conf['persist_path'] = '/scratch/ag7531/'
-CACHE_FOLDER = '/tmp/pangeo_cache'
+CACHE_FOLDER = '/scratch/ag7531/pangeo_cache'
 
 
 def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
