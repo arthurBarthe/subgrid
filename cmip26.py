@@ -28,7 +28,7 @@ parser = argparse.ArgumentParser(description=DESCRIPTION)
 parser.add_argument('scale', type=float, default=30, help='scale in\
                     kilometers')
 parser.add_argument('bounds', type=float, nargs=4,
-                    default='32.6 20 35 -30 -15', help='min lat, max_lat,\
+                    default=[20, 35, -30, -15], help='min lat, max_lat,\
                     min_long, max_long')
 parser.add_argument('--ntimes', type=int, default=100, help='number of days,\
                     starting from first day.')
