@@ -65,8 +65,8 @@ forcing['vsurf'].attrs['type'] = 'input'
 
 # Crop according to bounds
 bounds = params.bounds
-forcing.sel(xu_ocean=slice(bounds[2], bounds[3]),
-            yu_ocean=slice(bounds[0], bounds[1]))
+forcing = forcing.sel(xu_ocean=slice(bounds[2], bounds[3]),
+                      yu_ocean=slice(bounds[0], bounds[1]))
 
 # export data
 # forcing = forcing.compute()
