@@ -13,66 +13,129 @@ import xarray as xr
 from scipy.ndimage import gaussian_filter
 import numpy as np
 
+
 def advections(u_v_field, grid_data):
-    """Computes advection terms"""
+    """
+    Return the advection terms corresponding to the passed velocity field.
+
+    Parameters
+    ----------
+    u_v_field : xarray dataset
+        Velocity field, must contains variables usurf and vsurf.
+    grid_data : xarray dataset
+        Dataset with grid details, must contain variables dxu and dyu.
+
+    Returns
+    -------
+    advections : xarray dataset
+        Advection components, under variable names adv_x and adv_y.
+
+    """
     gradient_x = u_v_field.diff(dim='xu_ocean') / grid_data['dxu']
     gradient_y = u_v_field.diff(dim='yu_ocean') / grid_data['dyu']
     u, v = u_v_field['usurf'], u_v_field['vsurf']
     adv_x = u * gradient_x['usurf'] + v * gradient_y['usurf']
     adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
-    return xr.Dataset({'adv_x': adv_x, 'adv_y' : adv_y})
+    return xr.Dataset({'adv_x': adv_x, 'adv_y': adv_y})
 
-
-# def spatial_filter(data, scale):
-#     print('scale', scale)
-#     result = None
-#     for time in range(data.shape[0]):
-#         print(time)
-#         gf = dask.delayed(gaussian_filter)(data[time, ...], scale)
-#         if result is None:
-#             result = dask.array.from_delayed(gf, shape=data.shape[1:],
-#                                              dtype=float)
-#         else:
-#             gf = dask.array.from_delayed(gf, shape = data.shape[1:], 
-#                                          dtype=float)
-#             result = dask.array.concatenate((result, gf))
-#     return result
 
 def spatial_filter(data, sigma):
+    """
+    Apply a gaussian filter along all dimensions except first one.
+
+    Parameters
+    ----------
+    data : numpy array
+        Data to filter.
+    sigma : float
+        Unitless scale of the filter.
+
+    Returns
+    -------
+    result : numpy array
+        Filtered data.
+
+    """
     result = np.zeros_like(data)
     for t in range(data.shape[0]):
         result[t, ...] = gaussian_filter(data[t, ...], sigma,
                                          mode='constant')
     return result
 
-def spatial_filter_dataset(dataset, sigma: float):
-    """Applies spatial filtering to the dataset across the spatial dimensions
-    """
-    return xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset, 
-                                  dask='parallelized', 
-                                  output_dtypes=[float,])
 
-#Old version
-# def compute_grid_steps(u_v_dataset):
-#     """Computes the grid steps for the (x,y) grid"""
-#     grid_step = [0, 0]
-#     steps_x = u_v_dataset.coords['x'].diff('x')
-#     steps_y = u_v_dataset.coords['y'].diff('y')
-#     grid_step[0] = abs(steps_x.mean().item())
-#     grid_step[1] = abs(steps_y.mean().item())
-#     return tuple(grid_step)
+def spatial_filter_dataset(dataset, grid_info, sigma: float):
+    """
+    Apply spatial filtering to the dataset across the spatial dimensions.
+
+    Parameters
+    ----------
+    dataset : xarray dataset
+        Dataset to which filtering is applied. Time must be the first
+        dimension, whereas spatial dimensions must come after.
+    grid_info : xarray dataset
+        Dataset containing details on the grid, in particular must have
+        variables dxu and dyu.
+    sigma : float
+        Scale of the filtering, same unit as those of the grid (often, meters)
+
+    Returns
+    -------
+    filt_dataset : xarray dataset
+        Filtered dataset.
+
+    """
+    # Convert scale to unitless
+    sigma_x, sigma_y = sigma
+    step_x, step_y = compute_grid_steps(grid_info)
+    sigma_x = sigma_x / step_x, sigma_y / step_y
+    sigma = (sigma_x, sigma_y)
+    return xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
+                          dask='parallelized',  output_dtypes=[float, ])
 
 
 def compute_grid_steps(grid_info: xr.Dataset):
-    """Returns the average grid step along each axis, used later in the
-    application of a Gaussian filter"""
+    """
+    Return the average grid step along each axis.
+
+    Parameters
+    ----------
+    grid_info : xr.Dataset
+        Dataset containing the grid details. Must have variables dxu and dyu
+
+    Returns
+    -------
+    step_x : float
+        Mean step of the grid along the x axis (longitude)
+    step_y : float
+        Mean step of the grid along the y axis (latitude)
+
+    """
     step_x = grid_info['dxu'].mean().compute().item()
     step_y = grid_info['dyu'].mean().compute().item()
     return step_x, step_y
 
 
 def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
-    """Computes the eddy forcing terms."""
+    """
+    Compute the sub-grid forcing terms.
+
+    Parameters
+    ----------
+    u_v_dataset : xarray dataset
+        High-resolution velocity field.
+    grid_data : xarray dataset
+        High-resolution grid details.
+    scale : float
+        Scale, in meters.
+    method : str, optional
+        Coarse-graining method. The default is 'mean'.
+
+    Returns
+    -------
+    forcing : xarray dataset
+        Dataset containing the low-resolution velocity field and forcing.
+
+    """
     # TODO check if we can do something smarter here
     # Replace nan values with zeros
     u_v_dataset = u_v_dataset.fillna(0.0)
@@ -81,28 +144,27 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
     print('Average grid steps: ', grid_steps)
     # High res advection terms
     adv = advections(u_v_dataset, grid_data)
-    adv = spatial_filter_dataset(adv, (scale / grid_steps[0], 
-                                 scale / grid_steps[1]))
+    adv = spatial_filter_dataset(adv, (scale, scale))
     # Filtered u,v field
-    u_v_filtered = spatial_filter_dataset(u_v_dataset, 
-                                          (scale / grid_steps[0],
-                                          scale / grid_steps[1]))
+    u_v_filtered = spatial_filter_dataset(u_v_dataset, (scale, scale))
     # Advection term from filtered velocity field
     adv_filtered = advections(u_v_filtered, grid_data)
     # Forcing
     forcing = adv_filtered - adv
-    forcing = forcing.rename({'adv_x' : 'S_x', 'adv_y' : 'S_y'})
+    forcing = forcing.rename({'adv_x': 'S_x', 'adv_y': 'S_y'})
     # Merge filtered u,v and forcing terms
     forcing = forcing.merge(u_v_filtered)
     # Reweight using the area of the cell
     forcing = forcing * grid_data['area_u'] / 1e8
     print(forcing)
     # Coarsen
-    forcing = forcing.coarsen({'xu_ocean' : int(scale / grid_steps[0]),
-                               'yu_ocean' : int(scale / grid_steps[1])},
-                                boundary='trim')
+    print('scale: ', scale)
+    print('step: ', grid_steps)
+    forcing = forcing.coarsen({'xu_ocean': int(scale / grid_steps[0]),
+                               'yu_ocean': int(scale / grid_steps[1])},
+                              boundary='trim')
     if method == 'mean':
         forcing = forcing.mean()
     else:
-        raise('Passed method does not correspond to anything.')
+        raise('Passed coarse-graining method not implemented.')
     return forcing
