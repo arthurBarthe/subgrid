@@ -36,6 +36,7 @@ parser.add_argument('--CO2', type=int, default=0, choices=[0, 1], help='CO2\
 params = parser.parse_args()
 
 # Use a larger patch to compute the eddy forcing then we will crop
+# TODO do we need even larger borders?
 extra_bounds = params.bounds
 extra_bounds[0] -= 2 * params.scale / 10
 extra_bounds[2] -= 2 * params.scale / 10
