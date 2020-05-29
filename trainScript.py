@@ -5,7 +5,6 @@ Created on Wed Dec 11 16:13:28 2019
 @author: Arthur
 TODO:
     - data augmentation by *lambda -> *lambda**2 forcing
-    - try not to remove the mean flow in normalizing
     - Learnable min value of precision started at high value
     - try again different normalizaiton (including same one everywhere with
                                          a lot of training data)
@@ -16,6 +15,7 @@ TODO:
     - for concat datasets print test loss for each dataset
 To-Done:
     - Early stopping
+    - try not to remove the mean flow in normalizing: done
 """
 # This is required to avoid some issue with matplotlib when running on NYU's
 # prince server
@@ -75,13 +75,10 @@ import importlib
 import pickle
 
 
-
-
-# PARAMETERS ---------
 def negative_int(value: str):
     return -int(value)
 
-
+# PARAMETERS ---------
 description = 'Trains a model on a chosen dataset from the store. Allows \
     to set training parameters via the CLI.'
 parser = argparse.ArgumentParser(description=description)
@@ -150,7 +147,7 @@ model_output_dir = 'model_output'
 
 
 def _check_dir(dir_path):
-    """Tries to create the directory if it does not already exists"""
+    """Create the directory if it does not already exists"""
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
 
@@ -166,14 +163,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 device_type = DEVICE_TYPE.GPU if torch.cuda.is_available() \
                               else DEVICE_TYPE.CPU
 print('Selected device type: ', device_type.value)
-
-
 # FIN PARAMETERS --------------------------------------------------------------
-
-
-
-
-
 
 
 # DATA-------------------------------------------------------------------------
@@ -181,16 +171,16 @@ print('Selected device type: ', device_type.value)
 run_ids_str = params.run_id
 run_ids = run_ids_from_string(run_ids_str)
 # Load data from the store, according to experiment id and run id
-xr_datasets = load_data_from_runs(run_ids) 
+xr_datasets = load_data_from_runs(run_ids)
 # Split into train and test datasets
 datasets, train_datasets, test_datasets = list(), list(), list()
 try:
     features_transform_cls_names = list_from_string(features_transform_cls_name)
     features_transform_clss = [getattr(data.datasets, cls_name) for 
-                           cls_name in features_transform_cls_names]
+                               cls_name in features_transform_cls_names]
     targets_transform_cls_names = list_from_string(targets_transform_cls_name)
     targets_transform_clss = [getattr(data.datasets, cls_name) for 
-                           cls_name in targets_transform_cls_names]
+                              cls_name in targets_transform_cls_names]
 except AttributeError as e:
     raise type(e)('Could not find the dataset transform class: ' +
                   str(e))
@@ -205,9 +195,9 @@ for dataset in xr_datasets:
     test_index = int(test_split * len(dataset))
     train_dataset = Subset_(dataset, np.arange(train_index))
     features_transform = ComposeTransforms(*[t() for t in
-                                           features_transform_clss])
+                                             features_transform_clss])
     targets_transform = ComposeTransforms(*[t() for t in
-                                           targets_transform_clss])
+                                            targets_transform_clss])
     transform = DatasetTransformer(features_transform, targets_transform)
     transform.fit(train_dataset)
     dataset = DatasetWithTransform(dataset, transform)
@@ -231,18 +221,11 @@ with open(full_path, 'wb') as f:
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
                               shuffle=True)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
-                              shuffle=False)
+                             shuffle=False)
 
 print('Size of training data: {}'.format(len(train_dataset)))
 print('Size of validation data : {}'.format(len(test_dataset)))
 # FIN DATA---------------------------------------------------------------------
-
-
-
-
-
-
-
 
 
 # NEURAL NETWORK---------------------------------------------------------------
@@ -258,7 +241,7 @@ except AttributeError as e:
     raise type(e)('Could not find the specified model class: ' +
                   str(e))
 
-net = model_cls(datasets[0].n_features, 2 * datasets[0].n_targets, 
+net = model_cls(datasets[0].n_features, 2 * datasets[0].n_targets,
                 datasets[0].height, datasets[0].width)
 # We only log the structure when the net is used in the training script
 net.log_structure = True
@@ -284,15 +267,6 @@ with open(os.path.join(data_location, models_directory,
     print('Writing neural net architecture into txt file.')
     f.write(str(net))
 # FIN NEURAL NETWORK ---------------------------------------------------------
-
-
-
-
-
-
-
-
-
 
 
 # Training---------------------------------------------------------------------
@@ -327,7 +301,7 @@ for i_epoch in range(n_epochs):
     print('Epoch number {}.'.format(i_epoch))
     # TODO remove clipping?
     train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer,
-                                             clip=1e-1)
+                                             clip=1.)
     test = trainer.test(test_dataloader)
     if test == 'EARLY_STOPPING':
         print(test)
@@ -341,7 +315,6 @@ for i_epoch in range(n_epochs):
     mlflow.log_metric('train loss', train_loss, i_epoch)
     mlflow.log_metric('test loss', test_loss, i_epoch)
     mlflow.log_metrics(metrics_results)
-        
 
     # We also save a snapshot figure to the disk and log it
     # TODO rewrite this bit, looks confusing for now
@@ -376,9 +349,6 @@ for i_epoch in range(n_epochs):
 
 # FIN TRAINING ----------------------------------------------------------------
 
-
-
-
 # Save the trained model to disk
 print('Moving the network to the CPU before saving...')
 net.cpu()
@@ -396,23 +366,20 @@ with open(full_path, 'wb') as f:
     pickle.dump(transformation, f)
 
 
-
-
-
 # DEBUT TEST ------------------------------------------------------------------
 
 for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
                                                         datasets,
-                                                        test_datasets,   
+                                                        test_datasets,
                                                         xr_datasets):
-    u_v_surf = np.zeros((len(test_dataset), 2, test_dataset.height, 
+    u_v_surf = np.zeros((len(test_dataset), 2, test_dataset.height,
                          test_dataset.width))
     pred = np.zeros((len(test_dataset), 4, test_dataset.height,
                      test_dataset.width))
     truth = np.zeros((len(test_dataset), 2, test_dataset.height,
                       test_dataset.width))
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
-                              shuffle=False)
+                                 shuffle=False)
     test_index = int(test_split * len(dataset))
     # Predictions on the test set using the trained model
     net.eval()
@@ -428,16 +395,18 @@ for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
     new_dims = ('time', 'latitude', 'longitude')
     coords = xr_dataset.coords
     new_coords = {'time': coords['time'][test_index:],
-                  'latitude': coords['yu_ocean'].data,
-                  'longitude': coords['xu_ocean'].data}
+                  'latitude': coords['yu_ocean'].data[:test_dataset.height],
+                  'longitude': coords['xu_ocean'].data[:test_dataset.width]}
     u_surf = xr.DataArray(data=u_v_surf[:, 0, ...], dims=new_dims,
                           coords=new_coords)
     v_surf = xr.DataArray(data=u_v_surf[:, 1, ...], dims=new_dims,
                           coords=new_coords)
     s_x = xr.DataArray(data=truth[:, 0, ...], dims=new_dims, coords=new_coords)
     s_y = xr.DataArray(data=truth[:, 1, ...], dims=new_dims, coords=new_coords)
-    s_x_pred = xr.DataArray(data=pred[:, 0, ...], dims=new_dims, coords=new_coords)
-    s_y_pred = xr.DataArray(data=pred[:, 1, ...], dims=new_dims, coords=new_coords)
+    s_x_pred = xr.DataArray(data=pred[:, 0, ...], dims=new_dims,
+                            coords=new_coords)
+    s_y_pred = xr.DataArray(data=pred[:, 1, ...], dims=new_dims,
+                            coords=new_coords)
     s_x_pred_scale = xr.DataArray(data=pred[:, 2, ...], dims=new_dims,
                                   coords=new_coords)
     s_y_pred_scale = xr.DataArray(data=pred[:, 3, ...], dims=new_dims,
@@ -448,7 +417,7 @@ for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
                                  'S_xpred_scale': s_x_pred_scale,
                                  'S_ypred_scale': s_y_pred_scale,
                                  'S_ypred': s_y_pred})
-    
+
     # Save model output on the test dataset
     output_dataset.to_zarr(os.path.join(data_location, model_output_dir,
                                         f'test_output{i_dataset}'))
