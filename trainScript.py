@@ -47,7 +47,7 @@ import matplotlib.pyplot as plt
 # Import our Dataset class and neural network
 from data.datasets import (DatasetWithTransform, DatasetTransformer,
                            RawDataFromXrDataset, ConcatDataset_,
-                           Subset_, ComposeTransforms)
+                           Subset_, ComposeTransforms, MultipleTimeIndices)
 import data.datasets
 
 # Import some utils functions
@@ -203,6 +203,10 @@ for dataset in xr_datasets:
     dataset = DatasetWithTransform(dataset, transform)
     train_dataset = Subset_(dataset, np.arange(train_index))
     test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
+    train_dataset = MultipleTimeIndices(train_dataset)
+    test_dataset = MultipleTimeIndices(test_dataset)
+    train_dataset.time_indices = [0, -1]
+    test_dataset.time_indices = [0, -1]
     train_datasets.append(train_dataset)
     test_datasets.append(test_dataset)
     datasets.append(dataset)

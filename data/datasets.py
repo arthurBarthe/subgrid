@@ -598,13 +598,13 @@ class MultipleTimeIndices(Dataset):
         self._shift = 0
         if time_indices is not None:
             self.time_indices = time_indices
+        else:
+            self.time_indices = [0,]
 
     @property
     def time_indices(self):
         if self._time_indices:
-            return self._time_indices
-        else:
-            return [0, ]
+            return np.array(self._time_indices)
 
     @time_indices.setter
 #    @call_only_once
@@ -614,7 +614,6 @@ class MultipleTimeIndices(Dataset):
                 raise ValueError('The indices should be 0 or negative')
         self._time_indices = indices
         self._shift = max([abs(v) for v in indices])
-        mlflow.log_param('time_indices', indices)
 
     @property
     def shift(self):
@@ -625,19 +624,14 @@ class MultipleTimeIndices(Dataset):
         raise Exception('The shift cannot be set manually. Instead set \
                         the time indices.')
 
-    def _build_features(self):
-        indices = np.arange(len(self))[:, np.newaxis]
-        indices = indices + self.shift + self.time_indices
-        features = self.dataset[:][0][indices]
-        self.features = np.take(features, 0, axis=2)
-
     def __getitem__(self, index):
         """Returns the sample indexed by the passed index."""
-        if not hasattr(self, 'features'):
-            self._build_features()
         # TODO check this does not slows things down. Hopefully should not,
         # as it should just be a memory view.
-        feature = self.features[index]
+        indices = index + self.shift + self.time_indices
+        print(indices)
+        features = [self.dataset[i][0] for i in indices]
+        feature = np.concatenate(features)
         target = self.dataset[index + self.shift][1]
         return (feature, target)
 
