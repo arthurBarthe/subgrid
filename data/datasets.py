@@ -633,7 +633,6 @@ class MultipleTimeIndices(Dataset):
         # TODO check this does not slows things down. Hopefully should not,
         # as it should just be a memory view.
         indices = index + self.shift + self.time_indices
-        print(indices)
         features = [self.dataset[i][0] for i in indices]
         feature = np.concatenate(features)
         target = self.dataset[index + self.shift][1]
