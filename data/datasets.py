@@ -624,6 +624,10 @@ class MultipleTimeIndices(Dataset):
         raise Exception('The shift cannot be set manually. Instead set \
                         the time indices.')
 
+    @property
+    def n_features(self):
+        return self.dataset.n_features * len(self.time_indices)
+
     def __getitem__(self, index):
         """Returns the sample indexed by the passed index."""
         # TODO check this does not slows things down. Hopefully should not,
@@ -641,6 +645,12 @@ class MultipleTimeIndices(Dataset):
         if self.indices contains values other than 0, i.e. if we are
         using some data from the past to make predictions"""
         return len(self.dataset) - self.shift
+
+    def __getattr__(self, attr_name):
+        if hasattr(self.dataset, attr_name):
+            return getattr(self.dataset, attr_name)
+        else:
+            raise AttributeError()
 
 
 if __name__ == '__main__':
