@@ -201,12 +201,10 @@ for dataset in xr_datasets:
     transform = DatasetTransformer(features_transform, targets_transform)
     transform.fit(train_dataset)
     dataset = DatasetWithTransform(dataset, transform)
+    dataset = MultipleTimeIndices(dataset)
+    dataset.time_indices = [0, -1]
     train_dataset = Subset_(dataset, np.arange(train_index))
     test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
-    train_dataset = MultipleTimeIndices(train_dataset)
-    test_dataset = MultipleTimeIndices(test_dataset)
-    train_dataset.time_indices = [0, -1]
-    test_dataset.time_indices = [0, -1]
     train_datasets.append(train_dataset)
     test_datasets.append(test_dataset)
     datasets.append(dataset)
