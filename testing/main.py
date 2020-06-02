@@ -6,6 +6,9 @@ Created on Tue Jan 28 20:25:09 2020
 Here we test a trained model on an unseen region. The user is prompted to
 select a trained model within a list and a new region to test that model.
 Fine-tuning is an option through the n_epochs parameter of the script.
+
+TODO:
+    - Allow to test on all regions at once with one command
 """
 import mlflow
 import torch
@@ -16,7 +19,8 @@ import xarray as xr
 from analysis.utils import select_run
 from train.utils import learning_rates_from_string
 from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
-                            Subset_, ConcatDataset_, DatasetWithTransform)
+                            Subset_, ConcatDataset_, DatasetWithTransform,
+                            MultipleTimeIndices)
 from train.base import Trainer
 from train.losses import (HeteroskedasticGaussianLoss, 
                           HeteroskedasticGaussianLossV2)
@@ -139,6 +143,8 @@ else:
     transform = DatasetTransformer(features_transform, targets_transform)
 transform.fit(train_dataset)
 dataset = DatasetWithTransform(dataset, transform)
+dataset = MultipleTimeIndices(dataset)
+dataset.time_indices = [0, -1]
 train_dataset = Subset_(dataset, np.arange(train_index))
 test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
 
@@ -226,7 +232,8 @@ truth = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
 with torch.no_grad():
     for i, data in enumerate(test_dataloader):
         print(i)
-        velocities[i * batch_size: (i + 1) * batch_size] = data[0].numpy()
+        uv_data = data[0][:, :2, ...].numpy()
+        velocities[i * batch_size: (i + 1) * batch_size] = uv_data
         truth[i * batch_size: (i + 1) * batch_size] = data[1].numpy()
         X = data[0].to(device, dtype=torch.float)
         pred_i = net(X)
@@ -236,9 +243,10 @@ with torch.no_grad():
 # Put this into an xarray dataset before saving
 new_dims = ('time', 'latitude', 'longitude')
 coords = xr_dataset.coords
-new_coords = {'time': coords['time'][test_index:],
-              'latitude': coords['yu_ocean'].data,
-              'longitude': coords['xu_ocean'].data}
+new_coords = {'time': coords['time']
+              [test_index:test_index + len(test_dataset)],
+              'latitude': coords['yu_ocean'].data[:test_dataset.height],
+              'longitude': coords['xu_ocean'].data[:test_dataset.width]}
 u_surf = xr.DataArray(data=velocities[:, 0, ...], dims=new_dims,
                       coords=new_coords)
 v_surf = xr.DataArray(data=velocities[:, 1, ...], dims=new_dims,
