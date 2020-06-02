@@ -90,9 +90,9 @@ class Unet(Module):
                 n_out_channels = 2 * n_out_channels
             k_size = self.kernel_sizes[i]
             conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, k_size,
-                                    padding=1)
+                                    padding=k_size//2)
             conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, k_size,
-                                    padding=1)
+                                    padding=k_size//2)
             block1 = self._make_subblock(conv1)
             block2 = self._make_subblock(conv2)
             submodule = Sequential(*block1, *block2)
@@ -109,9 +109,9 @@ class Unet(Module):
             n_out_channels = n_out_channels // 2
             k_size = self.kernel_sizes[-i]
             conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, k_size,
-                                    padding=1)
+                                    padding=k_size//2)
             conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, k_size,
-                                    padding=1)
+                                    padding=k_size//2)
             block1 = self._make_subblock(conv1)
             block2 = self._make_subblock(conv2)
             submodule = Sequential(*block1, *block2)
