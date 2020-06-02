@@ -9,20 +9,22 @@ Implementation of the U-net structure
 
 
 import torch
-from torch.nn import (Module, ModuleList, Parameter, Upsample, Sequential)
+from torch.nn import (Module, ModuleList, Upsample, Sequential)
 from torch.nn import functional as F
-from torch.nn.modules.utils import _pair
 from torch.nn.functional import pad
 import torch.nn as nn
-import numpy as np
+
 
 class Unet(Module):
     def __init__(self, n_in_channels: int = 2, n_out_channels: int = 4,
-                 height=0, width=0, n_scales: int = 2, batch_norm=True):
+                 height=0, width=0, n_scales: int = 2, depth=128,
+                 kernel_sizes=[5, 3], batch_norm=True):
         super().__init__()
         self.n_in_channels = n_in_channels
         self.n_out_channels = n_out_channels
         self.n_scales = n_scales
+        self.depth = depth
+        self.kernel_sizes = self._repeat(kernel_sizes, n_scales)
         self.down_convs = ModuleList()
         self.up_convs = ModuleList()
         self.up_samplers = ModuleList()
@@ -30,9 +32,13 @@ class Unet(Module):
         self.conv_layers = []
         self.linear_layer = None
         self.batch_norm = batch_norm
-        self._build_convs()
         self.linear_layer = None
+        self._build_convs()
 
+    @staticmethod
+    def repeat(l, n_times):
+        for i in range(n_times - len(l)):
+            l.append(l[-1])
 
     @property
     def transformation(self):
@@ -42,17 +48,21 @@ class Unet(Module):
     def transformation(self, transformation):
         self._final_transformation = transformation
 
-    def forward(self, x : torch.Tensor):
+    def forward(self, x: torch.Tensor):
         blocks = list()
         for i in range(self.n_scales):
+            # Convolutions layers for that scale
             x = self.down_convs[i](x)
-            if i != self.n_scales - 1:
+            if i < self.n_scales - 1:
                 blocks.append(x)
+                # Downscaling
                 x = self.down(x)
         blocks.reverse()
         for i in range(self.n_scales - 1):
             x = self.up(x, i)
+            # Concatenate to the finer scale
             x = torch.cat((x, blocks[i]), 1)
+            # Convolutions for that scale
             x = self.up_convs[i](x)
         final = self.final_convs(x)
         return self.transformation(final)
@@ -73,12 +83,15 @@ class Unet(Module):
         for i in range(self.n_scales):
             if i == 0:
                 n_in_channels = self.n_in_channels
-                n_out_channels = 64
+                n_out_channels = self.depth
             else:
                 n_in_channels = n_out_channels
                 n_out_channels = 2 * n_out_channels
-            conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, 3, padding=1)
-            conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, 3, padding=1)
+            k_size = self.kernel_sizes[i]
+            conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, k_size,
+                                    padding=1)
+            conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, k_size,
+                                    padding=1)
             block1 = self._make_subblock(conv1)
             block2 = self._make_subblock(conv2)
             submodule = Sequential(*block1, *block2)
@@ -93,15 +106,18 @@ class Unet(Module):
             # The up convs
             n_in_channels = n_out_channels
             n_out_channels = n_out_channels // 2
-            conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, 3, padding=1)
-            conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, 3, padding=1)
+            k_size = self.kernel_sizes[-i]
+            conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, k_size,
+                                    padding=1)
+            conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, k_size,
+                                    padding=1)
             block1 = self._make_subblock(conv1)
             block2 = self._make_subblock(conv2)
             submodule = Sequential(*block1, *block2)
             self.up_convs.append(submodule)
             self.conv_layers.append(conv1)
             self.conv_layers.append(conv2)
-        #Final convs
+        # Final convs
         conv1 = torch.nn.Conv2d(n_out_channels, n_out_channels,
                                 3, padding=1)
         conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels,
@@ -111,4 +127,3 @@ class Unet(Module):
         block1 = self._make_subblock(conv1)
         block2 = self._make_subblock(conv2)
         self.final_convs = Sequential(*block1, *block2, conv3)
-            
