@@ -13,6 +13,9 @@ TODO:
     - multiple time-indexing
     - make one file per working training procedure
     - for concat datasets print test loss for each dataset
+    - try to add as an input the squared components
+    - rerun the data processing.
+    - make Unet tunable
 To-Done:
     - Early stopping
     - try not to remove the mean flow in normalizing: done
@@ -202,7 +205,7 @@ for dataset in xr_datasets:
     transform.fit(train_dataset)
     dataset = DatasetWithTransform(dataset, transform)
     dataset = MultipleTimeIndices(dataset)
-    dataset.time_indices = [0, -1]
+    dataset.time_indices = [0,]
     train_dataset = Subset_(dataset, np.arange(train_index))
     test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
     train_datasets.append(train_dataset)
