@@ -137,7 +137,7 @@ class Randommult(ArrayTransform):
 
 
 class CropToMultipleof(ArrayTransform):
-    def __init__(self, multiple_of: int = 2):
+    def __init__(self, multiple_of: int = 4):
         self.multiple_of = multiple_of
 
     def fit(self, x):
@@ -607,7 +607,6 @@ class MultipleTimeIndices(Dataset):
             return np.array(self._time_indices)
 
     @time_indices.setter
-#    @call_only_once
     def time_indices(self, indices: list):
         for i in indices:
             if i > 0:
