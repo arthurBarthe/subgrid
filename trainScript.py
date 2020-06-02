@@ -387,7 +387,10 @@ for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
     net.eval()
     with torch.no_grad():
         for i, data in enumerate(test_dataloader):
-            u_v_surf[i * batch_size: (i+1) * batch_size] = data[0].numpy()
+            # In case of multiple time indices used for prediction we only
+            # save one to save some space.
+            uv_saved = data[0][:2, ...].numpy()
+            u_v_surf[i * batch_size: (i+1) * batch_size] = uv_saved
             truth[i * batch_size:(i+1) * batch_size] = data[1].numpy()
             X = data[0].to(device, dtype=torch.float)
             Y_hat = net(X)
