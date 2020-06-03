@@ -99,6 +99,16 @@ class TanTransform(Transform):
         return 'TanTransform()'
 
 
+class SquareTransform(Transform):
+    def transform(self, input_):
+        mean, precision = torch.split(input_, 2, dim=1)
+        mean = mean**2
+        return torch.cat((mean, precision), dim=1)
+
+    def __repr__(self):
+        return 'SquareTransform()'
+
+
 class ComposeTransform(Transform):
     def __init__(self, transforms):
         super().__init__()
@@ -117,3 +127,8 @@ class ComposeTransform(Transform):
 class ComposeTanSoftPlus(ComposeTransform):
     def __init__(self):
         super().__init__((TanTransform(), SoftPlusTransform()))
+
+
+class ComposeSquareSoftPlus(ComposeTransform):
+    def __init__(self):
+        super().__init__((SquareTransform(), SoftPlusTransform()))
