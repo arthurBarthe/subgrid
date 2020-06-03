@@ -87,3 +87,33 @@ class SquareTransform(PrecisionTransform):
 
     def __repr__(self):
         return ''.join(('SquareTransform(', str(self.min_value), ')'))
+
+
+class TanTransform(Transform):
+    def transform(self, input_):
+        mean, precision = torch.split(input_, 2, dim=1)
+        mean = torch.tan(mean)
+        return torch.cat((mean, precision), dim=1)
+
+    def __repr__(self):
+        return 'TanTransform()'
+
+
+class ComposeTransform(Transform):
+    def __init__(self, transforms):
+        super().__init__()
+        self.transforms = transforms
+
+    def transform(self, input):
+        x = input
+        for t in self.transforms:
+            x = t.forward(x)
+        return x
+
+    def __repr__(self):
+        return ' + '.join([t.__repr__() for t in self.transforms])
+
+
+class ComposeTanSoftPlus(ComposeTransform):
+    def __init__(self):
+        super().__init__((TanTransform(), SoftPlusTransform()))
