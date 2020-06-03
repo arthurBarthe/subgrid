@@ -13,6 +13,7 @@ Run cmip26 -h to display help.
 import argparse
 from dask.diagnostics import ProgressBar
 import mlflow
+from copy import copy
 
 from data.coarse import eddy_forcing
 from data.pangeo_catalog import get_patch
@@ -37,7 +38,7 @@ params = parser.parse_args()
 
 # Use a larger patch to compute the eddy forcing then we will crop
 # TODO do we need even larger borders?
-extra_bounds = params.bounds
+extra_bounds = copy(params.bounds)
 extra_bounds[0] -= 2 * params.scale / 10
 extra_bounds[2] -= 2 * params.scale / 10
 extra_bounds[1] += 2 * params.scale / 10
