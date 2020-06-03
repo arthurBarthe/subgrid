@@ -144,7 +144,7 @@ else:
 transform.fit(train_dataset)
 dataset = DatasetWithTransform(dataset, transform)
 dataset = MultipleTimeIndices(dataset)
-dataset.time_indices = [0, -1]
+dataset.time_indices = [0, ]
 train_dataset = Subset_(dataset, np.arange(train_index))
 test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
 
