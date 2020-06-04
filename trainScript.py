@@ -277,6 +277,8 @@ test_dataset.add_targets_transform_from_model(net)
 
 # Training---------------------------------------------------------------------
 # MSE criterion + Adam optimizer
+# TODO rn we need to call this after train_dataset.add_targets_tr...
+# otherwise tensors are not on the same device during the call
 # To GPU
 net.to(device)
 
@@ -288,11 +290,11 @@ metrics = {'mse': F.mse_loss}
 metrics = {}
 
 params = list(net.parameters())
-linear_layer = net.linear_layer
-if linear_layer is not None:
-    params.append({'params': linear_layer.parameters(),
-                   'weight_decay': weight_decay,
-                   'lr': learning_rates[0] / 100})
+# linear_layer = net.linear_layer
+# if linear_layer is not None:
+#     params.append({'params': linear_layer.parameters(),
+#                    'weight_decay': weight_decay,
+#                    'lr': learning_rates[0] / 100})
 optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0)
               for (i, v) in learning_rates.items()}
 
