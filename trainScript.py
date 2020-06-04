@@ -262,8 +262,7 @@ print('--------------------')
 print(net)
 print('--------------------')
 print('***')
-# To GPU
-net.to(device)
+
 
 # Log the text representation of the net into a txt artifact
 with open(os.path.join(data_location, models_directory,
@@ -278,6 +277,9 @@ test_dataset.add_targets_transform_from_model(net)
 
 # Training---------------------------------------------------------------------
 # MSE criterion + Adam optimizer
+# To GPU
+net.to(device)
+
 criterion = getattr(train.losses, loss_cls_name)()
 
 # metrics saved independently of the training criterion
