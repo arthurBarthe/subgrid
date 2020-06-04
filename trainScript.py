@@ -409,24 +409,28 @@ for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
     # Convert to dataset
     new_dims = ('time', 'latitude', 'longitude')
     coords = xr_dataset.coords
-    new_coords = {'time': coords['time']
+    coords_uv = {'time': coords['time']
+                  [test_index:test_index+len(test_dataset)],
+                  'latitude': coords['yu_ocean'].data[:test_dataset.height],
+                  'longitude': coords['xu_ocean'].data[:test_dataset.width]}
+    coords_s = {'time': coords['time']
                   [test_index:test_index+len(test_dataset)],
                   'latitude': coords['yu_ocean'].data[:test_dataset.output_height],
                   'longitude': coords['xu_ocean'].data[:test_dataset.output_width]}
     u_surf = xr.DataArray(data=u_v_surf[:, 0, ...], dims=new_dims,
-                          coords=new_coords)
+                          coords=coords_uv)
     v_surf = xr.DataArray(data=u_v_surf[:, 1, ...], dims=new_dims,
-                          coords=new_coords)
-    s_x = xr.DataArray(data=truth[:, 0, ...], dims=new_dims, coords=new_coords)
-    s_y = xr.DataArray(data=truth[:, 1, ...], dims=new_dims, coords=new_coords)
+                          coords=coords_uv)
+    s_x = xr.DataArray(data=truth[:, 0, ...], dims=new_dims, coords=coords_s)
+    s_y = xr.DataArray(data=truth[:, 1, ...], dims=new_dims, coords=coords_s)
     s_x_pred = xr.DataArray(data=pred[:, 0, ...], dims=new_dims,
-                            coords=new_coords)
+                            coords=coords_s)
     s_y_pred = xr.DataArray(data=pred[:, 1, ...], dims=new_dims,
-                            coords=new_coords)
+                            coords=coords_s)
     s_x_pred_scale = xr.DataArray(data=pred[:, 2, ...], dims=new_dims,
-                                  coords=new_coords)
+                                  coords=coords_s)
     s_y_pred_scale = xr.DataArray(data=pred[:, 3, ...], dims=new_dims,
-                                  coords=new_coords)
+                                  coords=coords_s)
     output_dataset = xr.Dataset({'u_surf': u_surf, 'v_surf': v_surf,
                                  'S_x': s_x, 'S_y': s_y,
                                  'S_xpred': s_x_pred,
