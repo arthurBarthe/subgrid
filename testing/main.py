@@ -179,7 +179,6 @@ except AttributeError as e:
 net = model_cls(dataset.n_features, 2*dataset.n_targets)
 net.final_transformation = transformation
 
-net.to(device=device)
 logging.info('Loading the neural net parameters')
 # Load parameters of pre-trained model
 net.load_state_dict(torch.load(model_file))
