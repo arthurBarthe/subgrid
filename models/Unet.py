@@ -13,13 +13,15 @@ from torch.nn import (Module, ModuleList, Upsample, Sequential)
 from torch.nn import functional as F
 from torch.nn.functional import pad
 import torch.nn as nn
+from base import DetectOutputSizeMixin, FinalTransformationMixin
 
 
-class Unet(Module):
+class Unet_(Module, DetectOutputSizeMixin):
     def __init__(self, n_in_channels: int = 2, n_out_channels: int = 4,
                  height=0, width=0, n_scales: int = 3, depth=64,
                  kernel_sizes=[5, 3], batch_norm=True):
-        super().__init__()
+        Module.__init__(self)
+        DetectOutputSizeMixin.__init__(self, height, width)
         self.n_in_channels = n_in_channels
         self.n_out_channels = n_out_channels
         self.n_scales = n_scales
@@ -41,14 +43,6 @@ class Unet(Module):
             l.append(l[-1])
         return l
 
-    @property
-    def transformation(self):
-        return self._final_transformation
-
-    @transformation.setter
-    def transformation(self, transformation):
-        self._final_transformation = transformation
-
     def forward(self, x: torch.Tensor):
         blocks = list()
         for i in range(self.n_scales):
@@ -66,7 +60,7 @@ class Unet(Module):
             # Convolutions for that scale
             x = self.up_convs[i](x)
         final = self.final_convs(x)
-        return self.transformation(final)
+        return final
 
     def down(self, x):
         return F.max_pool2d(x, 2)
@@ -128,3 +122,8 @@ class Unet(Module):
         block1 = self._make_subblock(conv1)
         block2 = self._make_subblock(conv2)
         self.final_convs = Sequential(*block1, *block2, conv3)
+
+
+class Unet(FinalTransformationMixin, Unet_):
+    def __init__(self, *args, **kargs):
+        Unet_.__init__(self, *args, **kargs)

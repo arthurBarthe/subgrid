@@ -17,13 +17,14 @@ logged.
 # stream datasets.
 
 import torch
-from torch.nn import Module, Parameter
+from torch.nn import Module, Parameter, Sequential, ModuleList
 from torch.nn import functional as F
 from torch.nn.modules.utils import _pair
 from torch.nn.functional import pad
 import torch.nn as nn
-import mlflow
+# import mlflow
 import numpy as np
+from base import DetectOutputSizeMixin, FinalTransformationMixin
 
 class Identity(Module):
     def __init__(self):
@@ -102,7 +103,7 @@ class LocallyConnected2d(nn.Module):
 
 
 class MLFlowNN(Module):
-    """Abstract class for a pytorch NN whose characteristics are automatically
+    """Class for a pytorch NN whose characteristics are automatically
     logged through MLFLOW."""
     def __init__(self, input_depth: int, output_size: int, height : int = None,
                  width: int = None):
@@ -428,46 +429,77 @@ class Model4(MLFlowNN):
                                      do_not_load=True)
         self.add_final_activation('identity')
 
-class FullyCNN(MLFlowNN):
-    def __init__(self, input_depth: int, output_size: int, width : int = None,
-                 height : int = None, do_not_load_linear : bool = False):
-        super().__init__(input_depth, output_size, width, height)
-        self.do_not_load_linear = do_not_load_linear
-        self.build()
+
+class FullyCNN(FinalTransformationMixin, DetectOutputSizeMixin, Sequential):
+    def __init__(self, n_in_channels: int = 2, n_out_channels: int = 4,
+                 batch_norm=True):
+        self.n_in_channels = n_in_channels
+        self.batch_norm = batch_norm
+        conv1 = torch.nn.Conv2d(n_in_channels, 128, 5)
+        block1 = self._make_subblock(conv1)
+        conv2 = torch.nn.Conv2d(128, 64, 5)
+        block2 = self._make_subblock(conv2)
+        conv3 = torch.nn.Conv2d(64, 32, 3)
+        block3 = self._make_subblock(conv3)
+        conv4 = torch.nn.Conv2d(32, 32, 3)
+        block4 = self._make_subblock(conv4)
+        conv5 = torch.nn.Conv2d(32, 32, 3)
+        block5 = self._make_subblock(conv5)
+        conv6 = torch.nn.Conv2d(32, 32, 3)
+        block6 = self._make_subblock(conv6)
+        conv7 = torch.nn.Conv2d(32, 32, 3)
+        block7 = self._make_subblock(conv7)
+        conv8 = torch.nn.Conv2d(32, n_out_channels, 3)
+        Sequential.__init__(self, *block1, *block2, *block3, *block4, *block5,
+                            *block6, *block7, conv8)
+
+    def _make_subblock(self, conv):
+        subbloc = [conv, nn.ReLU()]
+        if self.batch_norm:
+            subbloc.append(nn.BatchNorm2d(conv.out_channels))
+        return subbloc
 
 
-    def build(self):
-        self.add_conv2d_layer(self.input_depth, 128, 5, padding=2+0)
-        self.add_activation('relu')
-        self.add_batch_norm_layer(128)
-        
-        self.add_conv2d_layer(128, 64, 5, padding=2+0)
-        self.add_activation('relu')
-        self.add_batch_norm_layer(64)
-        
-        self.add_conv2d_layer(64, 32, 3, padding=1+0)
-        self.add_activation('relu')
-        self.add_batch_norm_layer(32)
-        
-        self.add_conv2d_layer(32, 32, 3, padding=1+0)
-        self.add_activation('relu')
-        self.add_batch_norm_layer(32)
-        
-        self.add_conv2d_layer(32, 32, 3, padding=1+(0))
-        self.add_activation('relu')
-        self.add_batch_norm_layer(32)
-        
-        self.add_conv2d_layer(32, 32, 3, padding=1)
-        self.add_activation('relu')
-        self.add_batch_norm_layer(32)
-        
-        self.add_conv2d_layer(32, 32, 3, padding=1)
-        self.add_activation('relu')
-        self.add_batch_norm_layer(32)
-        
-        self.add_conv2d_layer(32, 4, 3, padding=1)
-        
-        self.add_final_activation('identity')
+# class FullyCNN(MLFlowNN, DetectOutputSizeMixin):
+#     def __init__(self, input_depth: int, output_size: int, width: int = None,
+#                  height: int = None, do_not_load_linear: bool = False):
+#         super().__init__(input_depth, output_size, width, height)
+#         DetectOutputSizeMixin.__init__(self, height, width)
+#         self.do_not_load_linear = do_not_load_linear
+#         self.build()
+
+#     def build(self):
+#         self.add_conv2d_layer(self.input_depth, 128, 5, padding=2+0)
+#         self.add_activation('relu')
+#         self.add_batch_norm_layer(128)
+
+#         self.add_conv2d_layer(128, 64, 5, padding=2+0)
+#         self.add_activation('relu')
+#         self.add_batch_norm_layer(64)
+
+#         self.add_conv2d_layer(64, 32, 3, padding=1+0)
+#         self.add_activation('relu')
+#         self.add_batch_norm_layer(32)
+
+#         self.add_conv2d_layer(32, 32, 3, padding=1+0)
+#         self.add_activation('relu')
+#         self.add_batch_norm_layer(32)
+
+#         self.add_conv2d_layer(32, 32, 3, padding=1+(0))
+#         self.add_activation('relu')
+#         self.add_batch_norm_layer(32)
+
+#         self.add_conv2d_layer(32, 32, 3, padding=1)
+#         self.add_activation('relu')
+#         self.add_batch_norm_layer(32)
+
+#         self.add_conv2d_layer(32, 32, 3, padding=1)
+#         self.add_activation('relu')
+#         self.add_batch_norm_layer(32)
+
+#         self.add_conv2d_layer(32, 4, 3, padding=1)
+
+#         self.add_final_activation('identity')
 
 
 if __name__ == '__main__':

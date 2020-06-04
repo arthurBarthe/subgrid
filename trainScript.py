@@ -5,20 +5,21 @@ Created on Wed Dec 11 16:13:28 2019
 @author: Arthur
 TODO:
     - data augmentation by *lambda -> *lambda**2 forcing
-    - Learnable min value of precision started at high value
-    - try again different normalizaiton (including same one everywhere with
-                                         a lot of training data)
+    - Learnable min value of precision started at low value
     - tune Adam + keep momemtum
     - when concatenating datasets, weights depending on sizes
-    - multiple time-indexing
     - make one file per working training procedure
     - for concat datasets print test loss for each dataset
     - try to add as an input the squared components
     - rerun the data processing.
     - make Unet tunable
+    - multiple time-indexing
+    - loss usbsampling
 To-Done:
     - Early stopping
     - try not to remove the mean flow in normalizing: done
+    - try again different normalizaiton (including same one everywhere with
+                                         a lot of training data)
 """
 # This is required to avoid some issue with matplotlib when running on NYU's
 # prince server
@@ -187,8 +188,8 @@ try:
 except AttributeError as e:
     raise type(e)('Could not find the dataset transform class: ' +
                   str(e))
-for dataset in xr_datasets:
-    dataset = RawDataFromXrDataset(dataset)
+for xr_dataset in xr_datasets:
+    dataset = RawDataFromXrDataset(xr_dataset)
     dataset.index = 'time'
     dataset.add_input('usurf')
     dataset.add_input('vsurf')
@@ -205,7 +206,7 @@ for dataset in xr_datasets:
     transform.fit(train_dataset)
     dataset = DatasetWithTransform(dataset, transform)
     dataset = MultipleTimeIndices(dataset)
-    dataset.time_indices = [0,]
+    dataset.time_indices = [0, ]
     train_dataset = Subset_(dataset, np.arange(train_index))
     test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
     train_datasets.append(train_dataset)
@@ -246,16 +247,14 @@ except AttributeError as e:
     raise type(e)('Could not find the specified model class: ' +
                   str(e))
 
-net = model_cls(datasets[0].n_features, 2 * datasets[0].n_targets,
-                datasets[0].height, datasets[0].width)
+net = model_cls(datasets[0].n_features, 2 * datasets[0].n_targets)
 # We only log the structure when the net is used in the training script
 net.log_structure = True
 
 try:
     transformation_cls = getattr(models.transforms, transformation_cls_name)
     transformation = transformation_cls()
-    # TODO use the property here
-    net._final_transformation = transformation
+    net.final_transformation = transformation
 except AttributeError as e:
     raise type(e)('Could not find the specified transformation class: ' +
                   str(e))
@@ -272,6 +271,9 @@ with open(os.path.join(data_location, models_directory,
     print('Writing neural net architecture into txt file.')
     f.write(str(net))
 # FIN NEURAL NETWORK ---------------------------------------------------------
+
+train_dataset.add_targets_transform_from_model(net)
+test_dataset.add_targets_transform_from_model(net)
 
 
 # Training---------------------------------------------------------------------
@@ -379,10 +381,10 @@ for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
                                                         xr_datasets):
     u_v_surf = np.zeros((len(test_dataset), 2, test_dataset.height,
                          test_dataset.width))
-    pred = np.zeros((len(test_dataset), 4, test_dataset.height,
-                     test_dataset.width))
-    truth = np.zeros((len(test_dataset), 2, test_dataset.height,
-                      test_dataset.width))
+    pred = np.zeros((len(test_dataset), 4, test_dataset.output_height,
+                     test_dataset.output_width))
+    truth = np.zeros((len(test_dataset), 2, test_dataset.output_height,
+                      test_dataset.output_width))
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                                  shuffle=False)
     test_index = int(test_split * len(dataset))

@@ -176,9 +176,8 @@ except ModuleNotFoundError as e:
 except AttributeError as e:
     raise type(e)('Could not retrieve the model\'s class. ' + str(e))
 
-net = model_cls(dataset.n_features, 2*dataset.n_targets, dataset.height,
-                dataset.width)
-net._final_transformation = transformation
+net = model_cls(dataset.n_features, 2*dataset.n_targets)
+net.final_transformation = transformation
 
 net.to(device=device)
 logging.info('Loading the neural net parameters')

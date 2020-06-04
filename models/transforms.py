@@ -99,7 +99,7 @@ class TanTransform(Transform):
         return 'TanTransform()'
 
 
-class SquareTransform(Transform):
+class SquareTransformMean(Transform):
     def transform(self, input_):
         mean, precision = torch.split(input_, 2, dim=1)
         mean = mean**2 * torch.sign(mean)
@@ -114,8 +114,7 @@ class ComposeTransform(Transform):
         super().__init__()
         self.transforms = transforms
 
-    def transform(self, input):
-        x = input
+    def transform(self, x):
         for t in self.transforms:
             x = t.forward(x)
         return x
@@ -131,4 +130,4 @@ class ComposeTanSoftPlus(ComposeTransform):
 
 class ComposeSquareSoftPlus(ComposeTransform):
     def __init__(self):
-        super().__init__((SquareTransform(), SoftPlusTransform()))
+        super().__init__((SquareTransformMean(), SoftPlusTransform()))

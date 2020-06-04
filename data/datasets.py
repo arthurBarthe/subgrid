@@ -66,6 +66,18 @@ class DatasetTransformer:
             targets_transform = deepcopy(features_transform)
         self.transforms['targets'] = targets_transform
 
+    def add_features_transform(self, transform):
+        feature_t = self.transforms['features']
+        if not isinstance(feature_t, ComposeTransforms):
+            self.transforms['features'] = ComposeTransforms([feature_t, ])
+        self.transforms['features'].add_transform(transform)
+
+    def add_targets_transform(self, transform):
+        target_t = self.transforms['targets']
+        if not isinstance(target_t, ComposeTransforms):
+            self.transforms['targets'] = ComposeTransforms([target_t, ])
+        self.transforms['targets'].add_transform(transform)
+
     def fit(self, x: torch.utils.data.Dataset):
         features, targets = x[:]
         self.transforms['features'].fit(features)
@@ -103,7 +115,7 @@ class ArrayTransform(ABC):
 
 class ComposeTransforms(ArrayTransform):
     def __init__(self, *transforms):
-        self.transforms = transforms
+        self.transforms = list(transforms)
 
     def fit(self, x):
         for transform in self.transforms:
@@ -117,6 +129,9 @@ class ComposeTransforms(ArrayTransform):
         for transform in self.transforms:
             x = transform(x)
         return x
+
+    def add_transform(self, transform):
+        self.transforms.append(transform)
 
 
 class Randommult(ArrayTransform):
@@ -149,6 +164,28 @@ class CropToMultipleof(ArrayTransform):
 
     def transform(self, x):
         return x[:, :self.new_shape[1], :self.new_shape[2]]
+
+
+class CropToNewShape(ArrayTransform):
+    """Crops to a new shape. Keeps the array centered, modulo 1 in which case
+    the left side is priviledged"""
+    def __init__(self, height, width):
+        self.height = height
+        self.width = width
+
+    def fit(self, x):
+        pass
+
+    def transform(self, x):
+        height, width = x.shape[1:]
+        dh_left = max(0, (height - self.height) // 2)
+        dh_right = dh_left + (height - self.height) % 2
+        dw_left = max(0, (width - self.width) // 2)
+        dw_right = dw_left + (width - self.width) % 2
+        return x[:, dh_left:height-dh_right, dw_left:width-dw_right]
+
+    def __repr__(self):
+        return f'CropToNewShape({self.height}, {self.width})'
 
 
 class SignedSqrt(ArrayTransform):
@@ -385,8 +422,21 @@ class DatasetWithTransform:
     def __len__(self):
         return len(self.dataset)
 
+    def add_targets_transform_from_model(self, model):
+        output_height = model.output_height(self.height, self.width)
+        output_width = model.output_width(self.height, self.width)
+        transform = CropToNewShape(output_height, output_width)
+        self.add_targets_transform(transform)
+        return transform
+
     def inverse_transform(self, x):
         return self.transform.inverse_transform(x)
+
+    def add_features_transform(self, transform):
+        self.transform.add_features_transform(transform)
+
+    def add_targets_transform(self, transform):
+        self.transform.add_targets_transform(transform)
 
 
 class Subset_(Subset):
@@ -411,6 +461,14 @@ class ConcatDataset_(ConcatDataset):
             widths = [dataset.width for dataset in self.datasets]
         self.height = min(heights)
         self.width = min(widths)
+        for dataset in self.datasets:
+            crop_transform = CropToNewShape(self.height, self.width)
+            dataset.add_features_transform(crop_transform)
+            dataset.add_targets_transform(crop_transform)
+
+    def add_targets_transform_from_model(self, model):
+        for dataset in self.datasets:
+            dataset.add_targets_transform_from_model(model)
 
     def __getattr__(self, attr):
         print('Trying ', attr)
@@ -418,13 +476,6 @@ class ConcatDataset_(ConcatDataset):
             return getattr(self.datasets[0], attr)
         else:
             raise AttributeError()
-
-    def __getitem__(self, index: int):
-        result = super().__getitem__(index)
-        if self.enforce_same_dims:
-            result = (result[0][:, :self.height, :self.width],
-                      result[1][:, :self.height, :self.width])
-        return result
 
 
 class LensDescriptor:

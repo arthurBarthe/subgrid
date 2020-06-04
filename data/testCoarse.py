@@ -16,16 +16,16 @@ from coarse import *
 import matplotlib.pyplot as plt
 
 class TestEddyForcing(unittest.TestCase):
-    def test_compute_grid_steps(self):
-        a1 = DataArray(data = np.zeros((10, 4, 4)), 
-                       dims = ['time', 'x', 'y'],
-                       coords = {'time' : np.arange(10) * 3,
-                                 'x' : np.arange(4) * 7,
-                                 'y' : np.arange(4) * 11})
-        ds = Dataset({'var0' : a1})
-        s_x, s_y = compute_grid_steps(ds)
-        self.assertEqual(s_x, 7)
-        self.assertEqual(s_y, 11)
+    # def test_compute_grid_steps(self):
+    #     a1 = DataArray(data = np.zeros((10, 4, 4)), 
+    #                    dims = ['time', 'x', 'y'],
+    #                    coords = {'time' : np.arange(10) * 3,
+    #                              'x' : np.arange(4) * 7,
+    #                              'y' : np.arange(4) * 11})
+    #     ds = Dataset({'var0' : a1})
+    #     s_x, s_y = compute_grid_steps(ds)
+    #     self.assertEqual(s_x, 7)
+    #     self.assertEqual(s_y, 11)
 
     def test_spatial_filter_dataset(self):
         a1 = DataArray(data = np.zeros((10, 4, 4)), 
@@ -55,6 +55,21 @@ class TestEddyForcing(unittest.TestCase):
         # plt.colorbar()
         test = (filtered.to_array().values == filtered2).all()
         self.assertTrue(test.item())
+
+    def test_spatial_filter_dataset3(self):
+        """Checks that the average of the filtered dataset is equal to that
+        of the original data within some threshold"""
+        a1 = DataArray(data = np.random.randn(1000, 40, 40), 
+                       dims = ['time', 'x', 'y'],
+                       coords = {'time' : np.arange(1000) * 3,
+                                 'x' : np.arange(40) * 7,
+                                 'y' : np.arange(40) * 11})
+        ds = Dataset({'var0' : a1})
+        filtered = spatial_filter_dataset(ds, sigma=3)
+        mean_origin = ds.mean(dim='x').mean(dim='y')
+        mean_filtered = filtered.mean(dim='x').mean(dim='y')
+        self.assertTrue((mean_filtered - mean_origin 
+                         <= 0.1 * mean_origin ).all())
     
     def test_eddy_forcing(self):
         a1 = DataArray(data = np.random.randn(1000, 100, 100), 
@@ -87,20 +102,20 @@ class TestEddyForcing(unittest.TestCase):
         ds = Dataset({'usurf' : a1, 'vsurf' : a2})
         forcing = eddy_forcing(ds, 40)
 
-    def test_advections(self):
-        a1 = DataArray(data = np.zeros((1000, 40, 40)), 
-                       dims = ['time', 'x', 'y'],
-                       coords = {'time' : np.arange(1000) * 3,
-                                 'x' : np.arange(40) * 7,
-                                 'y' : np.arange(40) * 11})
-        a2= DataArray(data = np.zeros((1000, 40, 40)), 
-                       dims = ['time', 'x', 'y'],
-                       coords = {'time' : np.arange(1000) * 3,
-                                 'x' : np.arange(40) * 7,
-                                 'y' : np.arange(40) * 11})
-        ds = Dataset({'usurf' : a1, 'vsurf' : a2})
-        adv = advections(ds)
-        self.assertTrue((adv == 0).all().to_array().all().item())
+    # def test_advections(self):
+    #     a1 = DataArray(data = np.zeros((1000, 40, 40)), 
+    #                    dims = ['time', 'x', 'y'],
+    #                    coords = {'time' : np.arange(1000) * 3,
+    #                              'x' : np.arange(40) * 7,
+    #                              'y' : np.arange(40) * 11})
+    #     a2= DataArray(data = np.zeros((1000, 40, 40)), 
+    #                    dims = ['time', 'x', 'y'],
+    #                    coords = {'time' : np.arange(1000) * 3,
+    #                              'x' : np.arange(40) * 7,
+    #                              'y' : np.arange(40) * 11})
+    #     ds = Dataset({'usurf' : a1, 'vsurf' : a2})
+    #     adv = advections(ds)
+    #     self.assertTrue((adv == 0).all().to_array().all().item())
         
 
 if __name__ == '__main__':
