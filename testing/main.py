@@ -198,12 +198,12 @@ except AttributeError as e:
 print('width: {}, height: {}'.format(dataset.width, dataset.height))
 # If the model has defined a linear layer we train that only. Otherwise
 # we train all the parameters for now
-if net.linear_layer is not None:
-    print('Training final layer only')
-    parameters = net.linear_layer.parameters()
-else:
-    print('Fine-tuning whole network')
-    parameters = net.parameters()
+# if net.linear_layer is not None:
+#     print('Training final layer only')
+#     parameters = net.linear_layer.parameters()
+# else:
+print('Fine-tuning whole network')
+parameters = net.parameters()
 optimizer = torch.optim.Adam(parameters, lr=learning_rate,
                              weight_decay=0)
 net.to(device)
