@@ -228,9 +228,12 @@ print(f'Final train loss is {train_loss}')
 print(f'Final test loss is {test_loss}')
 
 # Do the predictions for that dataset using the loaded model
-velocities = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
-predictions = np.zeros((len(test_dataset), 4, dataset.height, dataset.width))
-truth = np.zeros((len(test_dataset), 2, dataset.height, dataset.width))
+velocities = np.zeros((len(test_dataset), 2, test_dataset.height,
+                       test_dataset.width))
+predictions = np.zeros((len(test_dataset), 4, test_dataset.output_height,
+                        test_dataset.output_width))
+truth = np.zeros((len(test_dataset), 2, test_dataset.output_height,
+                  test_dataset.output_width))
 
 
 with torch.no_grad():
@@ -247,24 +250,28 @@ with torch.no_grad():
 # Put this into an xarray dataset before saving
 new_dims = ('time', 'latitude', 'longitude')
 coords = xr_dataset.coords
-new_coords = {'time': coords['time']
-              [test_index:test_index + len(test_dataset)],
-              'latitude': coords['yu_ocean'].data[:test_dataset.height],
-              'longitude': coords['xu_ocean'].data[:test_dataset.width]}
+coords_uv = {'time': coords['time']
+                  [test_index:test_index+len(test_dataset)],
+                  'latitude': coords['yu_ocean'].data[:test_dataset.height],
+                  'longitude': coords['xu_ocean'].data[:test_dataset.width]}
+coords_s = {'time': coords['time']
+              [test_index:test_index+len(test_dataset)],
+              'latitude': coords['yu_ocean'].data[:test_dataset.output_height],
+              'longitude': coords['xu_ocean'].data[:test_dataset.output_width]}
 u_surf = xr.DataArray(data=velocities[:, 0, ...], dims=new_dims,
-                      coords=new_coords)
+                      coords=coords_uv)
 v_surf = xr.DataArray(data=velocities[:, 1, ...], dims=new_dims,
-                      coords=new_coords)
-s_x = xr.DataArray(data=truth[:, 0, ...], dims=new_dims, coords=new_coords)
-s_y = xr.DataArray(data=truth[:, 1, ...], dims=new_dims, coords=new_coords)
+                      coords=coords_uv)
+s_x = xr.DataArray(data=truth[:, 0, ...], dims=new_dims, coords=coords_s)
+s_y = xr.DataArray(data=truth[:, 1, ...], dims=new_dims, coords=coords_s)
 s_x_pred = xr.DataArray(data=predictions[:, 0, ...], dims=new_dims,
-                        coords=new_coords)
+                        coords=coords_s)
 s_y_pred = xr.DataArray(data=predictions[:, 1, ...], dims=new_dims,
-                        coords=new_coords)
+                        coords=coords_s)
 s_x_pred_scale = xr.DataArray(data=predictions[:, 2, ...], dims=new_dims,
-                              coords=new_coords)
+                              coords=coords_s)
 s_y_pred_scale = xr.DataArray(data=predictions[:, 3, ...], dims=new_dims,
-                              coords=new_coords)
+                              coords=coords_s)
 output_dataset = xr.Dataset({'u_surf': u_surf, 'v_surf': v_surf,
                              'S_x': s_x, 'S_y': s_y, 'S_xpred': s_x_pred,
                              'S_ypred': s_y_pred, 'S_xscale': s_x_pred_scale,
