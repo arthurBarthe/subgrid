@@ -410,6 +410,14 @@ class DatasetWithTransform:
         x = self[0][0]
         return x.shape[2]
 
+    @property
+    def output_height(self):
+        return self[0][1].shape[1]
+
+    @property
+    def output_width(self):
+        return self[0][1].shape[2]
+
     def __getitem__(self, index: int):
         return self.transform(self.dataset[index])
 
