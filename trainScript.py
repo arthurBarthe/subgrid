@@ -405,13 +405,14 @@ for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
             Y_hat = net(X)
             Y_hat = Y_hat.cpu().numpy()
             pred[i * batch_size:(i+1) * batch_size] = Y_hat
+
     # Convert to dataset
     new_dims = ('time', 'latitude', 'longitude')
     coords = xr_dataset.coords
     new_coords = {'time': coords['time']
                   [test_index:test_index+len(test_dataset)],
-                  'latitude': coords['yu_ocean'].data[:test_dataset.height],
-                  'longitude': coords['xu_ocean'].data[:test_dataset.width]}
+                  'latitude': coords['yu_ocean'].data[:test_dataset.output_height],
+                  'longitude': coords['xu_ocean'].data[:test_dataset.output_width]}
     u_surf = xr.DataArray(data=u_v_surf[:, 0, ...], dims=new_dims,
                           coords=new_coords)
     v_surf = xr.DataArray(data=u_v_surf[:, 1, ...], dims=new_dims,
