@@ -184,6 +184,11 @@ logging.info('Loading the neural net parameters')
 # Load parameters of pre-trained model
 net.load_state_dict(torch.load(model_file))
 
+train_dataset.add_targets_transform_from_model(net)
+test_dataset.add_targets_transform_from_model(net)
+
+
+
 # Set up training criterion and select parameters to train
 try:
     criterion = getattr(modules['__main__'], loss_cls_name)()
