@@ -190,6 +190,7 @@ test_dataset.add_targets_transform_from_model(net)
 
 net.to(device)
 net.zero_grad()
+net.train()
 
 # Set up training criterion and select parameters to train
 try:
