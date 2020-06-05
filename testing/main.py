@@ -182,13 +182,13 @@ logging.info('Loading the neural net parameters')
 # Load parameters of pre-trained model
 net.final_transformation = transformation
 net.load_state_dict(torch.load(model_file))
-net.to(device)
+
 
 
 train_dataset.add_targets_transform_from_model(net)
 test_dataset.add_targets_transform_from_model(net)
 
-
+net.to(device)
 
 # Set up training criterion and select parameters to train
 try:
