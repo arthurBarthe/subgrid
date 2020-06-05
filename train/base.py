@@ -124,7 +124,6 @@ class Trainer:
             Y_hat = self.net(X)
             # Compute loss
             loss = self.criterion(Y, Y_hat)
-            print(loss)
             running_loss.update(loss.item(), X.size(0))
             running_loss_.update(loss.item(), X.size(0))
             # Print current loss
@@ -133,12 +132,11 @@ class Trainer:
                 # Every time we print we reset the running average
                 running_loss_.reset()
             # Backpropagate
-            #loss.backward()
+            loss.backward()
             if clip:
                 clip_grad_norm_(self.net.parameters(), clip)
             # Update parameters
-            #optimizer.step()
-            
+            optimizer.step()
         return running_loss.value
 
     def test(self, dataloader) -> float:
