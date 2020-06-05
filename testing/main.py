@@ -189,9 +189,6 @@ train_dataset.add_targets_transform_from_model(net)
 test_dataset.add_targets_transform_from_model(net)
 
 net.to(device)
-net.train()
-net.zero_grad()
-
 
 # Set up training criterion and select parameters to train
 try:
@@ -209,9 +206,10 @@ print('width: {}, height: {}'.format(dataset.width, dataset.height))
 # else:
 trainer = Trainer(net, device)
 trainer.criterion = criterion
-print('Fine-tuning whole network')
-parameters = net.parameters()
-optimizer = torch.optim.Adam(parameters, lr=learning_rate, weight_decay=0)
+if n_epochs > 0:
+    print('Fine-tuning whole network')
+    parameters = net.parameters()
+    optimizer = torch.optim.Adam(parameters, lr=learning_rate, weight_decay=0)
     
 
 # Training itself
