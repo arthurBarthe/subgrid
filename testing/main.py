@@ -88,9 +88,9 @@ try:
 except FileNotFoundError:
     targets_transform_file = None
 
-with torch.no_grad():
-    with open(transformation_file, 'rb') as f:
-        transformation = pickle.load(f)
+# with torch.no_grad():
+#     with open(transformation_file, 'rb') as f:
+#         transformation = pickle.load(f)
 with open(features_transform_file, 'rb') as f:
     features_transform = pickle.load(f)
 if targets_transform_file is not None:
