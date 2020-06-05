@@ -24,7 +24,7 @@ from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
 from train.base import Trainer
 from train.losses import (HeteroskedasticGaussianLoss, 
                           HeteroskedasticGaussianLossV2)
-
+from models.transforms import SoftPlusTransform
 import os.path
 import importlib
 
@@ -78,8 +78,8 @@ learning_rate = learning_rates[0] * lr_ratio
 client = mlflow.tracking.MlflowClient()
 model_file = client.download_artifacts(model_run.run_id,
                                        'models/trained_model.pth')
-transformation_file = client.download_artifacts(model_run.run_id,
-                                                'models/transformation')
+# transformation_file = client.download_artifacts(model_run.run_id,
+#                                                 'models/transformation')
 features_transform_file = client.download_artifacts(model_run.run_id,
                                                     'models/features_transform')
 try:
@@ -181,7 +181,7 @@ net = model_cls(dataset.n_features, 2*dataset.n_targets)
 
 logging.info('Loading the neural net parameters')
 # Load parameters of pre-trained model
-net.final_transformation = transformation
+net.final_transformation = SoftPlusTransform()
 net.load_state_dict(torch.load(model_file))
 
 
