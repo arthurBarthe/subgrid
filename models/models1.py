@@ -432,7 +432,7 @@ class Model4(MLFlowNN):
 
 class FullyCNN(DetectOutputSizeMixin, Sequential):
     def __init__(self, n_in_channels: int = 2, n_out_channels: int = 4,
-                 batch_norm=True):
+                 batch_norm=False):
         self.n_in_channels = n_in_channels
         self.batch_norm = batch_norm
         conv1 = torch.nn.Conv2d(n_in_channels, 128, 5)
