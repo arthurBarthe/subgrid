@@ -14,8 +14,7 @@ from .utils import print_every, RunningAverage
 
 
 class Trainer:
-    """Training object for a neural network on a specific device. Defines
-    a training method that trains for one epoch.
+    """Training object for a neural network on a specific device.
 
     Properties
     ----------
@@ -88,20 +87,24 @@ class Trainer:
         self._metrics[metric_name] = metric_func
 
     def train_for_one_epoch(self, dataloader: DataLoader, optimizer,
-                            clip=None) -> float:
-        """Trains the neural network for one epoch using the data provided
-        through the dataloader passed as an argument, and the optimizer
-        passed as an argument.
+                            clip: float = None) -> float:
+        """Trains the neural network for one epoch.
+
+        Training uses the data provided through the dataloader passed as an
+        argument, and the optimizer passed as an argument.
 
         Parameters
         ----------
-
-        :dataloader: DataLoader,
+        dataloader : DataLoader,
             The Pytorch DataLoader object used to provide training data.
 
-        :optimizer: Optimizer,
+        optimizer : Optimizer,
             The Pytorch Optimizer used to update the parameters after each
             forward-backward pass.
+
+        clip : float,
+            Value used to clipp gradients. Default is None, in which case
+            no clipping of gradients.
 
         Returns
         -------
@@ -121,6 +124,7 @@ class Trainer:
             Y_hat = self.net(X)
             # Compute loss
             loss = self.criterion(Y, Y_hat)
+            print(loss)
             running_loss.update(loss.item(), X.size(0))
             running_loss_.update(loss.item(), X.size(0))
             # Print current loss
@@ -131,25 +135,25 @@ class Trainer:
             # Backpropagate
             loss.backward()
             if clip:
-                norm = clip_grad_norm_(self.net.parameters(), clip)
+                clip_grad_norm_(self.net.parameters(), clip)
             # Update parameters
             optimizer.step()
         return running_loss.value
 
     def test(self, dataloader) -> float:
-        """Returns the validation loss on the provided data. The criterion
-        used is the same as the one used for the training.
+        """Returns the validation loss on the provided data.
+
+        The criterion used is the same as the one used for the training.
 
         Parameters
         ----------
-
         :dataloader: Dataloader,
             The Pytorch dataloader providing the data for validation.
 
 
         Returns
-        ----------
-        (float, dict)
+        -------
+        test_loss, metrics : (float, dict)
             The validation loss calculated over the provided data.
             A dictionary of the computed metrics over the test dataset.
         """
