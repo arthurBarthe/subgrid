@@ -182,7 +182,7 @@ logging.info('Loading the neural net parameters')
 # Load parameters of pre-trained model
 net.final_transformation = transformation
 net.load_state_dict(torch.load(model_file))
-
+net.to(device)
 
 
 train_dataset.add_targets_transform_from_model(net)
@@ -204,12 +204,13 @@ print('width: {}, height: {}'.format(dataset.width, dataset.height))
 #     print('Training final layer only')
 #     parameters = net.linear_layer.parameters()
 # else:
-print('Fine-tuning whole network')
-parameters = net.parameters()
-optimizer = torch.optim.Adam(parameters, lr=learning_rate, weight_decay=0)
-net.to(device)
 trainer = Trainer(net, device)
 trainer.criterion = criterion
+if n_epochs > 0:
+    print('Fine-tuning whole network')
+    parameters = net.parameters()
+    optimizer = torch.optim.Adam(parameters, lr=learning_rate, weight_decay=0)
+    
 
 # Training itself
 for i_epoch in range(n_epochs):
