@@ -180,8 +180,9 @@ net = model_cls(dataset.n_features, 2*dataset.n_targets)
 
 logging.info('Loading the neural net parameters')
 # Load parameters of pre-trained model
-net.load_state_dict(torch.load(model_file))
 net.final_transformation = transformation
+net.load_state_dict(torch.load(model_file))
+
 
 
 train_dataset.add_targets_transform_from_model(net)
@@ -234,7 +235,7 @@ predictions = np.zeros((len(test_dataset), 4, test_dataset.output_height,
 truth = np.zeros((len(test_dataset), 2, test_dataset.output_height,
                   test_dataset.output_width))
 
-
+net.eval()
 with torch.no_grad():
     for i, data in enumerate(test_dataloader):
         print(i)
