@@ -133,7 +133,7 @@ class Trainer:
                 # Every time we print we reset the running average
                 running_loss_.reset()
             # Backpropagate
-            loss.backward()
+            #loss.backward()
             if clip:
                 clip_grad_norm_(self.net.parameters(), clip)
             # Update parameters
