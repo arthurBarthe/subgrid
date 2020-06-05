@@ -208,10 +208,9 @@ print('width: {}, height: {}'.format(dataset.width, dataset.height))
 # else:
 trainer = Trainer(net, device)
 trainer.criterion = criterion
-if n_epochs > 0:
-    print('Fine-tuning whole network')
-    parameters = net.parameters()
-    optimizer = torch.optim.Adam(parameters, lr=learning_rate, weight_decay=0)
+print('Fine-tuning whole network')
+parameters = net.parameters()
+optimizer = torch.optim.Adam(parameters, lr=learning_rate, weight_decay=0)
     
 
 # Training itself
