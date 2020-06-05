@@ -81,7 +81,7 @@ model_file = client.download_artifacts(model_run.run_id,
 transformation_file = client.download_artifacts(model_run.run_id,
                                                 'models/transformation')
 features_transform_file = client.download_artifacts(model_run.run_id,
-                                                'models/features_transform')
+                                                    'models/features_transform')
 try:
     targets_transform_file = client.download_artifacts(model_run.run_id,
                                                     'models/targets_transform')
@@ -177,11 +177,12 @@ except AttributeError as e:
     raise type(e)('Could not retrieve the model\'s class. ' + str(e))
 
 net = model_cls(dataset.n_features, 2*dataset.n_targets)
-net.final_transformation = transformation
 
 logging.info('Loading the neural net parameters')
 # Load parameters of pre-trained model
 net.load_state_dict(torch.load(model_file))
+net.final_transformation = transformation
+
 
 train_dataset.add_targets_transform_from_model(net)
 test_dataset.add_targets_transform_from_model(net)
@@ -204,8 +205,7 @@ print('width: {}, height: {}'.format(dataset.width, dataset.height))
 # else:
 print('Fine-tuning whole network')
 parameters = net.parameters()
-optimizer = torch.optim.Adam(parameters, lr=learning_rate,
-                             weight_decay=0)
+optimizer = torch.optim.Adam(parameters, lr=learning_rate, weight_decay=0)
 net.to(device)
 trainer = Trainer(net, device)
 trainer.criterion = criterion
