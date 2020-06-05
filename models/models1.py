@@ -24,7 +24,7 @@ from torch.nn.functional import pad
 import torch.nn as nn
 # import mlflow
 import numpy as np
-from .base import DetectOutputSizeMixin, FinalTransformationMixin
+from base import DetectOutputSizeMixin, FinalTransformationMixin
 
 class Identity(Module):
     def __init__(self):
@@ -430,7 +430,7 @@ class Model4(MLFlowNN):
         self.add_final_activation('identity')
 
 
-class FullyCNN(FinalTransformationMixin, DetectOutputSizeMixin, Sequential):
+class FullyCNN(DetectOutputSizeMixin, Sequential):
     def __init__(self, n_in_channels: int = 2, n_out_channels: int = 4,
                  batch_norm=True):
         self.n_in_channels = n_in_channels
@@ -452,6 +452,18 @@ class FullyCNN(FinalTransformationMixin, DetectOutputSizeMixin, Sequential):
         conv8 = torch.nn.Conv2d(32, n_out_channels, 3)
         Sequential.__init__(self, *block1, *block2, *block3, *block4, *block5,
                             *block6, *block7, conv8)
+
+    @property
+    def final_transformation(self):
+        return self._final_transformation
+
+    @final_transformation.setter
+    def final_transformation(self, transformation):
+        self._final_transformation = transformation
+
+    def forward(self, x):
+        x = super().forward(x)
+        return self.final_transformation(x)
 
     def _make_subblock(self, conv):
         subbloc = [conv, nn.ReLU()]
