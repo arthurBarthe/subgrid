@@ -138,6 +138,7 @@ class Trainer:
                 clip_grad_norm_(self.net.parameters(), clip)
             # Update parameters
             #optimizer.step()
+            break
         return running_loss.value
 
     def test(self, dataloader) -> float:
