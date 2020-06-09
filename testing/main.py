@@ -37,7 +37,7 @@ import logging
 
 import argparse
 import pickle
-
+from copy import deepcopy
 from sys import modules
 
 # Parse arguments
@@ -144,6 +144,8 @@ while True:
     test_index = int(test_split * len(dataset))
     train_dataset = Subset_(dataset, np.arange(train_index))
 
+    features_transform_ = deepcopy(features_transform)
+    targets_transform_ = deepcopy(targets_transform)
     transform = DatasetTransformer(features_transform, targets_transform)
     transform.fit(train_dataset)
     dataset = DatasetWithTransform(dataset, transform)
