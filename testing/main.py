@@ -125,7 +125,6 @@ while True:
     # Set the experiment to 'multiregion'
     print('Logging to experiment multiregion')
     mlflow.set_experiment('multiregion')
-    mlflow.start_run()
     mlflow.log_param('model_run_id', model_run.run_id)
     mlflow.log_param('data_run_id', data_run.run_id)
     mlflow.log_param('n_epochs', n_epochs)
