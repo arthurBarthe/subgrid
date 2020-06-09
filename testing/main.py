@@ -108,14 +108,13 @@ if targets_transform_file is not None:
 else:
     targets_transform = None
 
-# Prompt user to select the test dataset
-mlflow.set_experiment('forcingdata')
-cols = ['params.lat_min', 'params.lat_max', 'params.long_min',
-        'params.long_max', 'params.scale']
-
 i_test = 0
 while True:
     i_test += 1
+    # Prompt user to select the test dataset
+    mlflow.set_experiment('forcingdata')
+    cols = ['params.lat_min', 'params.lat_max', 'params.long_min',
+            'params.long_max', 'params.scale']
     data_run = select_run(cols=cols)
     if isinstance(data_run, int):
         break
