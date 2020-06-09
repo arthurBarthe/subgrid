@@ -60,7 +60,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Prompt user to retrieve a trained model based on a run id for the default
 # experiment (folder mlruns/0)
-cols = ['metrics.test mse', 'start_time', 'params.time_indices',
+cols = ['metrics.test loss', 'start_time', 'params.time_indices',
         'params.model_cls_name', 'params.source.run_id']
 # Recover experiment id of the models
 models_experiment = mlflow.get_experiment_by_name(models_experiment_name)
