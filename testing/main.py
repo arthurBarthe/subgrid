@@ -146,7 +146,7 @@ while True:
 
     features_transform_ = deepcopy(features_transform)
     targets_transform_ = deepcopy(targets_transform)
-    transform = DatasetTransformer(features_transform, targets_transform)
+    transform = DatasetTransformer(features_transform_, targets_transform_)
     transform.fit(train_dataset)
     dataset = DatasetWithTransform(dataset, transform)
     dataset = MultipleTimeIndices(dataset)
