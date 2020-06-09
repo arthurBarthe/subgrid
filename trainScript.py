@@ -58,23 +58,13 @@ import data.datasets
 from train.utils import (DEVICE_TYPE, learning_rates_from_string,
                          run_ids_from_string, list_from_string)
 from data.utils import load_data_from_runs
-
-# import training class
+from testing.utils import create_test_dataset
 from train.base import Trainer
-
-# import losses
 import train.losses
-
 import models.transforms
-
 # import to parse CLI arguments
 import argparse
-
-# import to create temporary dir used to save the model and predictions
-# before logging through MLFlow
 import tempfile
-
-# import to import the module containing the model
 import importlib
 import pickle
 
@@ -331,35 +321,6 @@ for i_epoch in range(n_epochs):
     mlflow.log_metric('train loss', train_loss, i_epoch)
     mlflow.log_metric('test loss', test_loss, i_epoch)
     mlflow.log_metrics(metrics_results)
-
-    # We also save a snapshot figure to the disk and log it
-    # TODO rewrite this bit, looks confusing for now
-    ids_data = (np.random.randint(0, len(test_dataset)), 300)
-    with torch.no_grad():
-        for i, id_data in enumerate(ids_data):
-            data = test_dataset[id_data]
-            X, Y = data
-            X = torch.tensor(X)
-            Y = torch.tensor(Y)
-            X = X.to(device, dtype=torch.float)
-            Y = Y.to(device, dtype=torch.float)
-            X = torch.unsqueeze(X, dim=0)
-            Y = torch.unsqueeze(Y, dim=0)
-            Y_hat = net(X)
-            Y = Y.cpu().numpy().squeeze()
-            Y_hat = Y_hat.cpu().numpy().squeeze()
-#            transformer = s.targets_transformer
-#            true = transformer.inverse_transform(true)
-#            pred = transformer.inverse_transform(pred)
-            fig = plt.figure()
-            plt.subplot(121)
-            plt.imshow(Y[0])
-            plt.subplot(122)
-            plt.imshow(Y_hat[0])
-            f_name = 'image{}-{}.png'.format(i, i_epoch)
-            file_path = os.path.join(data_location, figures_directory, f_name)
-            plt.savefig(file_path)
-            plt.close(fig)
     # log the epoch
     mlflow.log_param('n_epochs', i_epoch + 1)
 
@@ -388,60 +349,8 @@ for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
                                                         datasets,
                                                         test_datasets,
                                                         xr_datasets):
-    u_v_surf = np.zeros((len(test_dataset), 2, test_dataset.height,
-                         test_dataset.width))
-    pred = np.zeros((len(test_dataset), 4, test_dataset.output_height,
-                     test_dataset.output_width))
-    truth = np.zeros((len(test_dataset), 2, test_dataset.output_height,
-                      test_dataset.output_width))
-    test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
-                                 shuffle=False)
-    test_index = int(test_split * len(dataset))
-    # Predictions on the test set using the trained model
-    net.eval()
-    with torch.no_grad():
-        for i, data in enumerate(test_dataloader):
-            # In case of multiple time indices used for prediction we only
-            # save one to save some space.
-            uv_saved = data[0][:, :2, ...].numpy()
-            u_v_surf[i * batch_size: (i+1) * batch_size] = uv_saved
-            truth[i * batch_size:(i+1) * batch_size] = data[1].numpy()
-            X = data[0].to(device, dtype=torch.float)
-            Y_hat = net(X)
-            Y_hat = Y_hat.cpu().numpy()
-            pred[i * batch_size:(i+1) * batch_size] = Y_hat
-
-    # Convert to dataset
-    new_dims = ('time', 'latitude', 'longitude')
-    coords = xr_dataset.coords
-    coords_uv = {'time': coords['time']
-                  [test_index:test_index+len(test_dataset)],
-                  'latitude': coords['yu_ocean'].data[:test_dataset.height],
-                  'longitude': coords['xu_ocean'].data[:test_dataset.width]}
-    coords_s = {'time': coords['time']
-                  [test_index:test_index+len(test_dataset)],
-                  'latitude': coords['yu_ocean'].data[:test_dataset.output_height],
-                  'longitude': coords['xu_ocean'].data[:test_dataset.output_width]}
-    u_surf = xr.DataArray(data=u_v_surf[:, 0, ...], dims=new_dims,
-                          coords=coords_uv)
-    v_surf = xr.DataArray(data=u_v_surf[:, 1, ...], dims=new_dims,
-                          coords=coords_uv)
-    s_x = xr.DataArray(data=truth[:, 0, ...], dims=new_dims, coords=coords_s)
-    s_y = xr.DataArray(data=truth[:, 1, ...], dims=new_dims, coords=coords_s)
-    s_x_pred = xr.DataArray(data=pred[:, 0, ...], dims=new_dims,
-                            coords=coords_s)
-    s_y_pred = xr.DataArray(data=pred[:, 1, ...], dims=new_dims,
-                            coords=coords_s)
-    s_x_pred_scale = xr.DataArray(data=pred[:, 2, ...], dims=new_dims,
-                                  coords=coords_s)
-    s_y_pred_scale = xr.DataArray(data=pred[:, 3, ...], dims=new_dims,
-                                  coords=coords_s)
-    output_dataset = xr.Dataset({'u_surf': u_surf, 'v_surf': v_surf,
-                                 'S_x': s_x, 'S_y': s_y,
-                                 'S_xpred': s_x_pred,
-                                 'S_xpred_scale': s_x_pred_scale,
-                                 'S_ypred_scale': s_y_pred_scale,
-                                 'S_ypred': s_y_pred})
+    output_dataset = create_test_dataset(net, xr_dataset, test_dataset,
+                                         test_dataloader, test_index, device)
 
     # Save model output on the test dataset
     output_dataset.to_zarr(os.path.join(data_location, model_output_dir,
