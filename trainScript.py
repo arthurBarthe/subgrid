@@ -212,8 +212,7 @@ for xr_dataset in xr_datasets:
     train_datasets.append(train_dataset)
     test_datasets.append(test_dataset)
     datasets.append(dataset)
-train_dataset = ConcatDataset_(train_datasets)
-test_dataset = ConcatDataset_(test_datasets)
+
 
 # Saving the array transform object
 full_path = os.path.join(data_location, models_directory, 'features_transform')
@@ -222,6 +221,13 @@ with open(full_path, 'wb') as f:
 full_path = os.path.join(data_location, models_directory, 'targets_transform')
 with open(full_path, 'wb') as f:
     pickle.dump(targets_transform, f)
+
+# Concatenate datasets. This adds shape transforms to ensure that all regions
+# produce fields of the same shape, hence should be called after saving
+# the transformation so that when we're going to test on another region
+# this does not occur.
+train_dataset = ConcatDataset_(train_datasets)
+test_dataset = ConcatDataset_(test_datasets)
 
 # Dataloaders
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
