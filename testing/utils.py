@@ -8,6 +8,7 @@ Created on Tue Jun  9 17:58:33 2020
 import numpy as np
 import xarray as xr
 import torch
+import progressbar
 
 # TODO correct coordinates
 
@@ -22,15 +23,16 @@ def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
     batch_size = test_dataloader.batch_size
     net.eval()
     with torch.no_grad():
-        for i, data in enumerate(test_dataloader):
-            print(i)
-            uv_data = data[0][:, :2, ...].numpy()
-            velocities[i * batch_size: (i + 1) * batch_size] = uv_data
-            truth[i * batch_size: (i + 1) * batch_size] = data[1].numpy()
-            X = data[0].to(device, dtype=torch.float)
-            pred_i = net(X)
-            pred_i = pred_i.cpu().numpy()
-            predictions[i * batch_size: (i+1) * batch_size] = pred_i
+        with progressbar.ProgressBar(max_value=10) as bar:
+            for i, data in enumerate(test_dataloader):
+                uv_data = data[0][:, :2, ...].numpy()
+                velocities[i * batch_size: (i + 1) * batch_size] = uv_data
+                truth[i * batch_size: (i + 1) * batch_size] = data[1].numpy()
+                X = data[0].to(device, dtype=torch.float)
+                pred_i = net(X)
+                pred_i = pred_i.cpu().numpy()
+                predictions[i * batch_size: (i+1) * batch_size] = pred_i
+                bar.update(i)
 
     # Put this into an xarray dataset before saving
     new_dims = ('time', 'latitude', 'longitude')
