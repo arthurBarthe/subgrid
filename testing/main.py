@@ -204,14 +204,10 @@ while True:
     # Do the predictions for that dataset using the loaded model
     out = create_test_dataset(net, xr_dataset, test_dataset,
                               test_dataloader, test_index, device)
-    if i_test == 1:
-        output_dataset = out
-    else:
-        output_dataset = output_dataset.merge(out)
-    print(f'Current size of output data is {output_dataset.nbytes/1e9} GB')
+    file_path = os.path.join(data_location, f'test_output_{i_test}')
+    out.to_zarr(file_path)
+    print(f'Current size of output data is {out.nbytes/1e9} GB')
 
 # Save dataset
-file_path = os.path.join(data_location, 'test_output')
-output_dataset.to_zarr(file_path)
 mlflow.log_artifact(file_path)
 mlflow.end_run()
