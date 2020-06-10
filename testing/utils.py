@@ -69,6 +69,6 @@ def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
 
 def pickle_artifact(run_id: str, path: str):
     client = mlflow.tracking.MlflowClient()
-    file = client.download_artifact(run_id, path)
+    file = client.download_artifacts(run_id, path)
     f = open(file, 'rb')
     return pickle.load(f)
