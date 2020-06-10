@@ -11,13 +11,20 @@ import torch
 class DetectOutputSizeMixin:
     def output_width(self, input_height, input_width):
         x = torch.zeros((1, self.n_in_channels, input_height, input_width))
+        x = x.to(device=self.device)
         y = self(x)
         return y.size(3)
 
     def output_height(self, input_height, input_width):
         x = torch.zeros((1, self.n_in_channels, input_height, input_width))
+        x = x.to(device=self.device)
         y = self(x)
         return y.size(2)
+
+    @property
+    def device(self):
+        p = list(self.parameters())[0]
+        return p.device
 
 
 class FinalTransformationMixin:
