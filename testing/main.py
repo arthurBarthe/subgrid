@@ -178,6 +178,8 @@ while True:
         net.load_state_dict(torch.load(model_file))
 
     # Adding transforms required by the model
+    #Temporary fix
+    net.cpu()
     dataset.add_targets_transform_from_model(net)
 
     # Net to GPU
