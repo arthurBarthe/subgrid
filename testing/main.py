@@ -25,7 +25,7 @@ from train.base import Trainer
 from train.losses import (HeteroskedasticGaussianLoss, 
                           HeteroskedasticGaussianLossV2)
 
-from testing.utils import create_test_dataset
+from testing.utils import create_test_dataset, pickle_artifact
 
 from models.utils import load_model_cls
 
@@ -46,6 +46,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--n_epochs', type=int, default=0)
 parser.add_argument('--lr_ratio', type=float, default=1)
 parser.add_argument('--models_experiment_name', type=str, default='training')
+
 script_params = parser.parse_args()
 n_epochs = script_params.n_epochs
 lr_ratio = script_params.lr_ratio
@@ -87,26 +88,11 @@ learning_rate = learning_rates[0] * lr_ratio
 client = mlflow.tracking.MlflowClient()
 model_file = client.download_artifacts(model_run.run_id,
                                        'models/trained_model.pth')
-transformation_file = client.download_artifacts(model_run.run_id,
-                                                'models/transformation')
-features_transform_file = client.download_artifacts(model_run.run_id,
-                                                    'models/features_transform')
-try:
-    targets_transform_file = client.download_artifacts(model_run.run_id,
-                                                       'models/targets_transform')
-except FileNotFoundError:
-    targets_transform_file = None
-
-with torch.no_grad():
-    with open(transformation_file, 'rb') as f:
-        transformation = pickle.load(f)
-with open(features_transform_file, 'rb') as f:
-    features_transform = pickle.load(f)
-if targets_transform_file is not None:
-    with open(targets_transform_file, 'rb') as f:
-        targets_transform = pickle.load(f)
-else:
-    targets_transform = None
+transformation = pickle_artifact(model_run.run_id, 'models/transformation')
+features_transform = pickle_artifact(model_run.run_id, 
+                                     'models/features_transform')
+targets_transform = pickle_artifact(model_run.run_id,
+                                    'models/targets_transform')
 
 i_test = 0
 while True:
@@ -160,24 +146,24 @@ while True:
                                  shuffle=False, drop_last=True)
     print('Size of training data: {}'.format(len(train_dataset)))
     print('Size of validation data : {}'.format(len(test_dataset)))
-    print('Height: {}'.format(train_dataset.height))
-    print('Width: {}'.format(train_dataset.width))
+    print('Input height: {}'.format(train_dataset.height))
+    print('Input width: {}'.format(train_dataset.width))
     print(train_dataset[0][0].shape)
     print(train_dataset[0][1].shape)
     print('Features transform: ', transform.transforms['features'].transforms)
     print('Targets transform: ', transform.transforms['targets'].transforms)
 
-    # Load the model itself
+    # On first testdataset load the model
     if i_test == 1:
         logging.info('Creating the neural network model')
         model_cls = load_model_cls(model_module_name, model_cls_name)
-        net = model_cls(dataset.n_features, 2*dataset.n_targets)
+        net = model_cls(dataset.n_features, 2 * dataset.n_targets)
         logging.info('Loading the neural net parameters')
         # Load parameters of pre-trained model
         net.final_transformation = transformation
         net.load_state_dict(torch.load(model_file))
 
-    # Adding transforms required by the model
+    # Adding transforms to the targets required by the model
     dataset.add_targets_transform_from_model(net)
 
     # Net to GPU
@@ -209,6 +195,7 @@ while True:
         mlflow.log_metric('test loss', test_loss, i_epoch)
 
     # Final test
+    print('Testing on train and validation data...')
     train_loss, train_metrics_results = trainer.test(train_dataloader)
     test_loss, test_metrics_results = trainer.test(test_dataloader)
     print(f'Final train loss is {train_loss}')
@@ -221,6 +208,7 @@ while True:
         output_dataset = out
     else:
         output_dataset = output_dataset.merge(out)
+    print(f'Current size of output data is {output_dataset.nbytes/1e9} GB')
 
 # Save dataset
 file_path = os.path.join(data_location, 'test_output')

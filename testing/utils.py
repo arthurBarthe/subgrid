@@ -9,6 +9,8 @@ import numpy as np
 import xarray as xr
 import torch
 import progressbar
+import mlflow
+import tracking
 
 # TODO correct coordinates
 
@@ -64,3 +66,9 @@ def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
                                  'S_ypred': s_y_pred, 'S_xscale': s_x_pred_scale,
                                  'S_yscale': s_y_pred_scale})
     return output_dataset
+
+def pickle_artifact(run_id: str, path: str):
+    client = mlflow.tracking.MlflowClient()
+    file = client.download_artifact(run_id, path)
+    f = open(file, 'rb')
+    return pickle.load(f)
