@@ -23,7 +23,7 @@ def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
     batch_size = test_dataloader.batch_size
     net.eval()
     with torch.no_grad():
-        with progressbar.ProgressBar(max_value=len(test_dataset)) as bar:
+        with progressbar.ProgressBar(max_value=len(test_dataset)//batch_size) as bar:
             for i, data in enumerate(test_dataloader):
                 uv_data = data[0][:, :2, ...].numpy()
                 velocities[i * batch_size: (i + 1) * batch_size] = uv_data
