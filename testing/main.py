@@ -168,9 +168,10 @@ while True:
     print('Targets transform: ', transform.transforms['targets'].transforms)
 
     # Load the model itself
-    logging.info('Creating the neural network model')
-    model_cls = load_model_cls(model_module_name, model_cls_name)
-    net = model_cls(dataset.n_features, 2*dataset.n_targets)
+    if i_test == 1:
+        logging.info('Creating the neural network model')
+        model_cls = load_model_cls(model_module_name, model_cls_name)
+        net = model_cls(dataset.n_features, 2*dataset.n_targets)
 
     logging.info('Loading the neural net parameters')
     # Load parameters of pre-trained model
