@@ -38,7 +38,9 @@ def get_test_datasets(run_id: str):
         if a.is_dir:
             continue
         basename = os.path.basename(a.path)
+        print(basename)
         if basename.startswith('test_ouput_'):
+            print('Adding')
             ds = xr.open_zarr(client.download_artifacts(run_id, basename))
             test_outputs.append(TestDataset(ds))
     return test_outputs
