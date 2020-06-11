@@ -27,6 +27,8 @@ from train.losses import (HeteroskedasticGaussianLoss,
 
 from testing.utils import create_test_dataset, pickle_artifact
 
+from analysis.base import TestDataset
+
 from models.utils import load_model_cls
 
 import os.path
@@ -209,10 +211,8 @@ while True:
                               test_dataloader, test_index, device)
     file_path = os.path.join(data_location, f'test_output_{i_test}')
     out.to_zarr(file_path)
-    print(f'Current size of output data is {out.nbytes/1e9} GB')
-
-# Save dataset
-print('Logging artifacts...')
-mlflow.log_artifact(data_location)
+    mlflow.log_artifact(file_path)
+    print(f'Size of output data is {out.nbytes/1e9} GB')
+    
 mlflow.end_run()
 print('Done')
