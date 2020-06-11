@@ -18,22 +18,23 @@ from base import DetectOutputSizeMixin, FinalTransformationMixin
 
 class Unet_(Module, DetectOutputSizeMixin):
     def __init__(self, n_in_channels: int = 2, n_out_channels: int = 4,
-                 height=0, width=0, n_scales: int = 3, depth=64,
-                 kernel_sizes=[5, 3], batch_norm=True):
+                 n_scales: int = 2, depth=64, kernel_sizes=[5, 3],
+                 batch_norm=True, padding=False):
         Module.__init__(self)
-        DetectOutputSizeMixin.__init__(self, height, width)
+        DetectOutputSizeMixin.__init__(self)
         self.n_in_channels = n_in_channels
         self.n_out_channels = n_out_channels
         self.n_scales = n_scales
         self.depth = depth
         self.kernel_sizes = self._repeat(kernel_sizes, n_scales)
+        self.batch_norm = batch_norm
+        self.padding = padding
         self.down_convs = ModuleList()
         self.up_convs = ModuleList()
         self.up_samplers = ModuleList()
         self.final_convs = None
         self.conv_layers = []
         self.linear_layer = None
-        self.batch_norm = batch_norm
         self.linear_layer = None
         self._build_convs()
 
@@ -42,6 +43,20 @@ class Unet_(Module, DetectOutputSizeMixin):
         for i in range(n_times - len(l)):
             l.append(l[-1])
         return l
+
+    @staticmethod
+    def _crop_spatial(t: torch.Tensor, size: torch.Size):
+        size_t = t.size()
+        dh = (size_t[2] - size[2]) // 2
+        dw = (size_t[3] - size[3]) // 2
+        return t[:, :, dh : size_t[2]-dh, dw : size_t[3]-dw]
+
+    def _padding(self, k_size: int):
+        """Returns the padding, depending on the padding parameter"""
+        if self.padding:
+            return k_size // 2
+        else:
+            return 0
 
     def forward(self, x: torch.Tensor):
         blocks = list()
@@ -55,8 +70,9 @@ class Unet_(Module, DetectOutputSizeMixin):
         blocks.reverse()
         for i in range(self.n_scales - 1):
             x = self.up(x, i)
-            # Concatenate to the finer scale
-            x = torch.cat((x, blocks[i]), 1)
+            # Concatenate to the finer scale, after cropping
+            y = self._crop_spatial(blocks[i], x.size())
+            x = torch.cat((x, y), 1)
             # Convolutions for that scale
             x = self.up_convs[i](x)
         final = self.final_convs(x)
@@ -83,10 +99,11 @@ class Unet_(Module, DetectOutputSizeMixin):
                 n_in_channels = n_out_channels
                 n_out_channels = 2 * n_out_channels
             k_size = self.kernel_sizes[i]
+            padding = self._padding(k_size)
             conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, k_size,
-                                    padding=k_size//2)
+                                    padding=padding)
             conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, k_size,
-                                    padding=k_size//2)
+                                    padding=padding)
             block1 = self._make_subblock(conv1)
             block2 = self._make_subblock(conv2)
             submodule = Sequential(*block1, *block2)
@@ -102,10 +119,11 @@ class Unet_(Module, DetectOutputSizeMixin):
             n_in_channels = n_out_channels
             n_out_channels = n_out_channels // 2
             k_size = self.kernel_sizes[-i]
+            padding = self._padding(k_size)
             conv1 = torch.nn.Conv2d(n_in_channels, n_out_channels, k_size,
-                                    padding=k_size//2)
+                                    padding=padding)
             conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels, k_size,
-                                    padding=k_size//2)
+                                    padding=padding)
             block1 = self._make_subblock(conv1)
             block2 = self._make_subblock(conv2)
             submodule = Sequential(*block1, *block2)
@@ -113,15 +131,13 @@ class Unet_(Module, DetectOutputSizeMixin):
             self.conv_layers.append(conv1)
             self.conv_layers.append(conv2)
         # Final convs
-        conv1 = torch.nn.Conv2d(n_out_channels, n_out_channels,
-                                3, padding=1)
-        conv2 = torch.nn.Conv2d(n_out_channels, n_out_channels,
-                                3, padding=1)
-        conv3 = torch.nn.Conv2d(n_out_channels, self.n_out_channels,
-                                3, padding=1)
+        conv1 = torch.nn.Conv2d(n_out_channels, n_out_channels//2,
+                                3, padding=self._padding(3))
+
+        conv3 = torch.nn.Conv2d(n_out_channels//2, self.n_out_channels,
+                                3, padding=self._padding(3))
         block1 = self._make_subblock(conv1)
-        block2 = self._make_subblock(conv2)
-        self.final_convs = Sequential(*block1, *block2, conv3)
+        self.final_convs = Sequential(*block1, conv3)
 
 
 class Unet(FinalTransformationMixin, Unet_):
