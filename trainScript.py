@@ -349,6 +349,8 @@ for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
                                                         datasets,
                                                         test_datasets,
                                                         xr_datasets):
+    test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
+                                 shuffle=False, drop_last=True)
     output_dataset = create_test_dataset(net, xr_dataset, test_dataset,
                                          test_dataloader, test_index, device)
 
