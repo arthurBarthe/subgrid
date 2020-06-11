@@ -68,7 +68,7 @@ def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
     print(mlflow_runs[cols])
     id_ = int(input('Run id?'))
     if id_ < 0:
-        sys.exit()
+        return 0
     return mlflow_runs.loc[id_, :]
 
 
