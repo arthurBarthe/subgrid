@@ -220,9 +220,9 @@ test_dataset = ConcatDataset_(test_datasets)
 
 # Dataloaders
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
-                              shuffle=True)
+                              shuffle=True, drop_last=True)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
-                             shuffle=False)
+                             shuffle=False, drop_last=True)
 
 print('Size of training data: {}'.format(len(train_dataset)))
 print('Size of validation data : {}'.format(len(test_dataset)))
@@ -321,8 +321,8 @@ for i_epoch in range(n_epochs):
     mlflow.log_metric('train loss', train_loss, i_epoch)
     mlflow.log_metric('test loss', test_loss, i_epoch)
     mlflow.log_metrics(metrics_results)
-    # log the epoch
-    mlflow.log_param('n_epochs', i_epoch + 1)
+# log the epoch
+mlflow.log_param('n_epochs', i_epoch + 1)
 
 # FIN TRAINING ----------------------------------------------------------------
 
