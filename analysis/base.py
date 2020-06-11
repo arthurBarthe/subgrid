@@ -35,7 +35,7 @@ def get_test_datasets(run_id: str):
     artifacts = client.list_artifacts(run_id)
     test_outputs = list()
     for a in artifacts:
-        if a.is_dir():
+        if a.is_dir:
             continue
         basename = os.path.basename(a.path)
         if basename.startswith('test_ouput_'):
