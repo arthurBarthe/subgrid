@@ -8,6 +8,7 @@ Created on Thu Jun 11 11:13:35 2020
 import numpy as np
 import xarray as xr
 import mlflow
+import os.path
 
 class TestDataset:
     def __init__(ds):
@@ -34,8 +35,11 @@ def get_test_datasets(run_id: str):
     artifacts = client.list_artifacts(run_id)
     test_outputs = list()
     for a in artifacts:
+        if a.is_dir():
+            continue
+        basename = os.path.basename(a.path)
         if a.startswith('test_ouput_'):
-            ds = xr.open_zarr(client.download_artifacts(run_id, a))
+            ds = xr.open_zarr(client.download_artifacts(run_id, basename))
             test_outputs.append(TestDataset(ds))
     return test_outputs
 
