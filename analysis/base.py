@@ -11,7 +11,7 @@ import mlflow
 import os.path
 
 class TestDataset:
-    def __init__(ds):
+    def __init__(self, ds):
         self.ds = ds
 
     def __getitem__(self, i):
