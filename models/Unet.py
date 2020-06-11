@@ -13,7 +13,7 @@ from torch.nn import (Module, ModuleList, Upsample, Sequential)
 from torch.nn import functional as F
 from torch.nn.functional import pad
 import torch.nn as nn
-from base import DetectOutputSizeMixin, FinalTransformationMixin
+from .base import DetectOutputSizeMixin, FinalTransformationMixin
 
 
 class Unet_(Module, DetectOutputSizeMixin):
