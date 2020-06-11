@@ -59,6 +59,9 @@ model_output_dir = 'model_output'
 # Select the device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+print('Logging to experiment multiregion...')
+mlflow.set_experiment('multiregion')
+
 # Prompt user to retrieve a trained model based on a run id for the default
 # experiment (folder mlruns/0)
 cols = ['metrics.test loss', 'start_time', 'params.time_indices',
@@ -98,10 +101,11 @@ i_test = 0
 while True:
     i_test += 1
     # Prompt user to select the test dataset
-    mlflow.set_experiment('forcingdata')
     cols = ['params.lat_min', 'params.lat_max', 'params.long_min',
             'params.long_max', 'params.scale']
-    data_run = select_run(cols=cols)
+    data_experiment = mlflow.get_experiment_by_name('forcingdata')
+    data_experiment_id = data_experiment.experiment_id
+    data_run = select_run(cols=cols, experiment_ids=[data_experiment_id, ])
     if isinstance(data_run, int):
         break
     # Recover the data (velocities and forcing)
@@ -109,8 +113,6 @@ while True:
     data_file = client.download_artifacts(data_run.run_id, 'forcing')
 
     # Set the experiment to 'multiregion'
-    print('Logging to experiment multiregion')
-    mlflow.set_experiment('multiregion')
     mlflow.log_param('model_run_id', model_run.run_id)
     mlflow.log_param('data_run_id', data_run.run_id)
     mlflow.log_param('n_epochs', n_epochs)
@@ -209,5 +211,5 @@ while True:
     print(f'Current size of output data is {out.nbytes/1e9} GB')
 
 # Save dataset
-mlflow.log_artifact(file_path)
+mlflow.log_artifact(data_location)
 mlflow.end_run()
