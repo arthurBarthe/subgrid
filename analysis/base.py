@@ -35,9 +35,9 @@ def get_test_datasets(run_id: str):
     artifacts = client.list_artifacts(run_id)
     test_outputs = list()
     for a in artifacts:
-        basename = os.path.basename(a.path).strip()
+        basename = os.path.basename(a.path)
         print('.', basename, '.')
-        if basename.startswith('test_ouput_'):
+        if basename.startswith('test_output_'):
             print('loading')
             ds = xr.open_zarr(client.download_artifacts(run_id, basename))
             test_outputs.append(TestDataset(ds))
