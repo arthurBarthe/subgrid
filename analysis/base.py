@@ -36,6 +36,7 @@ def get_test_datasets(run_id: str):
     test_outputs = list()
     for a in artifacts:
         if a.is_dir:
+            print('directory')
             continue
         basename = os.path.basename(a.path)
         print(basename)
