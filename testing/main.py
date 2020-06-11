@@ -61,6 +61,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 print('Logging to experiment multiregion...')
 mlflow.set_experiment('multiregion')
+mlflow.start_run()
 
 # Prompt user to retrieve a trained model based on a run id for the default
 # experiment (folder mlruns/0)
@@ -211,5 +212,7 @@ while True:
     print(f'Current size of output data is {out.nbytes/1e9} GB')
 
 # Save dataset
+print('Logging artifacts...')
 mlflow.log_artifact(data_location)
 mlflow.end_run()
+print('Done')
