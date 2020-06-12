@@ -540,6 +540,7 @@ class DatasetWithTransform:
 class Subset_(Subset):
     """Extends the Pytorch Subset class to allow for attributes of the 
     dataset to be propagated to the subset dataset"""
+
     def __init__(self, dataset, indices):
         super(Subset_, self).__init__(dataset, indices)
 
@@ -551,7 +552,7 @@ class Subset_(Subset):
 
     @property
     def intput_coords(self):
-        new_coords = self.dataset.intput_coords
+        new_coords = deepcopy(self.dataset.intput_coords)
         new_coords['time'] = new_coords['time'][self.indices]
         return new_coords
 
@@ -815,10 +816,10 @@ if __name__ == '__main__':
     from torch.utils.data import DataLoader
     from numpy.random import randint
     from copy import deepcopy
-    da = DataArray(data=randint(0, 10, (20, 32, 48)), dims=('time', 'yu', 'xu'))
-    da2 = DataArray(data=randint(0, 3, (20, 32, 48)), dims=('time', 'yu', 'xu'))
-    da3 = DataArray(data=randint(0, 100, (20, 32, 48)) * 10, dims=('time', 'yu', 'xu'))
-    da4 = DataArray(data=randint(0, 2, (20, 32, 48)) * 20, dims=('time', 'yu', 'xu'))
+    da = DataArray(data=randint(0, 10, (20, 32, 48)), dims=('time', 'yu_ocean', 'xu_ocean'))
+    da2 = DataArray(data=randint(0, 3, (20, 32, 48)), dims=('time', 'yu_ocean', 'xu_ocean'))
+    da3 = DataArray(data=randint(0, 100, (20, 32, 48)) * 10, dims=('time', 'yu_ocean', 'xu_ocean'))
+    da4 = DataArray(data=randint(0, 2, (20, 32, 48)) * 20, dims=('time', 'yu_ocean', 'xu_ocean'))
     ds = xrDataset({'in0': da, 'in1': da2,
                     'out0': da3, 'out1': da4}, 
                    coords={'time': np.arange(20),
