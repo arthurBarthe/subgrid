@@ -40,6 +40,12 @@ def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
     new_dims = ('time', 'latitude', 'longitude')
     coords_uv = test_dataset.input_coords
     coords_s = test_dataset.output_coords
+    # Rename to latitude and longitude
+    coords_uv['latitude'] = coords_uv.pop('yu_ocean')
+    coords_uv['longitude'] = coords_uv.pop('xu_ocean')
+    coords_s['latitude'] = coords_s.pop('yu_ocean')
+    coords_s['longitude'] = coords_s.pop('xu_ocean')
+    # Create data arrays from numpy arrays
     u_surf = xr.DataArray(data=velocities[:, 0, ...], dims=new_dims,
                           coords=coords_uv)
     v_surf = xr.DataArray(data=velocities[:, 1, ...], dims=new_dims,
@@ -54,6 +60,7 @@ def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
                                   coords=coords_s)
     s_y_pred_scale = xr.DataArray(data=predictions[:, 3, ...], dims=new_dims,
                                   coords=coords_s)
+    # Create dataset from data arrays
     output_dataset = xr.Dataset({'u_surf': u_surf, 'v_surf': v_surf,
                                  'S_x': s_x, 'S_y': s_y, 'S_xpred': s_x_pred,
                                  'S_ypred': s_y_pred, 'S_xscale': s_x_pred_scale,
