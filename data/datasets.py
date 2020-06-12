@@ -328,11 +328,13 @@ class RawDataFromXrDataset(Dataset):
 
     @property
     def output_coords(self):
-        return dict(self.xr_dataset.coords)
+        return dict([(k, v.data) for k,v in 
+                     self.xr_dataset.coords.items()])
 
     @property
     def input_coords(self):
-        return dict(self.xr_dataset.coords)
+        return dict([(k, v.data) for k,v in 
+                     self.xr_dataset.coords.items()])
 
     @property
     def index(self):
@@ -458,14 +460,16 @@ class DatasetWithTransform:
 
     @property
     def output_coords(self):
-        coords = {'height': self.coords['yu_ocean'], 'width': self.coords['xu_ocean']}
+        coords = {'height': self.dataset.output_coords['yu_ocean'], 
+                  'width': self.dataset.output_coords['xu_ocean']}
         new_coords = self.transform.get_targets_coords(coords)
         return {'yu_ocean': new_coords['height'], 'xu_ocean': new_coords['width'],
                 'time': self.coords['time']}
 
     @property
     def input_coords(self):
-        coords = {'height': self.coords['yu_ocean'], 'width': self.coords['xu_ocean']}
+        coords = {'height': self.dataset.input_coords['yu_ocean'], 
+                  'width': self.dataset.input_coords['xu_ocean']}
         new_coords = self.transform.get_features_coords(coords)
         return {'yu_ocean': new_coords['height'], 'xu_ocean': new_coords['width'],
                 'time': self.coords['time']}
@@ -547,7 +551,7 @@ class Subset_(Subset):
     @property
     def output_coords(self):
         new_coords = self.dataset.output_coords
-        new_coords['time'] = new_coords['time'][self.indices]
+        new_coords['time'] = new_coords['time'][self.indices].data
         return new_coords
 
     @property
@@ -578,11 +582,17 @@ class ConcatDataset_(ConcatDataset):
             dataset.add_targets_transform(crop_transform)
 
     def __getattr__(self, attr):
-        print('Trying ', attr)
         if hasattr(self.datasets[0], attr):
             return getattr(self.datasets[0], attr)
         else:
             raise AttributeError()
+
+    # def __setattr__(self, attr_name, value):
+    #     if 'coord' in attr_name:
+    #         for ds in self.datasets:
+    #             setattr(ds, attr_name, value)
+    #     else:
+    #         self.__dict__[attr_name] = value
 
 
 class LensDescriptor:
@@ -823,8 +833,8 @@ if __name__ == '__main__':
     ds = xrDataset({'in0': da, 'in1': da2,
                     'out0': da3, 'out1': da4}, 
                    coords={'time': np.arange(20),
-                           'xu': np.arange(48) * 5, 
-                           'yu': np.arange(32) * 2})
+                           'xu_ocean': np.arange(48) * 5, 
+                           'yu_ocean': np.arange(32) * 2})
     dataset = RawDataFromXrDataset(ds)
     dataset.index = 'time'
     dataset.add_input('in0')
@@ -834,7 +844,7 @@ if __name__ == '__main__':
     
     loader = DataLoader(dataset, batch_size=7, drop_last=True)
     
-    ds2 = ds.isel(yu=slice(0, 28), xu=slice(0, 37))
+    ds2 = ds.isel(yu_ocean=slice(0, 28), xu_ocean=slice(0, 37))
     dataset2 = RawDataFromXrDataset(ds2)
     dataset2.index = 'time'
     dataset2.add_input('in0')
