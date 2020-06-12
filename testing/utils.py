@@ -38,15 +38,8 @@ def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
 
     # Put this into an xarray dataset before saving
     new_dims = ('time', 'latitude', 'longitude')
-    coords = xr_dataset.coords
-    coords_uv = {'time': coords['time']
-                      [test_index:test_index+len(test_dataset)],
-                      'latitude': coords['yu_ocean'].data[:test_dataset.height],
-                      'longitude': coords['xu_ocean'].data[:test_dataset.width]}
-    coords_s = {'time': coords['time']
-                  [test_index:test_index+len(test_dataset)],
-                  'latitude': coords['yu_ocean'].data[:test_dataset.output_height],
-                  'longitude': coords['xu_ocean'].data[:test_dataset.output_width]}
+    coords_uv = test_dataset.input_coords
+    coords_s = test_dataset.output_coords
     u_surf = xr.DataArray(data=velocities[:, 0, ...], dims=new_dims,
                           coords=coords_uv)
     v_surf = xr.DataArray(data=velocities[:, 1, ...], dims=new_dims,
@@ -66,6 +59,8 @@ def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
                                  'S_ypred': s_y_pred, 'S_xscale': s_x_pred_scale,
                                  'S_yscale': s_y_pred_scale})
     return output_dataset
+
+
 
 def pickle_artifact(run_id: str, path: str):
     client = mlflow.tracking.MlflowClient()

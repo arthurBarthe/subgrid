@@ -327,6 +327,14 @@ class RawDataFromXrDataset(Dataset):
         self._index = None
 
     @property
+    def output_coords(self):
+        return dict(self.xr_dataset.coords)
+
+    @property
+    def input_coords(self):
+        return dict(self.xr_dataset.coords)
+
+    @property
     def index(self):
         return self._index
 
@@ -452,13 +460,15 @@ class DatasetWithTransform:
     def output_coords(self):
         coords = {'height': self.coords['yu'], 'width': self.coords['xu']}
         new_coords = self.transform.get_targets_coords(coords)
-        return {'yu': new_coords['height'], 'xu': new_coords['width']}
+        return {'yu': new_coords['height'], 'xu': new_coords['width'],
+                'time': self.coords['time']}
 
     @property
     def input_coords(self):
         coords = {'height': self.coords['yu'], 'width': self.coords['xu']}
         new_coords = self.transform.get_features_coords(coords)
-        return {'yu': new_coords['height'], 'xu': new_coords['width']}
+        return {'yu': new_coords['height'], 'xu': new_coords['width'],
+                'time': self.coords['time']}
 
     @property
     def height(self):
@@ -532,6 +542,18 @@ class Subset_(Subset):
     dataset to be propagated to the subset dataset"""
     def __init__(self, dataset, indices):
         super(Subset_, self).__init__(dataset, indices)
+
+    @property
+    def output_coords(self):
+        new_coords = deepcopy(self.dataset.output_coords)
+        new_coords['time'] = new_coords['time'][self.indices]
+        return new_coords
+
+    @property
+    def intput_coords(self):
+        new_coords = self.dataset.intput_coords
+        new_coords['time'] = new_coords['time'][self.indices]
+        return new_coords
 
     def __getattr__(self, attr):
         if hasattr(self.dataset, attr):
@@ -823,8 +845,8 @@ if __name__ == '__main__':
                                              PerChannelNormalizer()))
     t.add_features_transform(CropToMultipleof(3))
     t2 = deepcopy(t)
-    train_dataset = Subset(dataset, np.arange(5))
-    train_dataset2 = Subset(dataset2, np.arange(5))
+    train_dataset = Subset_(dataset, np.arange(5))
+    train_dataset2 = Subset_(dataset2, np.arange(5))
     t.fit(train_dataset)
     t2.fit(train_dataset2)
     new_dataset = DatasetWithTransform(dataset, t)
