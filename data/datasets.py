@@ -546,13 +546,13 @@ class Subset_(Subset):
 
     @property
     def output_coords(self):
-        new_coords = deepcopy(self.dataset.output_coords)
+        new_coords = self.dataset.output_coords
         new_coords['time'] = new_coords['time'][self.indices]
         return new_coords
 
     @property
-    def intput_coords(self):
-        new_coords = deepcopy(self.dataset.intput_coords)
+    def input_coords(self):
+        new_coords = self.dataset.input_coords
         new_coords['time'] = new_coords['time'][self.indices]
         return new_coords
 
