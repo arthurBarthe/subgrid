@@ -458,16 +458,16 @@ class DatasetWithTransform:
 
     @property
     def output_coords(self):
-        coords = {'height': self.coords['yu'], 'width': self.coords['xu']}
+        coords = {'height': self.coords['yu_ocean'], 'width': self.coords['xu_ocean']}
         new_coords = self.transform.get_targets_coords(coords)
-        return {'yu': new_coords['height'], 'xu': new_coords['width'],
+        return {'yu_ocean': new_coords['height'], 'xu_ocean': new_coords['width'],
                 'time': self.coords['time']}
 
     @property
     def input_coords(self):
-        coords = {'height': self.coords['yu'], 'width': self.coords['xu']}
+        coords = {'height': self.coords['yu_ocean'], 'width': self.coords['xu_ocean']}
         new_coords = self.transform.get_features_coords(coords)
-        return {'yu': new_coords['height'], 'xu': new_coords['width'],
+        return {'yu_ocean': new_coords['height'], 'xu_ocean': new_coords['width'],
                 'time': self.coords['time']}
 
     @property
