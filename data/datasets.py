@@ -90,6 +90,18 @@ class DatasetTransformer:
         new_targets = self.transforms['targets'].transform(targets)
         return new_features, new_targets
 
+    def get_features_coords(self, coords):
+        result = dict()
+        for k, v in coords.items():
+            result[k] = self.transforms['features'].transform_coordinate(v, k)
+        return result
+
+    def get_targets_coords(self, coords):
+        result = dict()
+        for k, v in coords.items():
+            result[k] = self.transforms['targets'].transform_coordinate(v, k)
+        return result
+
     def __call__(self, x):
         return self.transform(x)
 
@@ -130,6 +142,12 @@ class ComposeTransforms(ArrayTransform):
             x = transform(x)
         return x
 
+    def transform_coordinate(self, coord, dim):
+        for transform in self.transforms:
+            if isinstance(transform, CropToNewShape):
+                x = transform.transform_coordinate(coord, dim)
+        return x
+
     def add_transform(self, transform):
         self.transforms.append(transform)
 
@@ -151,41 +169,66 @@ class Randommult(ArrayTransform):
         return x
 
 
-class CropToMultipleof(ArrayTransform):
-    def __init__(self, multiple_of: int = 2):
-        self.multiple_of = multiple_of
+# class CropToMultipleof(ArrayTransform):
+#     def __init__(self, multiple_of: int = 2):
+#         self.multiple_of = multiple_of
 
-    def fit(self, x):
-        shape = x.shape
-        new_shape_1 = shape[2] // self.multiple_of * self.multiple_of
-        new_shape_2 = shape[3] // self.multiple_of * self.multiple_of
-        self.new_shape = (shape[1], new_shape_1, new_shape_2)
-        print('debugging:', self.new_shape)
+#     def fit(self, x):
+#         shape = x.shape
+#         new_shape_1 = shape[2] // self.multiple_of * self.multiple_of
+#         new_shape_2 = shape[3] // self.multiple_of * self.multiple_of
+#         self.new_shape = (shape[1], new_shape_1, new_shape_2)
+#         print('debugging:', self.new_shape)
 
-    def transform(self, x):
-        return x[:, :self.new_shape[1], :self.new_shape[2]]
+#     def transform(self, x):
+#         return x[:, :self.new_shape[1], :self.new_shape[2]]
 
 
 class CropToNewShape(ArrayTransform):
     """Crops to a new shape. Keeps the array centered, modulo 1 in which case
-    the left side is priviledged"""
-    def __init__(self, height, width):
+    the top left is priviledged. If the passed data is smaller than the
+    requested shape, the data is unchanged."""
+
+    def __init__(self, height=None, width=None):
         self.height = height
         self.width = width
 
     def fit(self, x):
         pass
 
+    def get_slice(self, length: int, length_to: int):
+        d_left = max(0, (length - length_to) // 2)
+        d_right = d_left + max(0, (length - length_to)) % 2
+        return slice(d_left, length - d_right)
+
     def transform(self, x):
         height, width = x.shape[1:]
-        dh_left = max(0, (height - self.height) // 2)
-        dh_right = dh_left + (height - self.height) % 2
-        dw_left = max(0, (width - self.width) // 2)
-        dw_right = dw_left + (width - self.width) % 2
-        return x[:, dh_left:height-dh_right, dw_left:width-dw_right]
+        return x[:, self.get_slice(height, self.height),
+                 self.get_slice(width, self.width)]
+
+    def transform_coordinate(self, coords, dim):
+        length = len(coords)
+        if dim == 'height':
+            return coords[self.get_slice(length, self.height)]
+        if dim == 'width':
+            return coords[self.get_slice(length, self.width)]
 
     def __repr__(self):
         return f'CropToNewShape({self.height}, {self.width})'
+
+
+class CropToMultipleof(CropToNewShape):
+    def __init__(self, multiple_of: int = 2):
+        super().__init__()
+        self.multiple_of = multiple_of
+
+    def fit(self, x):
+        shape = x.shape
+        self.height = shape[2] // self.multiple_of * self.multiple_of
+        self.width = shape[3] // self.multiple_of * self.multiple_of
+
+    def __repr__(self):
+        return f'CropToMultipleOf({self.multiple_of})'
 
 
 class SignedSqrt(ArrayTransform):
@@ -393,11 +436,29 @@ class RawDataFromXrDataset(Dataset):
         if var_name in self._input_arrays or var_name in self._output_arrays:
             raise ValueError('Variable already added as input or output.')
 
+    def __getattr__(self, attr_name):
+        if hasattr(self.xr_dataset, attr_name):
+            return getattr(self.xr_dataset, attr_name)
+        else:
+            raise AttributeError()
+
 
 class DatasetWithTransform:
     def __init__(self, dataset, transform):
         self.dataset = dataset
         self.transform = transform
+
+    @property
+    def output_coords(self):
+        coords = {'height': self.coords['yu'], 'width': self.coords['xu']}
+        new_coords = self.transform.get_targets_coords(coords)
+        return {'yu': new_coords['height'], 'xu': new_coords['width']}
+
+    @property
+    def input_coords(self):
+        coords = {'height': self.coords['yu'], 'width': self.coords['xu']}
+        new_coords = self.transform.get_features_coords(coords)
+        return {'yu': new_coords['height'], 'xu': new_coords['width']}
 
     @property
     def height(self):
@@ -430,7 +491,26 @@ class DatasetWithTransform:
     def __len__(self):
         return len(self.dataset)
 
+    def add_transforms_from_model(self, model):
+        features_transforms = self.add_features_transform_from_model(model)
+        targets_transforms = self.add_targets_transform_from_model(model)
+        return {'features transform': features_transforms,
+                'targets_transform': targets_transforms}
+
+    def add_features_transform_from_model(self, model):
+        """Automatically adds features transform required by the model.
+        For instance Unet will require features to be reshaped to multiples
+        of 2, 4 or higher."""
+        if hasattr(model, 'get_features_transform'):
+            transform = model.get_features_transform()
+            self.add_features_transform(transform)
+            return transform
+        else:
+            return None
+
     def add_targets_transform_from_model(self, model):
+        """Automatically reshapes the targets of the dataset to match
+        the shape of the output of the model."""
         output_height = model.output_height(self.height, self.width)
         output_width = model.output_width(self.height, self.width)
         transform = CropToNewShape(output_height, output_width)
@@ -473,10 +553,6 @@ class ConcatDataset_(ConcatDataset):
             crop_transform = CropToNewShape(self.height, self.width)
             dataset.add_features_transform(crop_transform)
             dataset.add_targets_transform(crop_transform)
-
-    def add_targets_transform_from_model(self, model):
-        for dataset in self.datasets:
-            dataset.add_targets_transform_from_model(model)
 
     def __getattr__(self, attr):
         print('Trying ', attr)
@@ -745,6 +821,7 @@ if __name__ == '__main__':
     t = DatasetTransformer(ComposeTransforms(CropToMultipleof(5),
                                              SignedSqrt(),
                                              PerChannelNormalizer()))
+    t.add_features_transform(CropToMultipleof(3))
     t2 = deepcopy(t)
     train_dataset = Subset(dataset, np.arange(5))
     train_dataset2 = Subset(dataset2, np.arange(5))

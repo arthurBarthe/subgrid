@@ -14,6 +14,7 @@ from torch.nn import functional as F
 from torch.nn.functional import pad
 import torch.nn as nn
 from .base import DetectOutputSizeMixin, FinalTransformationMixin
+from ..data.datasets import CropToMultipleof
 
 
 class Unet_(Module, DetectOutputSizeMixin):
@@ -138,6 +139,9 @@ class Unet_(Module, DetectOutputSizeMixin):
                                 3, padding=self._padding(3))
         block1 = self._make_subblock(conv1)
         self.final_convs = Sequential(*block1, conv3)
+
+    def get_features_transform(self):
+        return CropToMultipleof(2**self.n_scales)
 
 
 class Unet(FinalTransformationMixin, Unet_):

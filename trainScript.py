@@ -266,8 +266,9 @@ with open(os.path.join(data_location, models_directory,
     f.write(str(net))
 # FIN NEURAL NETWORK ---------------------------------------------------------
 
-train_dataset.add_targets_transform_from_model(net)
-test_dataset.add_targets_transform_from_model(net)
+# Add transforms required by the model.
+for dataset in datasets:
+    dataset.add_transforms_from_model(net)
 
 
 # Training---------------------------------------------------------------------
