@@ -20,7 +20,7 @@ from analysis.utils import select_run
 from train.utils import learning_rates_from_string
 from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
                             Subset_, ConcatDataset_, DatasetWithTransform,
-                            MultipleTimeIndices)
+                            MultipleTimeIndices, CropToMultipleof)
 from train.base import Trainer
 from train.losses import (HeteroskedasticGaussianLoss, 
                           HeteroskedasticGaussianLossV2)
