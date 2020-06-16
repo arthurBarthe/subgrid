@@ -14,7 +14,7 @@ from torch.nn import functional as F
 from torch.nn.functional import pad
 import torch.nn as nn
 from .base import DetectOutputSizeMixin, FinalTransformationMixin
-from ..data.datasets import CropToMultipleof
+from data.datasets import CropToMultipleof
 
 
 class Unet_(Module, DetectOutputSizeMixin):
