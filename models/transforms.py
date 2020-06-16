@@ -47,17 +47,30 @@ class PrecisionTransform(Transform):
     def min_value(self, value):
         self._min_value = value
 
+    @property
+    def indices(self):
+        """Return the indices transformed"""
+        return self._indices
+
+    @indices.setter
+    def indices(self, values):
+        self._indices = values
+
     def transform(self, input_):
         # Split in sections of size 2 along channel dimension
         # Careful: the split argument is the size of the sections, not the
         # number of them (although does not matter for 4 channels)
-        mean, precision = torch.split(input_, 2, dim=1)
-        if (precision != precision).any():
-            print(self._min_value)
-            raise ValueError('Pre-processed precision contains nan')
-        precision = self.transform_precision(precision)
-        precision = precision + softplus(self.min_value)
-        return torch.cat((mean, precision), dim=1)
+        result = torch.clone(input_)
+        result[:, self.indices, :, :] = self.transform_precision(
+            input_[:, self.indices, :, :])
+        return result
+        # mean, precision = torch.split(input_, 2, dim=1)
+        # if (precision != precision).any():
+        #     print(self._min_value)
+        #     raise ValueError('Pre-processed precision contains nan')
+        # precision = self.transform_precision(precision)
+        # precision = precision + softplus(self.min_value)
+        # return torch.cat((mean, precision), dim=1)
 
     @staticmethod
     @abstractmethod
@@ -87,47 +100,3 @@ class SquareTransform(PrecisionTransform):
 
     def __repr__(self):
         return ''.join(('SquareTransform(', str(self.min_value), ')'))
-
-
-class TanTransform(Transform):
-    def transform(self, input_):
-        mean, precision = torch.split(input_, 2, dim=1)
-        mean = torch.tan(mean)
-        return torch.cat((mean, precision), dim=1)
-
-    def __repr__(self):
-        return 'TanTransform()'
-
-
-class SquareTransformMean(Transform):
-    def transform(self, input_):
-        mean, precision = torch.split(input_, 2, dim=1)
-        mean = mean**2 * torch.sign(mean)
-        return torch.cat((mean, precision), dim=1)
-
-    def __repr__(self):
-        return 'SquareTransform()'
-
-
-class ComposeTransform(Transform):
-    def __init__(self, transforms):
-        super().__init__()
-        self.transforms = transforms
-
-    def transform(self, x):
-        for t in self.transforms:
-            x = t.forward(x)
-        return x
-
-    def __repr__(self):
-        return ' + '.join([t.__repr__() for t in self.transforms])
-
-
-class ComposeTanSoftPlus(ComposeTransform):
-    def __init__(self):
-        super().__init__((TanTransform(), SoftPlusTransform()))
-
-
-class ComposeSquareSoftPlus(ComposeTransform):
-    def __init__(self):
-        super().__init__((SquareTransformMean(), SoftPlusTransform()))

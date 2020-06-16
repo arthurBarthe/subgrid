@@ -230,6 +230,9 @@ print('Size of validation data : {}'.format(len(test_dataset)))
 
 
 # NEURAL NETWORK---------------------------------------------------------------
+# Load the loss class required in the script parameters
+n_target_channels = datasets[0].n_targets
+criterion = getattr(train.losses, loss_cls_name)(n_target_channels)
 
 # Recover the model's class
 try:
@@ -242,13 +245,12 @@ except AttributeError as e:
     raise type(e)('Could not find the specified model class: ' +
                   str(e))
 
-net = model_cls(datasets[0].n_features, 2 * datasets[0].n_targets)
-# We only log the structure when the net is used in the training script
-net.log_structure = True
+net = model_cls(datasets[0].n_features, criterion.n_required_channels)
 
 try:
     transformation_cls = getattr(models.transforms, transformation_cls_name)
     transformation = transformation_cls()
+    transformation.indices = criterion.precision_indices
     net.final_transformation = transformation
 except AttributeError as e:
     raise type(e)('Could not find the specified transformation class: ' +
@@ -272,13 +274,10 @@ for dataset in datasets:
 
 
 # Training---------------------------------------------------------------------
-# MSE criterion + Adam optimizer
-# TODO rn we need to call this after train_dataset.add_targets_tr...
-# otherwise tensors are not on the same device during the call
+# Adam optimizer
 # To GPU
 net.to(device)
 
-criterion = getattr(train.losses, loss_cls_name)()
 
 # metrics saved independently of the training criterion
 metrics = {'mse': F.mse_loss}
