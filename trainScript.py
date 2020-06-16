@@ -59,6 +59,7 @@ from train.utils import (DEVICE_TYPE, learning_rates_from_string,
                          run_ids_from_string, list_from_string)
 from data.utils import load_data_from_runs
 from testing.utils import create_test_dataset
+from testing.metrics import MSEMetric
 from train.base import Trainer
 import train.losses
 import models.transforms
@@ -93,7 +94,7 @@ parser.add_argument('--weight_decay', type=float, default=0.05,
 parser.add_argument('--model_module_name', type=str, default='models.models1')
 parser.add_argument('--model_cls_name', type=str, default='FullyCNN')
 parser.add_argument('--loss_cls_name', type=str,
-                    default='HeteroskedasticGaussianLoss')
+                    default='HeteroskedasticGaussianLossV2')
 parser.add_argument('--transformation_cls_name', type=str,
                     default='SquareTransform')
 parser.add_argument('--features_transform_cls_name', type=str,
@@ -280,9 +281,7 @@ net.to(device)
 
 
 # metrics saved independently of the training criterion
-metrics = {'mse': F.mse_loss}
-# TODO temporary fix
-metrics = {}
+metrics = {'mse': MSEMetric()}
 
 params = list(net.parameters())
 # linear_layer = net.linear_layer
@@ -296,8 +295,8 @@ optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0)
 trainer = Trainer(net, device)
 trainer.criterion = criterion
 trainer.print_loss_every = print_loss_every
-for metric_name, metric_func in metrics.items():
-    trainer.register_metric(metric_name, metric_func)
+for metric_name, metric in metrics.items():
+    trainer.register_metric(metric_name, metric)
 
 for i_epoch in range(n_epochs):
     # Set to training mode
@@ -316,7 +315,8 @@ for i_epoch in range(n_epochs):
     # Log the training loss
     print('Train loss for this epoch is ', train_loss)
     print('Test loss for this epoch is ', test_loss)
-    for metric_name, metric_value in metrics_results:
+    
+    for metric_name, metric_value in metrics_results.items():
         print('Test {} for this epoch is {}'.format(metric_name, metric_value))
     mlflow.log_metric('train loss', train_loss, i_epoch)
     mlflow.log_metric('test loss', test_loss, i_epoch)

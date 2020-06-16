@@ -44,8 +44,7 @@ class HeteroskedasticGaussianLossV2(_Loss):
                           self.n_required_channels))
 
     def pointwise_likelihood(self, input: torch.Tensor, target: torch.Tensor):
-        n_channels = target.size(1)
-        mean, precision = torch.split(input, n_channels, dim=1)
+        mean, precision = torch.split(input, self.n_target_channels, dim=1)
         if not torch.all(precision > 0):
             raise ValueError('Got a non-positive variance value. \
                              Pre-processed variance tensor was: \
@@ -58,6 +57,10 @@ class HeteroskedasticGaussianLossV2(_Loss):
         # Split the target into mean (first half of channels) and scale
         lkhs = self.pointwise_likelihood(input, target)
         return lkhs.mean()
+
+    def predict(self, input: torch.Tensor):
+        mean, precision = torch.split(input, self.n_target_channels, dim=1)
+        return mean
 
 
 class MultimodalLoss(_Loss):
@@ -107,6 +110,20 @@ class MultimodalLoss(_Loss):
                   zip(probas, self.losses, inputs)]
         final_loss = torch.stack(losses)
         return final_loss.mean()
+
+    def predict(self, input: torch.Tensor):
+        input = torch.split(input, self.splits, dim=1)
+        probas, inputs = input[0], input[1:]
+        probas = torch.softmax(probas, dim=1)
+        predictions = [loss.predict(input) for loss, input in 
+                       zip(self.losses, inputs)]
+        predictions = torch.cat(predictions, dim=1)
+        sel = torch.argmax(probas, dim=1, keepdim=True)
+        # TODO make this general
+        final_predictions = predictions[sel:sel+2]
+        return final_predictions
+        
+        
 
 
 class BimodalGaussianLoss(MultimodalLoss):

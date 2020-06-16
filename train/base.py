@@ -83,8 +83,8 @@ class Trainer:
     def metrics(self):
         return self._metrics
 
-    def register_metric(self, metric_name, metric_func):
-        self._metrics[metric_name] = metric_func
+    def register_metric(self, metric_name, metric):
+        self._metrics[metric_name] = metric
 
     def train_for_one_epoch(self, dataloader: DataLoader, optimizer,
                             clip: float = None) -> float:
@@ -160,9 +160,9 @@ class Trainer:
         # that used for the training
         self.net.eval()
         running_loss = RunningAverage()
-        metrics_results = dict()
-        for metric_name in self.metrics:
-            metrics_results[metric_name] = RunningAverage()
+        # Reset the metrics
+        for metric in self.metrics.values():
+            metric.reset()
         with torch.no_grad():
             for i_batch, batch in enumerate(dataloader):
                 # Move batch to GPU
@@ -173,10 +173,9 @@ class Trainer:
                 loss = self.criterion(Y_hat, Y)
                 running_loss.update(loss.item(), X.size(0))
                 # Compute metrics
-                for metric_name, metric_func in self.metrics.items():
-                    metric_batch = metric_func(Y, Y_hat)
-                    metrics_results[metric_name].update(metric_batch,
-                                                        X.size(0))
+                Y_hat = self.criterion.predict(Y_hat)
+                for metric in self.metrics.values():
+                    metric.update(Y_hat, Y)
         test_loss = running_loss.value
         # Test early stopping
         if self._best_test_loss is None or test_loss < self._best_test_loss:
@@ -187,6 +186,6 @@ class Trainer:
             if self._counter >= self._early_stopping and self._early_stopping:
                 return 'EARLY_STOPPING'
         # Return loss
-        return running_loss.value, {metric_name: running_avg.value for
-                                    metric_name, running_avg in
-                                    metrics_results.items()}
+        return running_loss.value, {metric_name: metric.value for 
+                                    metric_name, metric in
+                                    self.metrics.items()}
