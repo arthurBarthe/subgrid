@@ -15,7 +15,7 @@ from torch.nn.functional import mse_loss
 class Metric:
     def __init__(self, metric_func, name: str = None):
         if name is None:
-            self.name = self.__class_.name
+            self.name = self.__class__.name
         else:
             self.name = name
         self.func = metric_func
