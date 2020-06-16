@@ -52,6 +52,7 @@ class Metric:
 
     def update(self, y_hat, y):
         value = self(y_hat, y)
+        value = value.item()
         self.value = self.i_batch / (self.i_batch + 1) * self.value
         self.value = self.value + 1 / (self.i_batch + 1) * value
 
