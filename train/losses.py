@@ -105,7 +105,7 @@ class MultimodalLoss(_Loss):
         losses = [(1-proba) * loss.pointwise_likelihood(input, target)
                   for (proba, loss, input) in
                   zip(probas, self.losses, inputs)]
-        final_loss = torch.sum(torch.stack(losses))
+        final_loss = torch.stack(losses)
         return final_loss.mean()
 
 
