@@ -126,7 +126,6 @@ class MultimodalLoss(_Loss):
         loss = torch.stack(losses, dim=2)
         final_loss = -torch.logsumexp(loss, dim=2)
         final_loss = final_loss.mean()
-        print(final_loss)
         return final_loss
 
     def predict(self, input: torch.Tensor):
@@ -141,7 +140,7 @@ class MultimodalLoss(_Loss):
         s = list(sel.size())
         s[1] = n_channels
         s = tuple(s)
-        sel = sel.repeat(s)
+        sel = sel.repeat((1, n_channels, 1, 1))
         for i in range(n_channels):
             sel[:, i, :, :] += i
         final_predictions = torch.gather(predictions, 1, sel)
