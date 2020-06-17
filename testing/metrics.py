@@ -80,8 +80,8 @@ class MSEMetric(Metric):
 
 class MaxMetric(Metric):
     def __init__(self):
-        def func(x):
-            return torch.max(torch.abs(x))
+        def func(x, y):
+            return torch.max(torch.abs(x - y))
         super(MaxMetric, self).__init__(func)
 
     def update(self, y_hat, y):
