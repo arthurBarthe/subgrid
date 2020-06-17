@@ -125,7 +125,9 @@ class MultimodalLoss(_Loss):
                   for (proba, loss, input) in zip(probas, self.losses, inputs)]
         loss = torch.stack(losses, dim=2)
         final_loss = -torch.log(torch.sum(loss, dim=2))
-        return final_loss.mean()
+        final_loss = final_loss.mean()
+        print(final_loss)
+        return final_loss
 
     def predict(self, input: torch.Tensor):
         input = torch.split(input, self.splits, dim=1)
