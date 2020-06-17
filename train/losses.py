@@ -51,18 +51,7 @@ class HeteroskedasticGaussianLossV2(_Loss):
                                  {}'.format(torch.min(precision)))
         term1 = - torch.log(precision)
         term2 = 1 / 2 * (target - mean)**2 * precision**2
-        return term1 + term2
-
-    def pointwise_likelihood_(self, input, target):
-        mean, precision = torch.split(input, self.n_target_channels, dim=1)
-        if not torch.all(precision > 0):
-            raise ValueError('Got a non-positive variance value. \
-                             Pre-processed variance tensor was: \
-                                 {}'.format(torch.min(precision)))
-        term1 = precision
-        term2 = torch.exp(- 1 / 2 * (target - mean)**2 * precision**2)
-        return term1 * term2
-        
+        return term1 + term2        
 
     def forward(self, input: torch.Tensor, target: torch.Tensor):
         # Split the target into mean (first half of channels) and scale
@@ -121,7 +110,7 @@ class MultimodalLoss(_Loss):
         input = torch.split(input, self.splits, dim=1)
         probas, inputs = input[0], input[1:]
         probas = torch.softmax(probas, dim=1)
-        losses = [torch.log(proba) + loss.pointwise_likelihood(input, target)
+        losses = [torch.log(proba) - loss.pointwise_likelihood(input, target)
                   for (proba, loss, input) in zip(probas, self.losses, inputs)]
         loss = torch.stack(losses, dim=2)
         final_loss = -torch.logsumexp(loss, dim=2)
