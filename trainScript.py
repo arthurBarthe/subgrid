@@ -59,7 +59,7 @@ from train.utils import (DEVICE_TYPE, learning_rates_from_string,
                          run_ids_from_string, list_from_string)
 from data.utils import load_data_from_runs
 from testing.utils import create_test_dataset
-from testing.metrics import MSEMetric
+from testing.metrics import MSEMetric, MaxMetric
 from train.base import Trainer
 import train.losses
 import models.transforms
@@ -281,7 +281,7 @@ net.to(device)
 
 
 # metrics saved independently of the training criterion
-metrics = {'mse': MSEMetric()}
+metrics = {'mse': MSEMetric(), 'Inf Norm': MaxMetric()}
 
 params = list(net.parameters())
 # linear_layer = net.linear_layer
