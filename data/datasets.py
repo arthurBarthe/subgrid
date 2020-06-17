@@ -202,6 +202,8 @@ class CropToNewShape(ArrayTransform):
         return slice(d_left, length - d_right)
 
     def transform(self, x):
+        if self.height is None:
+            self.fit(x)
         height, width = x.shape[1:]
         return x[:, self.get_slice(height, self.height),
                  self.get_slice(width, self.width)]
@@ -224,8 +226,8 @@ class CropToMultipleof(CropToNewShape):
 
     def fit(self, x):
         shape = x.shape
-        self.height = shape[2] // self.multiple_of * self.multiple_of
-        self.width = shape[3] // self.multiple_of * self.multiple_of
+        self.height = shape[1] // self.multiple_of * self.multiple_of
+        self.width = shape[2] // self.multiple_of * self.multiple_of
 
     def __repr__(self):
         return f'CropToMultipleOf({self.multiple_of})'
