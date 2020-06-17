@@ -53,12 +53,28 @@ class HeteroskedasticGaussianLossV2(_Loss):
         term2 = 1 / 2 * (target - mean)**2 * precision**2
         return term1 + term2
 
+    def pointwise_likelihood_(self, input, target):
+        mean, precision = torch.split(input, self.n_target_channels, dim=1)
+        if not torch.all(precision > 0):
+            raise ValueError('Got a non-positive variance value. \
+                             Pre-processed variance tensor was: \
+                                 {}'.format(torch.min(precision)))
+        term1 = precision
+        term2 = torch.exp(- 1 / 2 * (target - mean)**2 * precision**2
+        return term1 * term2
+        
+
     def forward(self, input: torch.Tensor, target: torch.Tensor):
         # Split the target into mean (first half of channels) and scale
         lkhs = self.pointwise_likelihood(input, target)
         return lkhs.mean()
 
     def predict(self, input: torch.Tensor):
+        mean, precision = torch.split(input, self.n_target_channels, dim=1)
+        return mean
+
+    def predict_mean(self, input: torch.Tensor):
+        """Return the mean of the conditional distribution"""
         mean, precision = torch.split(input, self.n_target_channels, dim=1)
         return mean
 
@@ -88,7 +104,7 @@ class MultimodalLoss(_Loss):
         for i, loss in enumerate(self.losses):
             sub_indices = loss.precision_indices
             for j, index in enumerate(sub_indices):
-                sub_indices[j] = index + 2 + i * loss.n_required_channels
+                sub_indices[j] = index + self.n_modes + i * loss.n_required_channels
             indices.extend(sub_indices)
         return indices
 
@@ -105,11 +121,10 @@ class MultimodalLoss(_Loss):
         input = torch.split(input, self.splits, dim=1)
         probas, inputs = input[0], input[1:]
         probas = torch.softmax(probas, dim=1)
-        losses = [proba * torch.exp(-loss.pointwise_likelihood(input, target))
-                  for (proba, loss, input) in
-                  zip(probas, self.losses, inputs)]
+        losses = [proba * loss.pointwise_likelihood_(input, target)
+                  for (proba, loss, input) in zip(probas, self.losses, inputs)]
         loss = torch.stack(losses, dim=2)
-        final_loss = -torch.sum(torch.log(loss), dim=2)
+        final_loss = -torch.log(torch.sum(loss, dim=2))
         return final_loss.mean()
 
     def predict(self, input: torch.Tensor):
