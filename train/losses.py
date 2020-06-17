@@ -60,7 +60,7 @@ class HeteroskedasticGaussianLossV2(_Loss):
                              Pre-processed variance tensor was: \
                                  {}'.format(torch.min(precision)))
         term1 = precision
-        term2 = torch.exp(- 1 / 2 * (target - mean)**2 * precision**2
+        term2 = torch.exp(- 1 / 2 * (target - mean)**2 * precision**2)
         return term1 * term2
         
 
