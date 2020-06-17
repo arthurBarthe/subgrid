@@ -13,7 +13,7 @@ normalization applied.
 import numpy as np
 import torch
 from torch.nn.functional import mse_loss
-from collections.abc import ABC, abstractmethod
+from abc import ABC, abstractmethod
 
 
 class Metric(ABC):
