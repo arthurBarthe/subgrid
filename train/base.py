@@ -26,8 +26,8 @@ class Trainer:
         Criterion used in the objective function.
 
     :early_stopping: int,
-        Number of epochs without improvement of the best test loss after
-        which we stop training.
+        Number of consecutive epochs without improvement of the best test loss
+        after which we stop training.
 
     :print_loss_every: int,
         Sets the number of batches that the average loss is printed.
@@ -35,10 +35,7 @@ class Trainer:
     :metrics: list,
         List of metrics reported on the test data. These are distinct from
         the criterion in the sense that they are not use for backpropagation,
-        they are only reported on the test dataset (although this might
-        change in the future).
-        Note: for now the passed metric are expected to be linear as we use
-        a running average to compute them.
+        they are only reported on the test dataset.
     """
 
     def __init__(self, net: Module, device: torch.device):
@@ -48,7 +45,7 @@ class Trainer:
         self._metrics = dict()
         self._print_loss_every = 20
         self._locked = False
-        self._early_stopping = 8
+        self._early_stopping = 4
         self._best_test_loss = None
         self._counter = 0
 
