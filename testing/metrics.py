@@ -87,7 +87,7 @@ class MaxMetric(Metric):
     def update(self, y_hat, y):
         value = self(y_hat, y)
         value = value.item()
-        self.value = np.max(value, self.value)
+        self.value = np.maximum(value, self.value)
 
     def reset(self):
         self.value = 0
