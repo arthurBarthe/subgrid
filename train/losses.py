@@ -117,13 +117,17 @@ class MultimodalLoss(_Loss):
         probas = torch.softmax(probas, dim=1)
         predictions = [loss.predict(input) for loss, input in 
                        zip(self.losses, inputs)]
+        n_channels = predictions[0].size(1)
         predictions = torch.cat(predictions, dim=1)
         sel = torch.argmax(probas, dim=1, keepdim=True)
-        # TODO make this general
-        final_predictions = predictions[sel:sel+2]
+        s = list(sel.size())
+        s[1] = n_channels
+        s = tuple(s)
+        sel = sel.repeat(s)
+        for i in range(n_channels):
+            sel[:, i, :, :] += i
+        final_predictions = torch.gather(predictions, 1, sel)
         return final_predictions
-        
-        
 
 
 class BimodalGaussianLoss(MultimodalLoss):
