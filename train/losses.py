@@ -61,7 +61,7 @@ class HeteroskedasticGaussianLossV2(_Loss):
 
     def predict(self, input: torch.Tensor):
         mean, precision = torch.split(input, self.n_target_channels, dim=1)
-        return mean
+        return mean + self.bias
 
     def predict_mean(self, input: torch.Tensor):
         """Return the mean of the conditional distribution"""
@@ -75,7 +75,7 @@ class MultimodalLoss(_Loss):
     'C' for channels, the mode is shared accross channels"""
 
     def __init__(self, n_modes, n_target_channels, base_loss_cls,
-                 base_loss_params, share_mode='C'):
+                 base_loss_params=[], share_mode='C'):
         super().__init__()
         self.n_modes = n_modes
         self.n_target_channels = n_target_channels
@@ -131,12 +131,14 @@ class MultimodalLoss(_Loss):
         predictions = [loss.predict(input) for loss, input in
                        zip(self.losses, inputs)]
         n_channels = predictions[0].size(1)
-        predictions = torch.cat(predictions, dim=1)
+        predictions = torch.stack(predictions, dim=2)
         sel = torch.argmax(probas, dim=1, keepdim=True)
-        sel = sel.repeat((1, n_channels, 1, 1))
-        for i in range(n_channels):
-            sel[:, i, :, :] += i
-        final_predictions = torch.gather(predictions, 1, sel)
+        sel = sel.unsqueeze(dim=2)
+        sel = sel.repeat((1, n_channels, 1, 1, 1))
+        print(sel.shape)
+        print(predictions.shape)
+        final_predictions = torch.gather(predictions, 2, sel)
+        final_predictions = final_predictions.squeeze(2)
         return final_predictions
 
 
