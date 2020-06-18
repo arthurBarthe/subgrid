@@ -127,6 +127,8 @@ class MultimodalLoss(_Loss):
     def predict(self, input: torch.Tensor):
         input = torch.split(input, self.splits, dim=1)
         probas, inputs = input[0], input[1:]
+        # Favour first one
+        probas[:, 0, ...] += 1
         probas = torch.softmax(probas, dim=1)
         predictions = [loss.predict(input) for loss, input in
                        zip(self.losses, inputs)]
@@ -173,4 +175,6 @@ class PentamodalGaussianLoss(MultimodalLoss):
     def __init__(self, n_target_channels: int):
         super().__init__(5, n_target_channels,
                          base_loss_cls=HeteroskedasticGaussianLossV2,
-                         base_loss_params=[dict(bias=-2), dict(bias=-1)])
+                         base_loss_params=[dict(bias=0), dict(bias=-10),
+                                           dict(bias=-5), dict(bias=5),
+                                           dict(bias=10)])
