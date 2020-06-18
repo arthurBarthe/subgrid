@@ -135,8 +135,6 @@ class MultimodalLoss(_Loss):
         sel = torch.argmax(probas, dim=1, keepdim=True)
         sel = sel.unsqueeze(dim=2)
         sel = sel.repeat((1, n_channels, 1, 1, 1))
-        print(sel.shape)
-        print(predictions.shape)
         final_predictions = torch.gather(predictions, 2, sel)
         final_predictions = final_predictions.squeeze(2)
         return final_predictions
