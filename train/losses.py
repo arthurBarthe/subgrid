@@ -110,6 +110,7 @@ class MultimodalLoss(_Loss):
         input = torch.split(input, self.splits, dim=1)
         probas, inputs = input[0], input[1:]
         probas = torch.softmax(probas, dim=1)
+        probas = torch.split(probas, 1, dim=1)
         losses = [torch.log(proba) - loss.pointwise_likelihood(input, target)
                   for (proba, loss, input) in zip(probas, self.losses, inputs)]
         loss = torch.stack(losses, dim=2)
