@@ -28,9 +28,10 @@ class HeteroskedasticGaussianLoss(_Loss):
 class HeteroskedasticGaussianLossV2(_Loss):
     """Class for Gaussian likelihood"""
 
-    def __init__(self, n_target_channels: int = 1):
+    def __init__(self, n_target_channels: int = 1, bias: float = 0.):
         super().__init__()
         self.n_target_channels = n_target_channels
+        self.bias = bias
 
     @property
     def n_required_channels(self):
@@ -50,7 +51,7 @@ class HeteroskedasticGaussianLossV2(_Loss):
                              Pre-processed variance tensor was: \
                                  {}'.format(torch.min(precision)))
         term1 = - torch.log(precision)
-        term2 = 1 / 2 * (target - mean)**2 * precision**2
+        term2 = 1 / 2 * (target - (mean + self.bias))**2 * precision**2
         return term1 + term2        
 
     def forward(self, input: torch.Tensor, target: torch.Tensor):
@@ -65,7 +66,7 @@ class HeteroskedasticGaussianLossV2(_Loss):
     def predict_mean(self, input: torch.Tensor):
         """Return the mean of the conditional distribution"""
         mean, precision = torch.split(input, self.n_target_channels, dim=1)
-        return mean
+        return mean + self.bias
 
 
 class MultimodalLoss(_Loss):
@@ -74,12 +75,17 @@ class MultimodalLoss(_Loss):
     'C' for channels, the mode is shared accross channels"""
 
     def __init__(self, n_modes, n_target_channels, base_loss_cls,
-                 share_mode='C', *base_loss_params):
+                 base_loss_params, share_mode='C'):
         super().__init__()
         self.n_modes = n_modes
         self.n_target_channels = n_target_channels
-        self.losses = [base_loss_cls(n_target_channels, *base_loss_params)
-                       for i in range(n_modes)]
+        self.losses = []
+        for i in range(n_modes):
+            if i < len(base_loss_params):
+                params = base_loss_params[i]
+                self.losses.append(base_loss_cls(n_target_channels, **params))
+            else:
+                self.losses.append(base_loss_cls(n_target_channels))
         self.share_mode = share_mode
 
     @property
@@ -122,14 +128,11 @@ class MultimodalLoss(_Loss):
         input = torch.split(input, self.splits, dim=1)
         probas, inputs = input[0], input[1:]
         probas = torch.softmax(probas, dim=1)
-        predictions = [loss.predict(input) for loss, input in 
+        predictions = [loss.predict(input) for loss, input in
                        zip(self.losses, inputs)]
         n_channels = predictions[0].size(1)
         predictions = torch.cat(predictions, dim=1)
         sel = torch.argmax(probas, dim=1, keepdim=True)
-        s = list(sel.size())
-        s[1] = n_channels
-        s = tuple(s)
         sel = sel.repeat((1, n_channels, 1, 1))
         for i in range(n_channels):
             sel[:, i, :, :] += i
@@ -157,3 +160,10 @@ class TrimodalGaussianLoss(MultimodalLoss):
     def __init__(self, n_target_channels: int):
         super().__init__(3, n_target_channels,
                          base_loss_cls=HeteroskedasticGaussianLossV2)
+
+
+class TrimodelGaussianLossV2(MultimodalLoss):
+    def __init__(self, n_target_channels: int):
+        super().__init__(3, n_target_channels,
+                         base_loss_cls=HeteroskedasticGaussianLossV2,
+                         base_loss_params=[dict(bias=-10), dict(bias=10)])
