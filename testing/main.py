@@ -100,6 +100,9 @@ features_transform = pickle_artifact(model_run.run_id,
 targets_transform = pickle_artifact(model_run.run_id,
                                     'models/targets_transform')
 
+# metrics saved independently of the training criterion
+metrics = {'mse': MSEMetric(), 'Inf Norm': MaxMetric()}
+
 i_test = 0
 while True:
     i_test += 1
@@ -190,6 +193,11 @@ while True:
 
     trainer = Trainer(net, device)
     trainer.criterion = criterion
+    
+    # Register metrics
+    for metric_name, metric in metrics.items():
+        trainer.register_metric(metric_name, metric)
+
     if n_epochs > 0:
         print('Fine-tuning whole network')
         parameters = net.parameters()
@@ -202,15 +210,20 @@ while True:
         print('Epoch {}'.format(i_epoch))
         print('Train loss for this epoch is {}'.format(train_loss))
         print('Test loss for this epoch is {}'.format(test_loss))
-        mlflow.log_metric('train loss', train_loss, i_epoch)
-        mlflow.log_metric('test loss', test_loss, i_epoch)
+        # mlflow.log_metric('train loss', train_loss, i_epoch)
+        # mlflow.log_metric('test loss', test_loss, i_epoch)
+        # mlflow.log_metrics(metrics_results)
 
     # Final test
     print('Testing on train and validation data...')
     train_loss, train_metrics_results = trainer.test(train_dataloader)
     test_loss, test_metrics_results = trainer.test(test_dataloader)
+    mlflow.log_metric('validation loss', n_epochs)
+    mlflow.log_metrics(test_metrics_results)
     print(f'Final train loss is {train_loss}')
     print(f'Final test loss is {test_loss}')
+    for metric_name, metric_value in test_metrics_results.items():
+        print(f'{metric_name} : {metric_value}')
 
     # Do the predictions for that dataset using the loaded model
     out = create_test_dataset(net, xr_dataset, test_dataset,
