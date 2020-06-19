@@ -71,7 +71,7 @@ class MSEMetric(Metric):
 
     def update(self, y_hat, y):
         mse = self(y_hat, y).item()
-        mse_zero = self(torch.zeros_like(y), y)
+        mse_zero = self(torch.zeros_like(y), y).item()
         self._mse_zero_estimator = self.update_mean(self._mse_zero_estimator,
                                                     mse_zero,
                                                     self.i_batch)
