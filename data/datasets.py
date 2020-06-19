@@ -143,6 +143,7 @@ class ComposeTransforms(ArrayTransform):
         return x
 
     def transform_coordinate(self, coord, dim):
+        x = coord
         for transform in self.transforms:
             if isinstance(transform, CropToNewShape):
                 x = transform.transform_coordinate(coord, dim)
@@ -290,7 +291,7 @@ class ArctanPerChannelNormalizer(PerChannelNormalizer):
         assert(self._mean is not None)
         if self._use_mean:
             x = x - self._mean
-        return np.arctan(x / self._std)
+        return np.arctan(x)
 
 
 class PerLocationNormalizer(ArrayTransform):
