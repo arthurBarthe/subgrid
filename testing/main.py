@@ -26,6 +26,8 @@ from train.losses import (HeteroskedasticGaussianLoss,
                           HeteroskedasticGaussianLossV2)
 
 from testing.utils import create_test_dataset, pickle_artifact
+from testing.metrics import MSEMetric, MaxMetric
+
 
 from analysis.base import TestDataset
 
