@@ -139,6 +139,7 @@ while True:
     targets_transform_ = deepcopy(targets_transform)
     transform = DatasetTransformer(features_transform_, targets_transform_)
     transform.add_features_transform(CropToMultipleof(2))
+    transform.add_targets_transform(CropToMultipleof(2))
     transform.fit(train_dataset)
     dataset = DatasetWithTransform(dataset, transform)
     dataset = MultipleTimeIndices(dataset)
@@ -159,18 +160,22 @@ while True:
     print('Features transform: ', transform.transforms['features'].transforms)
     print('Targets transform: ', transform.transforms['targets'].transforms)
 
-    # On first testdataset load the model
+    # On first testdataset load the model. Or if we train to reset the model
     if i_test == 1:
         logging.info('Creating the neural network model')
         model_cls = load_model_cls(model_module_name, model_cls_name)
         net = model_cls(dataset.n_features, 2 * dataset.n_targets)
-        logging.info('Loading the neural net parameters')
-        # Load parameters of pre-trained model
         net.final_transformation = transformation
-        net.load_state_dict(torch.load(model_file))
 
-    # Adding transforms to the targets required by the model
-    dataset.add_targets_transform_from_model(net)
+    if i_test == 1 or n_epochs > 0:
+        # Load parameters of pre-trained model
+        logging.info('Loading the neural net parameters')
+        net.cpu()
+        net.load_state_dict(torch.load(model_file))
+        print(net)
+
+    # Adding transforms required by the model
+    dataset.add_transforms_from_model(net)
 
     # Net to GPU
     net.to(device)
