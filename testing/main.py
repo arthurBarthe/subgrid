@@ -138,8 +138,6 @@ while True:
     features_transform_ = deepcopy(features_transform)
     targets_transform_ = deepcopy(targets_transform)
     transform = DatasetTransformer(features_transform_, targets_transform_)
-    transform.add_features_transform(CropToMultipleof(2))
-    transform.add_targets_transform(CropToMultipleof(2))
     transform.fit(train_dataset)
     dataset = DatasetWithTransform(dataset, transform)
     dataset = MultipleTimeIndices(dataset)
@@ -151,14 +149,6 @@ while True:
                                   shuffle=True, drop_last=True)
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                                  shuffle=False, drop_last=True)
-    print('Size of training data: {}'.format(len(train_dataset)))
-    print('Size of validation data : {}'.format(len(test_dataset)))
-    print('Input height: {}'.format(train_dataset.height))
-    print('Input width: {}'.format(train_dataset.width))
-    print(train_dataset[0][0].shape)
-    print(train_dataset[0][1].shape)
-    print('Features transform: ', transform.transforms['features'].transforms)
-    print('Targets transform: ', transform.transforms['targets'].transforms)
 
     # On first testdataset load the model. Or if we train to reset the model
     if i_test == 1:
@@ -176,6 +166,15 @@ while True:
 
     # Adding transforms required by the model
     dataset.add_transforms_from_model(net)
+    
+    print('Size of training data: {}'.format(len(train_dataset)))
+    print('Size of validation data : {}'.format(len(test_dataset)))
+    print('Input height: {}'.format(train_dataset.height))
+    print('Input width: {}'.format(train_dataset.width))
+    print(train_dataset[0][0].shape)
+    print(train_dataset[0][1].shape)
+    print('Features transform: ', transform.transforms['features'].transforms)
+    print('Targets transform: ', transform.transforms['targets'].transforms)
 
     # Net to GPU
     net.to(device)
