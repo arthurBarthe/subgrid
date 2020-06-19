@@ -181,7 +181,8 @@ while True:
 
     # Set up training criterion and select parameters to train
     try:
-        criterion = getattr(modules['__main__'], loss_cls_name)()
+        n_targets = dataset.n_targets
+        criterion = getattr(modules['__main__'], loss_cls_name)(n_targets)
     except AttributeError as e:
         raise type(e)('Could not find the loss class used for training.')
 
