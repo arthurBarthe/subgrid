@@ -221,7 +221,7 @@ while True:
     train_loss, train_metrics_results = trainer.test(train_dataloader)
     test_loss, test_metrics_results = trainer.test(test_dataloader)
     mlflow.log_metric('validation loss', n_epochs)
-    mlflow.log_metrics(test_metrics_results)
+    mlflow.log_metrics(test_metrics_results, i_test - 1)
     print(f'Final train loss is {train_loss}')
     print(f'Final test loss is {test_loss}')
     for metric_name, metric_value in test_metrics_results.items():
@@ -230,10 +230,10 @@ while True:
     # Do the predictions for that dataset using the loaded model
     out = create_test_dataset(net, xr_dataset, test_dataset,
                               test_dataloader, test_index, device)
-    file_path = os.path.join(data_location, f'test_output_{i_test}')
+    file_path = os.path.join(data_location, f'test_output_{i_test - 1}')
     out.to_zarr(file_path)
     mlflow.log_artifact(file_path)
     print(f'Size of output data is {out.nbytes/1e9} GB')
-    
+
 mlflow.end_run()
 print('Done')

@@ -66,15 +66,29 @@ class Metric(ABC):
 class MSEMetric(Metric):
     def __init__(self):
         super(MSEMetric, self).__init__(mse_loss)
+        self._mse_zero_estimator = 0
+        self._mse = 0
 
     def update(self, y_hat, y):
-        value = self(y_hat, y)
-        value = value.item()
-        self.value = self.i_batch / (self.i_batch + 1) * self.value
-        self.value = self.value + 1 / (self.i_batch + 1) * value
+        mse = self(y_hat, y).item()
+        mse_zero = self(torch.zeros_like(y), y)
+        self._mse_zero_estimator = self.update_mean(self._mse_zero_estimator,
+                                                    mse_zero,
+                                                    self.i_batch)
+        self._mse = self.update_mean(self._mse, mse, self.i_batch)
+        self.value = self._mse / self._mse_zero_estimator
+        self.i_batch += 1
+
+    @staticmethod
+    def update_mean(mean_value, value, i):
+        mean_value = i / (i + 1) * mean_value
+        mean_value += 1 / (i + 1) * value
+        return mean_value
 
     def reset(self):
         self.value = 0
+        self._mse_zero_estimator = 0
+        self._mse = 0
         self.i_batch = 0
 
 
@@ -85,9 +99,8 @@ class MaxMetric(Metric):
         super(MaxMetric, self).__init__(func)
 
     def update(self, y_hat, y):
-        value = self(y_hat, y)
-        value = value.item()
-        self.value = np.maximum(value, self.value)
+        value = self(y_hat, y).item()
+        self.value = max(value, self.value)
 
     def reset(self):
         self.value = 0
