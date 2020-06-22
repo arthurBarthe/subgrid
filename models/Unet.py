@@ -50,7 +50,7 @@ class Unet_(Module, DetectOutputSizeMixin):
         size_t = t.size()
         dh = (size_t[2] - size[2]) // 2
         dw = (size_t[3] - size[3]) // 2
-        return t[:, :, dh : size_t[2]-dh, dw : size_t[3]-dw]
+        return t[:, :, dh: size_t[2] - dh, dw: size_t[3] - dw]
 
     def _padding(self, k_size: int):
         """Returns the padding, depending on the padding parameter"""
@@ -147,3 +147,8 @@ class Unet_(Module, DetectOutputSizeMixin):
 class Unet(FinalTransformationMixin, Unet_):
     def __init__(self, *args, **kargs):
         Unet_.__init__(self, *args, **kargs)
+
+
+class Unet32(Unet):
+    def __init__(self, *args, **kargs):
+        super().__init__(depth=32)
