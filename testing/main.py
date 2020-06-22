@@ -16,7 +16,7 @@ import torch.nn
 from torch.utils.data import DataLoader, Subset
 import numpy as np
 import xarray as xr
-from analysis.utils import select_run
+from analysis.utils import select_run, select_experiment
 from train.utils import learning_rates_from_string
 from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
                             Subset_, ConcatDataset_, DatasetWithTransform,
@@ -49,12 +49,12 @@ from sys import modules
 parser = argparse.ArgumentParser()
 parser.add_argument('--n_epochs', type=int, default=0)
 parser.add_argument('--lr_ratio', type=float, default=1)
-parser.add_argument('--models_experiment_name', type=str, default='training')
+# parser.add_argument('--models_experiment_name', type=str, default='training')
 
 script_params = parser.parse_args()
 n_epochs = script_params.n_epochs
 lr_ratio = script_params.lr_ratio
-models_experiment_name = script_params.models_experiment_name
+# models_experiment_name = script_params.models_experiment_name
 
 # Location used to write generated data before it is logged through MLFlow
 data_location = tempfile.mkdtemp(dir='/scratch/ag7531/temp/')
@@ -69,6 +69,8 @@ mlflow.start_run()
 
 # Prompt user to retrieve a trained model based on a run id for the default
 # experiment (folder mlruns/0)
+models_experiment_name = select_experiment()
+
 cols = ['metrics.test loss', 'start_time', 'params.time_indices',
         'params.model_cls_name', 'params.source.run_id']
 # Recover experiment id of the models

@@ -6,6 +6,7 @@ Created on Tue Feb  4 14:00:45 2020
 """
 import numpy as np
 import mlflow
+from  mlflow.tracking import MlflowClient
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import pandas as pd
@@ -39,12 +40,24 @@ def rmse_map(targets: np.ndarray, predictions: np.ndarray,
     return rmse_map
 
 
+def select_experiment():
+    """Allow user to select an experiment among those prompted. Return
+    the name of the selected experiment"""
+    client = MlflowClient()
+    list_of_exp = client.list_experiments()
+    dict_of_exp = {exp.experiment_id: exp.name for exp in list_of_exp}
+    for id_, name in dict_of_exp.items():
+        print(id_, ': ', name)
+    selection = input('Select the id of an experiment: ')
+    return dict_of_exp[selection]
+
+
 def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
     """Allows to select a run from the tracking store interactively"""
     mlflow_runs = mlflow.search_runs(*args, **kargs)
     if cols is None:
         cols = list()
-    cols = ['run_id', 'experiment_id' ] + cols
+    cols = ['run_id', 'experiment_id'] + cols
     if sort_by is not None:
         mlflow_runs.sort_values(by=sort_by)
         cols.append(sort_by)
@@ -146,19 +159,38 @@ def sample(data : np.ndarray, step_time : int = 1, nb_per_time: int = 5):
     return sample
 
 
-def plot_dataset(dataset : xr.Dataset, plot_type = None, *args, **kargs):
+def plot_dataset(dataset: xr.Dataset, plot_type = None, *args, **kargs):
     """Calls the plot function of each variable in the dataset"""
     plt.figure(figsize = (20, 5 * int(len(dataset) / 2)))
+    kargs_ = [dict() for i in range(len(dataset))]
+    def process_list_of_args(name: str):
+        if name in kargs:
+            if isinstance(kargs[name], list):
+                for i, arg_value in enumerate(kargs[name]):
+                    kargs_[i][name] = arg_value
+            else:
+                for i in range(len(dataset)):
+                    kargs_[i][name] = kargs[name]
+            kargs.pop(name)
+    process_list_of_args('vmin')
+    process_list_of_args('vmax')
     for i, variable in enumerate(dataset):
         plt.subplot(int(len(dataset) / 2), 2, i + 1)
         if plot_type is None:
-            dataset[variable].plot(*args, **kargs)
+            try:
+                # By default we set the cmap to coolwarm
+                kargs.setdefault('cmap', 'coolwarm')
+                dataset[variable].plot(*args, **kargs_[i], **kargs)
+            except AttributeError as e:
+                kargs.pop('cmap', None)
+                dataset[variable].plot(*args, **kargs)
         else:
-            plt_func = getattr(dataset[variable], plot_type)
-            plt_func(*args, **args)
+            plt_func = getattr(dataset[variable].plot, plot_type)
+            plt_func(*args, **kargs)
+import matplotlib.animation as animation
 
-
-def dataset_to_movie(dataset : xr.Dataset, interval : int = 50):
+def dataset_to_movie(dataset : xr.Dataset, interval : int = 50,
+                    *args, **kargs):
     """Generates animations for all the variables in the dataset"""
     fig = plt.figure(figsize = (20, 5 * int(len(dataset) / 2)))
     axes = list()
@@ -169,7 +201,8 @@ def dataset_to_movie(dataset : xr.Dataset, interval : int = 50):
         im = list()
         for axis, variable in zip(axes, dataset.keys()):
             plt.sca(axis)
-            img = dataset[variable].isel(time=i).plot(vmin=-2, vmax=2)
+            img = dataset[variable].isel(time=i).plot(vmin=-2, vmax=2,
+                                                      cmap='coolwarm')
             cb = img.colorbar
             cb.remove()
             im.append(img)
@@ -178,8 +211,6 @@ def dataset_to_movie(dataset : xr.Dataset, interval : int = 50):
                                     interval=interval, blit=True,
                                     repeat_delay=1000)
     return ani
-    
-            
 
 def play_movie(predictions: np.ndarray, title : str = '', 
                interval : int = 500):
