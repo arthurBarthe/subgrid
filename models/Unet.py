@@ -152,3 +152,8 @@ class Unet(FinalTransformationMixin, Unet_):
 class Unet32(Unet):
     def __init__(self, *args, **kargs):
         super().__init__(depth=32)
+
+
+class Unet32_3scales(Unet32):
+    def __init__(self, *args, **kargs):
+        super().__init__(n_scales=3)
