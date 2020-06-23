@@ -19,7 +19,7 @@ from data.datasets import CropToMultipleof
 
 class Unet_(Module, DetectOutputSizeMixin):
     def __init__(self, n_in_channels: int = 2, n_out_channels: int = 4,
-                 n_scales: int = 2, depth=64, kernel_sizes=[3, 3],
+                 n_scales: int = 2, depth=64, kernel_sizes=[5, 3],
                  batch_norm=False, padding=False):
         Module.__init__(self)
         DetectOutputSizeMixin.__init__(self)
@@ -147,6 +147,11 @@ class Unet_(Module, DetectOutputSizeMixin):
 class Unet(FinalTransformationMixin, Unet_):
     def __init__(self, *args, **kargs):
         Unet_.__init__(self, *args, **kargs)
+
+
+class Unet3scales(Unet):
+    def __init__(self, *args, **kargs):
+        super().__init__(n_scales=3)
 
 
 class Unet32(Unet):
