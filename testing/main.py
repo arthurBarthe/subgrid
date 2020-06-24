@@ -7,6 +7,11 @@ Here we test a trained model on an unseen region. The user is prompted to
 select a trained model within a list and a new region to test that model.
 Fine-tuning is an option through the n_epochs parameter of the script.
 
+We allow for different modes of training:
+    - training of all parameters
+    - training of last layer only
+    - training of batch norm layers only
+
 TODO:
     - Allow to test on all regions at once with one command
 """
@@ -34,13 +39,11 @@ from analysis.base import TestDataset
 from models.utils import load_model_cls
 
 import os.path
-import importlib
 
 import tempfile
 import logging
 
 import argparse
-import pickle
 from copy import deepcopy
 from sys import modules
 
@@ -49,6 +52,7 @@ from sys import modules
 parser = argparse.ArgumentParser()
 parser.add_argument('--n_epochs', type=int, default=0)
 parser.add_argument('--lr_ratio', type=float, default=1)
+parser.add_argument('--train_mode', type=str, default='all')
 # parser.add_argument('--models_experiment_name', type=str, default='training')
 
 script_params = parser.parse_args()
@@ -107,14 +111,17 @@ targets_transform = pickle_artifact(model_run.run_id,
 # metrics saved independently of the training criterion
 metrics = {'mse': MSEMetric(), 'Inf Norm': MaxMetric()}
 
+# Select the data experiment
+data_experiment_name = select_experiment()
+data_experiment = mlflow.get_experiment_by_name(data_experiment_name)
+data_experiment_id = data_experiment.experiment_id
+
 i_test = 0
 while True:
     i_test += 1
     # Prompt user to select the test dataset
     cols = ['params.lat_min', 'params.lat_max', 'params.long_min',
             'params.long_max', 'params.scale']
-    data_experiment = mlflow.get_experiment_by_name('forcingdata')
-    data_experiment_id = data_experiment.experiment_id
     data_run = select_run(cols=cols, experiment_ids=[data_experiment_id, ])
     if isinstance(data_run, int):
         break
@@ -126,10 +133,10 @@ while True:
     mlflow.log_param('model_run_id', model_run.run_id)
     mlflow.log_param('data_run_id', data_run.run_id)
     mlflow.log_param('n_epochs', n_epochs)
-    
+
     # Read the dataset file
     xr_dataset = xr.open_zarr(data_file).load()
-    
+
     # To PyTorch Dataset
     dataset = RawDataFromXrDataset(xr_dataset)
     dataset.index = 'time'
@@ -173,7 +180,7 @@ while True:
 
     # Adding transforms required by the model
     dataset.add_transforms_from_model(net)
-    
+
     print('Size of training data: {}'.format(len(train_dataset)))
     print('Size of validation data : {}'.format(len(test_dataset)))
     print('Input height: {}'.format(train_dataset.height))
@@ -197,7 +204,7 @@ while True:
 
     trainer = Trainer(net, device)
     trainer.criterion = criterion
-    
+
     # Register metrics
     for metric_name, metric in metrics.items():
         trainer.register_metric(metric_name, metric)
