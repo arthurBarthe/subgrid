@@ -35,7 +35,7 @@ class TestDataset:
 
     def __getattr__(self, attr_name):
         if hasattr(self.ds, attr_name):
-            return self.ds.attr_name
+            return getattr(self.ds, attr_name)
         else:
             raise AttributeError()
 
