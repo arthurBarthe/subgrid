@@ -40,7 +40,7 @@ class TestDataset:
             raise AttributeError()
 
     def __setattr__(self, name, value):
-        if hasattr(self.ds, name):
+        if name != 'ds' and hasattr(self.ds, name):
             setattr(self.ds, name, value)
         else:
             self.__dict__[name] = value
