@@ -10,6 +10,7 @@ import xarray as xr
 import mlflow
 import os.path
 
+
 class TestDataset:
     def __init__(self, ds):
         self.ds = ds
@@ -28,6 +29,14 @@ class TestDataset:
     def rmse(self, dim: str, normalized=False):
         errors = self.errors(normalized)
         return np.sqrt((errors['S_x']**2 + errors['S_y']**2).mean(dim=dim))
+
+    def __getattr__(self, attr_name):
+        if hasattr(self.ds, attr_name):
+            return self.ds.attr_name
+
+    def __setattr__(self, name, value):
+        if hasattr(self.ds, name):
+            setattr(self.ds, name, value)
 
 def get_test_datasets(run_id: str):
     """Return a list of the test datasets for the provided run id"""
