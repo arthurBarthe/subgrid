@@ -62,7 +62,7 @@ class PrecisionTransform(Transform):
         # number of them (although does not matter for 4 channels)
         result = torch.clone(input_)
         result[:, self.indices, :, :] = self.transform_precision(
-            input_[:, self.indices, :, :])
+            input_[:, self.indices, :, :]) + softplus(self.min_value)
         return result
         # mean, precision = torch.split(input_, 2, dim=1)
         # if (precision != precision).any():
@@ -100,3 +100,35 @@ class SquareTransform(PrecisionTransform):
 
     def __repr__(self):
         return ''.join(('SquareTransform(', str(self.min_value), ')'))
+
+
+class MeanTransform(Transform):
+    def transform(self, input):
+        result = torch.clone(input)
+        result[:, 0:2, :, :] = torch.tan(result[:, 0:2, :, :])
+        return result
+
+    def __repr__(self):
+        return self.__class__.__name__
+
+
+class ComposeTransform(Transform):
+    def __init__(self, transforms):
+        super().__init__()
+        self.transforms = transforms
+
+    def transform(self, input):
+        for t in self.transforms:
+            input = t(input)
+        return input
+
+    def __repr__(self):
+        return ' o '.join([t.__repr__() for t in self.transforms])
+
+
+class MeanPrecisionTransform(ComposeTransform):
+    def __init__(self):
+        t1 = SoftPlusTransform()
+        t1.indices = [2, 3]
+        t2 = MeanTransform()
+        super().__init__((t1, t2))
