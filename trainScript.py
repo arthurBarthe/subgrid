@@ -282,6 +282,8 @@ net.to(device)
 
 # metrics saved independently of the training criterion
 metrics = {'mse': MSEMetric(), 'Inf Norm': MaxMetric()}
+for metric in metrics.values():
+    metric.inv_transform = lambda x: test_dataset.inverse_transform_target(x)
 
 params = list(net.parameters())
 # linear_layer = net.linear_layer

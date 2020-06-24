@@ -23,7 +23,6 @@ class Metric(ABC):
         else:
             self.name = name
         self.func = metric_func
-        self.inv_transform = None
         self.i_batch = 0
         self.value = 0
 
@@ -45,13 +44,18 @@ class Metric(ABC):
 
     @property
     def inv_transform(self):
-        return self._inv_transform
+        if hasattr(self, '_inv_transform'):
+            return self._inv_transform
+        else:
+            return lambda x: x
 
     @inv_transform.setter
     def inv_transform(self, inv_transform):
         self._inv_transform = inv_transform
 
     def __call__(self, y_hat, y):
+        y_hat = self.inv_transform(y_hat)
+        y = self.inv_transform(y)
         return self.func(y_hat, y)
 
     @abstractmethod
