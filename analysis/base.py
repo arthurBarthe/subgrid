@@ -18,6 +18,9 @@ class TestDataset:
     def __getitem__(self, i):
         return self.ds[i]
 
+    def __setitem__(self, name, value):
+        self.ds[name] = value
+
     def errors(self, normalized=False):
         sx_error = self['S_xpred'] - self['S_x']
         sy_error = self['S_ypred'] - self['S_y']
