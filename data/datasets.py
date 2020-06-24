@@ -148,9 +148,7 @@ class ComposeTransforms(ArrayTransform):
 
     def inverse_transform(self, x):
         for transform in self.transforms:
-            print('let us see', transform)
             if hasattr(transform, 'inverse_transform'):
-                print('indeed')
                 x = transform.inverse_transform(x)
         return x
 
