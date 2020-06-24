@@ -14,7 +14,7 @@ CACHE_FOLDER = '/scratch/ag7531/pangeo_cache'
 
 
 def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
-              c02_level=0, *selected_vars):
+              cO2_level=0, *selected_vars):
     """
     Return a tuple with a patch of uv velocities along with the grid details.
 
@@ -27,7 +27,7 @@ def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
     bounds : list, optional
         Bounds of the path, (lat_min, lat_max, long_min, long_max). Note that
         the order matters!
-    c02_level : int, optional
+    cO2_level : int, optional
         CO2 level, 0 (control) or 1. The default is 0.
     *selected_vars : str
         Variables selected from the surface velocities dataset.
@@ -46,10 +46,12 @@ def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
 
     """
     catalog = intake.open_catalog(catalog_url)
-    if c02_level == 0:
+    if cO2_level == 0:
         source = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_control_ocean_surface
+    elif cO2_level == 1:
+        source = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_one_percent_ocean_surface
     else:
-        raise NotImplementedError('Only control implemented for now.')
+        raise ValueError('Unrecognized cO2 level.')
     s_grid = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_grid
     uv_data = source.get()
     grid_data = s_grid.get()
@@ -75,7 +77,7 @@ def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
 
 
 def get_whole_data(url):
-    data, grid = get_patch(url, None, None, 0, 'usurf', 'vsurf')
+    data, grid = get_patch(url, None, None, 1, 'usurf', 'vsurf')
     return data, grid
 
 
