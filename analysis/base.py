@@ -36,10 +36,14 @@ class TestDataset:
     def __getattr__(self, attr_name):
         if hasattr(self.ds, attr_name):
             return self.ds.attr_name
+        else:
+            raise AttributeError()
 
     def __setattr__(self, name, value):
         if hasattr(self.ds, name):
             setattr(self.ds, name, value)
+        else:
+            self.__dict__[name] = value
 
 def get_test_datasets(run_id: str):
     """Return a list of the test datasets for the provided run id"""
