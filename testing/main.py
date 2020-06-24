@@ -111,6 +111,7 @@ targets_transform = pickle_artifact(model_run.run_id,
 # metrics saved independently of the training criterion
 metrics = {'mse': MSEMetric(), 'Inf Norm': MaxMetric()}
 
+
 # Select the data experiment
 data_experiment_name = select_experiment()
 data_experiment = mlflow.get_experiment_by_name(data_experiment_name)
@@ -163,6 +164,11 @@ while True:
                                   shuffle=True, drop_last=True)
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                                  shuffle=False, drop_last=True)
+
+    # Set inverse transform for metrics
+    for metric in metrics.values():
+        metric.inv_transform = (lambda x: 
+                                test_dataset.inverse_transform_target(x))
 
     # On first testdataset load the model. Or if we train to reset the model
     if i_test == 1:
