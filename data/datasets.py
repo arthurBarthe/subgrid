@@ -105,6 +105,10 @@ class DatasetTransformer:
     def __call__(self, x):
         return self.transform(x)
 
+    def inverse_transform_target(self, target):
+        """Return the inverse transform of the passed transformed target"""
+        return self.transforms['targets'].inverse_transform(target)
+
     def inverse_transform(self, x: Dataset):
         features, targets = x
         new_features = self.transforms['features'].inverse_transform(features)
@@ -140,6 +144,12 @@ class ComposeTransforms(ArrayTransform):
     def transform(self, x):
         for transform in self.transforms:
             x = transform(x)
+        return x
+
+    def inverse_transform(self, x):
+        for transform in self.transforms:
+            if hasattr(transform, 'inverse_transform'):
+                x = transform.inverse_transform(x)
         return x
 
     def transform_coordinate(self, coord, dim):
@@ -241,6 +251,9 @@ class SignedSqrt(ArrayTransform):
     def transform(self, x):
         x = np.sign(x) * np.sqrt(np.abs(x))
         return x
+
+    def inverse_transform(self, x):
+        return x**2 * torch.sign(x)
 
 
 class PerChannelNormalizer(ArrayTransform):
@@ -536,6 +549,9 @@ class DatasetWithTransform:
 
     def inverse_transform(self, x):
         return self.transform.inverse_transform(x)
+
+    def inverse_transform_target(self, x):
+        return self.transform.inverse_transform_target(x)
 
     def add_features_transform(self, transform):
         self.transform.add_features_transform(transform)
