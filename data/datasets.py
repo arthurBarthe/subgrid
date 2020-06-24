@@ -148,7 +148,9 @@ class ComposeTransforms(ArrayTransform):
 
     def inverse_transform(self, x):
         for transform in self.transforms:
+            print('let us see', transform)
             if hasattr(transform, 'inverse_transform'):
+                print('indeed')
                 x = transform.inverse_transform(x)
         return x
 
@@ -178,21 +180,6 @@ class Randommult(ArrayTransform):
         x = x * self._multipliers[self.i]
         self.i += 1
         return x
-
-
-# class CropToMultipleof(ArrayTransform):
-#     def __init__(self, multiple_of: int = 2):
-#         self.multiple_of = multiple_of
-
-#     def fit(self, x):
-#         shape = x.shape
-#         new_shape_1 = shape[2] // self.multiple_of * self.multiple_of
-#         new_shape_2 = shape[3] // self.multiple_of * self.multiple_of
-#         self.new_shape = (shape[1], new_shape_1, new_shape_2)
-#         print('debugging:', self.new_shape)
-
-#     def transform(self, x):
-#         return x[:, :self.new_shape[1], :self.new_shape[2]]
 
 
 class CropToNewShape(ArrayTransform):
@@ -277,7 +264,10 @@ class PerChannelNormalizer(ArrayTransform):
         return x / self._std
 
     def inverse_transform(self, X):
-        return X * self._std + self._mean
+        if self._use_mean:
+            return X * self._std + self._mean
+        else:
+            return X * self._std
 
 
 class FixedNormalizer(ArrayTransform):
@@ -286,6 +276,9 @@ class FixedNormalizer(ArrayTransform):
 
     def transform(self, x):
         return x / self.std
+
+    def inverse_transform(self, x):
+        return x * self.std
 
 
 class FixedVelocityNormalizer(FixedNormalizer):
@@ -871,8 +864,8 @@ if __name__ == '__main__':
     dataset2.add_output('out0')
     dataset2.add_output('out1')
     t = DatasetTransformer(ComposeTransforms(CropToMultipleof(5),
-                                             SignedSqrt(),
-                                             PerChannelNormalizer()))
+                                             FixedVelocityNormalizer(),
+                                             SignedSqrt()))
     t.add_features_transform(CropToMultipleof(3))
     t2 = deepcopy(t)
     train_dataset = Subset_(dataset, np.arange(5))
