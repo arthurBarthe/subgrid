@@ -48,16 +48,18 @@ def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
     catalog = intake.open_catalog(catalog_url)
     if cO2_level == 0:
         source = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_control_ocean_surface
+        cache_folder = CACHE_FOLDER
     elif cO2_level == 1:
         source = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_one_percent_ocean_surface
+        cache_folder = CACHE_FOLDER + '1percent'
     else:
         raise ValueError('Unrecognized cO2 level.')
     s_grid = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_grid
     uv_data = source.get()
     grid_data = s_grid.get()
     # Use caching
-    uv_data.storage_options['cache_folder'] = CACHE_FOLDER
-    grid_data.storage_options['cache_folder'] = CACHE_FOLDER
+    uv_data.storage_options['cache_folder'] = cache_folder
+    grid_data.storage_options['cache_folder'] = cache_folder
     uv_data = uv_data.to_dask()
     grid_data = grid_data.to_dask()
     # Following line is necessary to transform non-primary coords into vars
