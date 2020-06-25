@@ -53,11 +53,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--n_epochs', type=int, default=0)
 parser.add_argument('--lr_ratio', type=float, default=1)
 parser.add_argument('--train_mode', type=str, default='all')
+parser.add_argument('--to_experiment', type=str, default='test')
 # parser.add_argument('--models_experiment_name', type=str, default='training')
 
 script_params = parser.parse_args()
 n_epochs = script_params.n_epochs
 lr_ratio = script_params.lr_ratio
+to_experiment = script_params.to_experiment
 # models_experiment_name = script_params.models_experiment_name
 
 # Location used to write generated data before it is logged through MLFlow
@@ -67,8 +69,8 @@ model_output_dir = 'model_output'
 # Select the device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-print('Logging to experiment multiregion...')
-mlflow.set_experiment('multiregion')
+print(f'Logging to experiment {to_experiment}...')
+mlflow.set_experiment(to_experiment)
 mlflow.start_run()
 
 # Prompt user to retrieve a trained model based on a run id for the default
