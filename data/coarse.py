@@ -4,9 +4,6 @@
 Created on Wed Feb 19 12:15:35 2020
 
 @author: arthur
-TODO 
-Add some verification that the call to eddy forcing is not for a dataset
-that is too large as a region.
 """
 
 import xarray as xr
@@ -115,7 +112,8 @@ def compute_grid_steps(grid_info: xr.Dataset):
     return step_x, step_y
 
 
-def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
+def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean',
+                 area=False):
     """
     Compute the sub-grid forcing terms.
 
@@ -129,6 +127,8 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
         Scale, in meters.
     method : str, optional
         Coarse-graining method. The default is 'mean'.
+    area: bool
+        True if we multiply by the cell area
 
     Returns
     -------
@@ -156,7 +156,8 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean'):
     # Merge filtered u,v and forcing terms
     forcing = forcing.merge(u_v_filtered)
     # Reweight using the area of the cell
-    forcing = forcing * grid_data['area_u'] / 1e8
+    if area:
+        forcing = forcing * grid_data['area_u'] / 1e8
     print(forcing)
     # Coarsen
     print('scale: ', scale)
