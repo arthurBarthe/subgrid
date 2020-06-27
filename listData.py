@@ -6,12 +6,13 @@ Created on Tue Feb 25 09:39:23 2020
 @author: arthur
 Script that lists the data runs with the relevant information
 """
-DATA_EXPERIMENT_ID = '1'
 
 import mlflow
 from mlflow.tracking import MlflowClient
 import xarray as xr
 import matplotlib.pyplot as plt
+from analysis.utils import select_run, select_experiment
+
 
 def show_data_sample(forcing, index: int):
     """Plots the data for the given index"""
@@ -29,7 +30,11 @@ def show_data_sample(forcing, index: int):
     plt.show()
 
 
-runs = mlflow.search_runs(experiment_ids=[DATA_EXPERIMENT_ID,])
+data_experiment_name = select_experiment()
+data_experiment = mlflow.get_experiment_by_name(data_experiment_name)
+data_experiment_id = data_experiment.experiment_id
+
+runs = mlflow.search_runs(experiment_ids=[data_experiment_id, ])
 runs_short = runs[['run_id', 'start_time', 'params.scale', 'params.ntimes', 
             'params.lat_min', 'params.lat_max', 
             'params.long_min', 'params.long_max']]
