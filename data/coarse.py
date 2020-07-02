@@ -28,10 +28,10 @@ def advections(u_v_field, grid_data):
         Advection components, under variable names adv_x and adv_y.
 
     """
-    # gradient_x = u_v_field.diff(dim='xu_ocean') / grid_data['dxu']
-    # gradient_y = u_v_field.diff(dim='yu_ocean') / grid_data['dyu']
-    gradient_x = u_v_field.differentiate(coord='xu_ocean')
-    gradient_y = u_v_field.differentiate(coord='yu_ocean')
+    gradient_x = u_v_field.diff(dim='xu_ocean') / grid_data['dxu']
+    gradient_y = u_v_field.diff(dim='yu_ocean') / grid_data['dyu']
+    # gradient_x = u_v_field.differentiate(coord='xu_ocean')
+    # gradient_y = u_v_field.differentiate(coord='yu_ocean')
     u, v = u_v_field['usurf'], u_v_field['vsurf']
     adv_x = u * gradient_x['usurf'] + v * gradient_y['usurf']
     adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
