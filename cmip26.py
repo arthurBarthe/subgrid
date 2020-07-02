@@ -33,11 +33,11 @@ parser.add_argument('--ntimes', type=int, default=100, help='number of days,\
                     starting from first day.')
 parser.add_argument('--CO2', type=int, default=0, choices=[0, 1], help='CO2\
                     level, O (control) or 1.')
-
+parser.add_argument('--factor', type=int, default=0,
+                    help='Factor of degrading')
 params = parser.parse_args()
 
 # Use a larger patch to compute the eddy forcing then we will crop
-# TODO do we need even larger borders?
 extra_bounds = copy(params.bounds)
 extra_bounds[0] -= 2 * params.scale / 10
 extra_bounds[2] -= 2 * params.scale / 10
@@ -53,7 +53,12 @@ print(grid_data)
 
 # Calculate eddy-forcing dataset for that particular patch
 scale_m = params.scale * 1e3
-forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean')
+if params.factor != 0:
+    scale_m = params.factor
+    forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean',
+                           scale_mode='factor')
+else:
+    forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean')
 
 # Progress bar
 ProgressBar().register()

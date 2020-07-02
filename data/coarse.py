@@ -28,8 +28,10 @@ def advections(u_v_field, grid_data):
         Advection components, under variable names adv_x and adv_y.
 
     """
-    gradient_x = u_v_field.diff(dim='xu_ocean') / grid_data['dxu']
-    gradient_y = u_v_field.diff(dim='yu_ocean') / grid_data['dyu']
+    # gradient_x = u_v_field.diff(dim='xu_ocean') / grid_data['dxu']
+    # gradient_y = u_v_field.diff(dim='yu_ocean') / grid_data['dyu']
+    gradient_x = u_v_field.differentiate(coord='xu_ocean')
+    gradient_y = u_v_field.differentiate(coord='yu_ocean')
     u, v = u_v_field['usurf'], u_v_field['vsurf']
     adv_x = u * gradient_x['usurf'] + v * gradient_y['usurf']
     adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
@@ -112,8 +114,8 @@ def compute_grid_steps(grid_info: xr.Dataset):
     return step_x, step_y
 
 
-def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean',
-                 area=False):
+def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
+                 area: bool = False, scale_mode: str = 'factor'):
     """
     Compute the sub-grid forcing terms.
 
@@ -124,12 +126,13 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean',
     grid_data : xarray dataset
         High-resolution grid details.
     scale : float
-        Scale, in meters.
+        Scale, in meters, or factor, if scale_mode is set to 'factor'
     method : str, optional
         Coarse-graining method. The default is 'mean'.
-    area: bool
+    area: bool, optional
         True if we multiply by the cell area
-
+    scale_mode: str, optional
+        'factor' if we set the factor, 'scale' if we set the scale
     Returns
     -------
     forcing : xarray dataset
@@ -142,12 +145,15 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean',
     # Grid steps
     grid_steps = compute_grid_steps(grid_data)
     print('Average grid steps: ', grid_steps)
+    if scale_mode == 'factor':
+        scale_x = scale * grid_steps[0]
+        scale_y = scale * grid_steps[1]
     # High res advection terms
     adv = advections(u_v_dataset, grid_data)
-    adv = spatial_filter_dataset(adv, grid_data, (scale, scale))
+    adv = spatial_filter_dataset(adv, grid_data, (scale_x, scale_y))
     # Filtered u,v field
     u_v_filtered = spatial_filter_dataset(u_v_dataset, grid_data,
-                                          (scale, scale))
+                                          (scale_x, scale_y))
     # Advection term from filtered velocity field
     adv_filtered = advections(u_v_filtered, grid_data)
     # Forcing
@@ -160,10 +166,10 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method='mean',
         forcing = forcing * grid_data['area_u'] / 1e8
     print(forcing)
     # Coarsen
-    print('scale: ', scale)
+    print('scale: ', (scale_x, scale_y))
     print('step: ', grid_steps)
-    forcing = forcing.coarsen({'xu_ocean': int(scale / grid_steps[0]),
-                               'yu_ocean': int(scale / grid_steps[1])},
+    forcing = forcing.coarsen({'xu_ocean': int(scale_x / grid_steps[0]),
+                               'yu_ocean': int(scale_y / grid_steps[1])},
                               boundary='trim')
     if method == 'mean':
         forcing = forcing.mean()
