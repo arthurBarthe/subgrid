@@ -146,6 +146,7 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     grid_steps = compute_grid_steps(grid_data)
     print('Average grid steps: ', grid_steps)
     if scale_mode == 'factor':
+        print('Using factor mode')
         scale_x = scale * grid_steps[0]
         scale_y = scale * grid_steps[1]
     # High res advection terms
@@ -167,6 +168,7 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     print(forcing)
     # Coarsen
     print('scale: ', (scale_x, scale_y))
+    print('scale factor: ', scale)
     print('step: ', grid_steps)
     forcing = forcing.coarsen({'xu_ocean': int(scale_x / grid_steps[0]),
                                'yu_ocean': int(scale_y / grid_steps[1])},
