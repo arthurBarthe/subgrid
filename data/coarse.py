@@ -130,6 +130,7 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     method : str, optional
         Coarse-graining method. The default is 'mean'.
     area: bool, optional
+        DEPRECIATED do not use
         True if we multiply by the cell area
     scale_mode: str, optional
         'factor' if we set the factor, 'scale' if we set the scale
@@ -139,9 +140,11 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         Dataset containing the low-resolution velocity field and forcing.
 
     """
-    # TODO check if we can do something smarter here
-    # Replace nan values with zeros
+    # Replace nan values with zeros. Multiply surface velocities by grid
+    # cell area
     u_v_dataset = u_v_dataset.fillna(0.0)
+    u_v_dataset['usurf'] *= grid_data['area_u'] / 1e8
+    u_v_dataset['vsurf'] *= grid_data['area_u'] / 1e8
     # Grid steps
     grid_steps = compute_grid_steps(grid_data)
     print('Average grid steps: ', grid_steps)
