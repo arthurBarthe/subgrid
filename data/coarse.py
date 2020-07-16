@@ -38,7 +38,7 @@ def advections(u_v_field, grid_data):
     return xr.Dataset({'adv_x': adv_x, 'adv_y': adv_y})
 
 
-def spatial_filter(data, sigma):
+def spatial_filter(data, sigma, areas):
     """
     Apply a gaussian filter along all dimensions except first one.
 
@@ -57,8 +57,11 @@ def spatial_filter(data, sigma):
     """
     result = np.zeros_like(data)
     for t in range(data.shape[0]):
-        result[t, ...] = gaussian_filter(data[t, ...], sigma,
-                                         mode='constant')
+        areas = areas / 1e8
+        data_t = data[t, ...] * areas
+        result_t = gaussian_filter(data_t, sigma, mode='constant')
+        result_t /= gaussian_filter(areas, sigma, mode='constant')
+        result[t, ...] = result_t
     return result
 
 
@@ -88,7 +91,8 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
     step_x, step_y = compute_grid_steps(grid_info)
     sigma_x, sigma_y = sigma_x / step_x, sigma_y / step_y
     sigma = (sigma_x, sigma_y)
-    return xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
+    areas = grid_info['area_u']
+    return xr.apply_ufunc(lambda x: spatial_filter(x, sigma, areas), dataset,
                           dask='parallelized',  output_dtypes=[float, ])
 
 
@@ -140,11 +144,8 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         Dataset containing the low-resolution velocity field and forcing.
 
     """
-    # Replace nan values with zeros. Multiply surface velocities by grid
-    # cell area
+    # Replace nan values with zeros. 
     u_v_dataset = u_v_dataset.fillna(0.0)
-    u_v_dataset['usurf'] *= grid_data['area_u'] / 1e8
-    u_v_dataset['vsurf'] *= grid_data['area_u'] / 1e8
     # Grid steps
     grid_steps = compute_grid_steps(grid_data)
     print('Average grid steps: ', grid_steps)
