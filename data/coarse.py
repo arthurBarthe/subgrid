@@ -38,7 +38,7 @@ def advections(u_v_field, grid_data):
     return xr.Dataset({'adv_x': adv_x, 'adv_y': adv_y})
 
 
-def spatial_filter(data, sigma, norm):
+def spatial_filter(data, sigma):
     """
     Apply a gaussian filter along all dimensions except first one.
 
@@ -59,7 +59,6 @@ def spatial_filter(data, sigma, norm):
     for t in range(data.shape[0]):
         data_t = data[t, ...]
         result_t = gaussian_filter(data_t, sigma, mode='constant')
-        result_t /= norm
         result[t, ...] = result_t
     return result
 
@@ -92,7 +91,8 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
     sigma = (sigma_x, sigma_y)
     areas = grid_info['area_u'] / 1e8
     norm = gaussian_filter(areas, sigma, mode='constant')
-    return xr.apply_ufunc(lambda x: spatial_filter(x, sigma, norm), dataset,
+    dataset = dataset / norm
+    return xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
                           dask='parallelized', output_dtypes=[float, ])
 
 
