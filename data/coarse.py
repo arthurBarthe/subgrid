@@ -38,7 +38,7 @@ def advections(u_v_field, grid_data):
     return xr.Dataset({'adv_x': adv_x, 'adv_y': adv_y})
 
 
-def spatial_filter(data, sigma, areas):
+def spatial_filter(data, sigma, norm):
     """
     Apply a gaussian filter along all dimensions except first one.
 
@@ -57,10 +57,8 @@ def spatial_filter(data, sigma, areas):
     """
     result = np.zeros_like(data)
     for t in range(data.shape[0]):
-        areas = areas / 1e8
-        data_t = data[t, ...] * areas
         result_t = gaussian_filter(data_t, sigma, mode='constant')
-        result_t /= gaussian_filter(areas, sigma, mode='constant')
+        result_t /= norm
         result[t, ...] = result_t
     return result
 
@@ -91,9 +89,11 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
     step_x, step_y = compute_grid_steps(grid_info)
     sigma_x, sigma_y = sigma_x / step_x, sigma_y / step_y
     sigma = (sigma_x, sigma_y)
-    areas = grid_info['area_u']
-    return xr.apply_ufunc(lambda x: spatial_filter(x, sigma, areas), dataset,
-                          dask='parallelized',  output_dtypes=[float, ])
+    areas = grid_info['area_u'] / 1e8
+    norm = xr.apply_ufunc(lambda x: gaussian_filter(areas, sigma,
+                                                    mode='constant'))
+    return xr.apply_ufunc(lambda x: spatial_filter(x, sigma, norm), dataset,
+                          dask='parallelized', output_dtypes=[float, ])
 
 
 def compute_grid_steps(grid_info: xr.Dataset):
@@ -155,10 +155,11 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         scale_y = scale * grid_steps[1]
     # High res advection terms
     adv = advections(u_v_dataset, grid_data)
-    adv = spatial_filter_dataset(adv, grid_data, (scale_x, scale_y))
+    adv = spatial_filter_dataset(adv * grid_data['area_u'] / 1e8, grid_data,
+                                 (scale_x, scale_y))
     # Filtered u,v field
-    u_v_filtered = spatial_filter_dataset(u_v_dataset, grid_data,
-                                          (scale_x, scale_y))
+    u_v_filtered = spatial_filter_dataset(u_v_dataset * grid_data['area_u'] / 1e8,
+                                          grid_data, (scale_x, scale_y))
     # Advection term from filtered velocity field
     adv_filtered = advections(u_v_filtered, grid_data)
     # Forcing
