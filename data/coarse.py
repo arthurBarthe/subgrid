@@ -57,6 +57,7 @@ def spatial_filter(data, sigma, norm):
     """
     result = np.zeros_like(data)
     for t in range(data.shape[0]):
+        data_t = data[t, ...]
         result_t = gaussian_filter(data_t, sigma, mode='constant')
         result_t /= norm
         result[t, ...] = result_t
