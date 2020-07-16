@@ -84,13 +84,16 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
         Filtered dataset.
 
     """
+    dataset = dataset * grid_data['area_u'] / 1e8
     # Convert scale to unitless
     sigma_x, sigma_y = sigma
     step_x, step_y = compute_grid_steps(grid_info)
     sigma_x, sigma_y = sigma_x / step_x, sigma_y / step_y
     sigma = (sigma_x, sigma_y)
     areas = grid_info['area_u'] / 1e8
-    norm = gaussian_filter(areas, sigma, mode='constant')
+    norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'), 
+                          areas, dask='parallelized',
+                          output_dtypes=[float, ])
     dataset = dataset / norm
     return xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
                           dask='parallelized', output_dtypes=[float, ])
@@ -155,10 +158,10 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         scale_y = scale * grid_steps[1]
     # High res advection terms
     adv = advections(u_v_dataset, grid_data)
-    adv = spatial_filter_dataset(adv * grid_data['area_u'] / 1e8, grid_data,
+    adv = spatial_filter_dataset(adv, grid_data,
                                  (scale_x, scale_y))
     # Filtered u,v field
-    u_v_filtered = spatial_filter_dataset(u_v_dataset * grid_data['area_u'] / 1e8,
+    u_v_filtered = spatial_filter_dataset(u_v_dataset,
                                           grid_data, (scale_x, scale_y))
     # Advection term from filtered velocity field
     adv_filtered = advections(u_v_filtered, grid_data)
