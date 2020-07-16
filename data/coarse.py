@@ -84,7 +84,7 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
         Filtered dataset.
 
     """
-    dataset = dataset * grid_data['area_u'] / 1e8
+    dataset = dataset * grid_info['area_u'] / 1e8
     # Convert scale to unitless
     sigma_x, sigma_y = sigma
     step_x, step_y = compute_grid_steps(grid_info)
