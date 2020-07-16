@@ -90,8 +90,7 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
     sigma_x, sigma_y = sigma_x / step_x, sigma_y / step_y
     sigma = (sigma_x, sigma_y)
     areas = grid_info['area_u'] / 1e8
-    norm = xr.apply_ufunc(lambda x: gaussian_filter(areas, sigma,
-                                                    mode='constant'))
+    norm = gaussian_filter(areas, sigma, mode='constant'))
     return xr.apply_ufunc(lambda x: spatial_filter(x, sigma, norm), dataset,
                           dask='parallelized', output_dtypes=[float, ])
 
