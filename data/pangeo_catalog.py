@@ -7,6 +7,8 @@ Created on Tue Feb 25 11:04:20 2020
 """
 
 import intake
+import xarray as xr
+import numpy as np
 
 from intake.config import conf
 conf['persist_path'] = '/scratch/ag7531/'
@@ -78,9 +80,17 @@ def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
         return uv_data[list(selected_vars)], grid_data
 
 
-def get_whole_data(url):
-    data, grid = get_patch(url, None, None, 1, 'usurf', 'vsurf')
+def get_whole_data(url, c02_level):
+    data, grid = get_patch(url, None, None, c02_level, 'usurf', 'vsurf')
     return data, grid
+
+
+def get_cm2_5_grid():
+    grid = xr.open_dataset('/home/arthur/ocean.static.nc')
+    dy_u = np.diff(grid['yu_ocean']) / 360 * 2 * np.pi * 6400 * 1e3
+    # dx_u = np.diff(grid['xu_ocean']) * np.cos(grid['yu_ocean'] / 360 * 2 * np.pi)
+    dx_u = None
+    return grid, dx_u, dy_u
 
 
 if __name__ == '__main__':
