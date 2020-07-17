@@ -143,7 +143,6 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         Coarse-graining method. The default is 'mean'.
     area: bool, optional
         DEPRECIATED do not use
-        True if we multiply by the cell area
     scale_mode: str, optional
         'factor' if we set the unitless factor, 'scale' if we set the scale
         in meters.
@@ -172,9 +171,12 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     # High res advection terms + filtering
     adv = advections(u_v_dataset, grid_data)
     filtered_adv = spatial_filter_dataset(adv, grid_data, (scale_x, scale_y))
+    if not debug_mode:
+        # to avoid oom
+        del adv
     # Filter u,v field + advection
-    u_v_filtered = spatial_filter_dataset(u_v_dataset,
-                                          grid_data, (scale_x, scale_y))
+    u_v_filtered = spatial_filter_dataset(u_v_dataset, grid_data, 
+                                          (scale_x, scale_y))
     adv_of_filtered = advections(u_v_filtered, grid_data)
     # Forcing
     forcing = adv_of_filtered - filtered_adv
