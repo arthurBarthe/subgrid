@@ -186,25 +186,27 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     # Coarsening
     print('scale: ', (scale_x, scale_y))
     print('scale factor: ', scale)
+    if not debug_mode:
+        forcing = forcing.coarsen({'xu_ocean': int(scale_x),
+                                   'yu_ocean': int(scale_y)}, boundary='trim')
+        if method == 'mean':
+            forcing = forcing.mean()
+        else:
+            raise ValueError('Passed coarse-graining method not implemented.')
+        return forcing
     forcing_coarse = forcing.coarsen({'xu_ocean': int(scale_x),
                                       'yu_ocean': int(scale_y)},
                                      boundary='trim')
-    if not debug_mode:
-        # to avoid oom
-        del forcing
     if method == 'mean':
         forcing_coarse = forcing_coarse.mean()
     else:
         raise ValueError('Passed coarse-graining method not implemented.')
-    if not debug_mode:
-        return forcing_coarse
-    else:
-        filtered_adv = filtered_adv.rename({'adv_x': 'f_adv_x',
-                                            'adv_y': 'f_adv_y'})
-        adv_of_filtered = adv_of_filtered.rename({'adv_x': 'adv_x_of_f',
-                                                  'adv_y': 'adv_y_of_f'})
-        u_v_dataset = u_v_dataset.merge(filtered_adv)
-        u_v_dataset = u_v_dataset.merge(adv_of_filtered)
-        u_v_dataset = u_v_dataset.merge(adv)
-        u_v_dataset = u_v_dataset.merge(forcing[['S_x', 'S_y']])
-        return forcing_coarse, u_v_dataset
+    filtered_adv = filtered_adv.rename({'adv_x': 'f_adv_x',
+                                        'adv_y': 'f_adv_y'})
+    adv_of_filtered = adv_of_filtered.rename({'adv_x': 'adv_x_of_f',
+                                              'adv_y': 'adv_y_of_f'})
+    u_v_dataset = u_v_dataset.merge(filtered_adv)
+    u_v_dataset = u_v_dataset.merge(adv_of_filtered)
+    u_v_dataset = u_v_dataset.merge(adv)
+    u_v_dataset = u_v_dataset.merge(forcing[['S_x', 'S_y']])
+    return forcing_coarse, u_v_dataset
