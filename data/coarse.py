@@ -33,7 +33,6 @@ def advections(u_v_field, grid_data):
     u, v = u_v_field['usurf'], u_v_field['vsurf']
     adv_x = u * gradient_x['usurf'] + v * gradient_y['usurf']
     adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
-    # Because we do forward differences we remove extreme-left points
     result = xr.Dataset({'adv_x': adv_x, 'adv_y': adv_y})
     return result
 
@@ -175,7 +174,7 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         # to avoid oom
         del adv
     # Filter u,v field + advection
-    u_v_filtered = spatial_filter_dataset(u_v_dataset, grid_data, 
+    u_v_filtered = spatial_filter_dataset(u_v_dataset, grid_data,
                                           (scale_x, scale_y))
     adv_of_filtered = advections(u_v_filtered, grid_data)
     # Forcing
@@ -190,6 +189,9 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     forcing_coarse = forcing.coarsen({'xu_ocean': int(scale_x),
                                       'yu_ocean': int(scale_y)},
                                      boundary='trim')
+    if not debug_mode:
+        # to avoid oom
+        del forcing
     if method == 'mean':
         forcing_coarse = forcing_coarse.mean()
     else:
