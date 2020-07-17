@@ -185,7 +185,6 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     # Coarsening
     print('scale: ', (scale_x, scale_y))
     print('scale factor: ', scale)
-    print('step: ', grid_steps)
     forcing_coarse = forcing.coarsen({'xu_ocean': int(scale_x),
                                       'yu_ocean': int(scale_y)},
                                      boundary='trim')
