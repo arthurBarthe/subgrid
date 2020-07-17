@@ -35,8 +35,8 @@ def advections(u_v_field, grid_data):
     adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
     # Because we do forward differences we remove extreme-left points
     result = xr.Dataset({'adv_x': adv_x, 'adv_y': adv_y})
-    result = result.dropna('xu_ocean', how='all')
-    result = result.dropna('yu_ocean', how='all')
+    result = result.dropna('xu_ocean', how='any')
+    result = result.dropna('yu_ocean', how='any')
     return result
 
 
