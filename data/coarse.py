@@ -84,17 +84,21 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
         Filtered dataset.
 
     """
+    # Normalize for computational stability
+    stds = dataset.std()
+    dataset = dataset / stds
     # Apply weights
     dataset = dataset * grid_info['area_u'] / 1e8
     areas = grid_info['area_u'] / 1e8
     # Compute normalization term by applying filter to cell areas only
-    norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'), 
+    norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'),
                           areas, dask='parallelized', output_dtypes=[float, ])
     filtered_data = xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
                                    dask='parallelized',
                                    output_dtypes=[float, ])
     # Apply normalization
     filtered_data /= norm
+    filtered_data *= stds
     return filtered_data
 
 
@@ -195,7 +199,7 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         filtered_adv = filtered_adv.rename({'adv_x': 'f_adv_x',
                                             'adv_y': 'f_adv_y'})
         adv_of_filtered = adv_of_filtered.rename({'adv_x': 'adv_x_of_f',
-                                               'adv_y': 'adv_y_of_f'})
+                                                  'adv_y': 'adv_y_of_f'})
         forcing = forcing.merge(filtered_adv)
         forcing = forcing.merge(adv_of_filtered)
         u_v_dataset = u_v_dataset.merge(adv)
