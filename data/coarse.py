@@ -35,14 +35,13 @@ def advections(u_v_field, grid_data):
     adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
     # Because we do forward differences we remove extreme-left points
     result = xr.Dataset({'adv_x': adv_x, 'adv_y': adv_y})
-    result = result.dropna('xu_ocean', how='any')
-    result = result.dropna('yu_ocean', how='any')
     return result
 
 
 def spatial_filter(data, sigma):
     """
-    Apply a gaussian filter along all dimensions except first one.
+    Apply a gaussian filter along all dimensions except first one, which
+    corresponds to time.
 
     Parameters
     ----------
@@ -78,7 +77,7 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
         Dataset containing details on the grid, in particular must have
         variables dxu and dyu.
     sigma : float
-        Unitless scale of the filtering
+        Unitless scale of the filter
 
     Returns
     -------
@@ -86,7 +85,7 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
         Filtered dataset.
 
     """
-    # Normalize for computational stability
+    # Normalize for computational stability. We multiply back after filtering.
     stds = dataset.std()
     dataset = dataset / stds
     # Apply weights
@@ -106,7 +105,7 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
 
 def compute_grid_steps(grid_info: xr.Dataset):
     """
-    Return the average grid step along each axis.
+    Return the average grid step along each axis. Not used in factor mode.
 
     Parameters
     ----------
@@ -159,14 +158,13 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     """
     # Replace nan values with zeros. 
     u_v_dataset = u_v_dataset.fillna(0.0)
-    # Grid steps
-    grid_steps = compute_grid_steps(grid_data)
-    print('Average grid steps: ', grid_steps)
     if scale_mode == 'factor':
         print('Using factor mode')
         scale_x = scale
         scale_y = scale
     else:
+        grid_steps = compute_grid_steps(grid_data)
+        print('Average grid steps: ', grid_steps)
         # !!!Should we take integer part here since we do in the 
         # coarse-graining?
         scale_x = scale / grid_steps[0]
@@ -174,7 +172,7 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     # High res advection terms + filtering
     adv = advections(u_v_dataset, grid_data)
     filtered_adv = spatial_filter_dataset(adv, grid_data, (scale_x, scale_y))
-    # Filtered u,v field + advection
+    # Filter u,v field + advection
     u_v_filtered = spatial_filter_dataset(u_v_dataset,
                                           grid_data, (scale_x, scale_y))
     adv_of_filtered = advections(u_v_filtered, grid_data)
@@ -184,17 +182,17 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     # Merge filtered u,v and forcing terms
     forcing = forcing.merge(u_v_filtered)
     print(forcing)
-    # Coarsen
+    # Coarsening
     print('scale: ', (scale_x, scale_y))
     print('scale factor: ', scale)
     print('step: ', grid_steps)
     forcing_coarse = forcing.coarsen({'xu_ocean': int(scale_x),
-                               'yu_ocean': int(scale_y)},
-                              boundary='trim')
+                                      'yu_ocean': int(scale_y)},
+                                     boundary='trim')
     if method == 'mean':
         forcing_coarse = forcing_coarse.mean()
     else:
-        raise('Passed coarse-graining method not implemented.')
+        raise ValueError('Passed coarse-graining method not implemented.')
     if not debug_mode:
         return forcing_coarse
     else:
