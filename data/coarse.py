@@ -192,8 +192,10 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     if not debug_mode:
         forcing
     else:
-        filtered_adv.rename({'adv_x': 'f_adv_x', 'adv_y': 'f_adv_y'})
-        adv_of_filtered.rename({'adv_x': 'adv_x_of_f', 'adv_y': 'adv_y_of_f'})
+        filtered_adv = filtered_adv.rename({'adv_x': 'f_adv_x',
+                                            'adv_y': 'f_adv_y'})
+        adv_of_filtered = adv_of_filtered.rename({'adv_x': 'adv_x_of_f',
+                                               'adv_y': 'adv_y_of_f'})
         forcing = forcing.merge(filtered_adv)
         forcing = forcing.merge(adv_of_filtered)
         u_v_dataset = u_v_dataset.merge(adv)
