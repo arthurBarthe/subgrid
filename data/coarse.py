@@ -205,4 +205,5 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         u_v_dataset = u_v_dataset.merge(filtered_adv)
         u_v_dataset = u_v_dataset.merge(adv_of_filtered)
         u_v_dataset = u_v_dataset.merge(adv)
+        u_v_dataset = u_v_dataset.merge(forcing)
         return forcing_coarse, u_v_dataset
