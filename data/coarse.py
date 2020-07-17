@@ -35,7 +35,11 @@ def advections(u_v_field, grid_data):
     u, v = u_v_field['usurf'], u_v_field['vsurf']
     adv_x = u * gradient_x['usurf'] + v * gradient_y['usurf']
     adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
-    return xr.Dataset({'adv_x': adv_x, 'adv_y': adv_y})
+    # Because we do forward differences we remove extreme-left points
+    result = xr.Dataset({'adv_x': adv_x, 'adv_y': adv_y})
+    result = result.isel(yu_ocean=slice(1, -1))
+    result = result.isel(xu_ocean=slice(1, -1))
+    return result
 
 
 def spatial_filter(data, sigma):
