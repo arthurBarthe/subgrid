@@ -76,7 +76,7 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
         Dataset containing details on the grid, in particular must have
         variables dxu and dyu.
     sigma : float
-        Scale of the filtering, same unit as those of the grid (often, meters)
+        Unitless scale of the filtering
 
     Returns
     -------
@@ -84,19 +84,18 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
         Filtered dataset.
 
     """
+    # Apply weights
     dataset = dataset * grid_info['area_u'] / 1e8
-    # Convert scale to unitless
-    sigma_x, sigma_y = sigma
-    step_x, step_y = compute_grid_steps(grid_info)
-    sigma_x, sigma_y = sigma_x / step_x, sigma_y / step_y
-    sigma = (sigma_x, sigma_y)
     areas = grid_info['area_u'] / 1e8
+    # Compute normalization term by applying filter to cell areas only
     norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'), 
-                          areas, dask='parallelized',
-                          output_dtypes=[float, ])
-    dataset = dataset / norm
-    return xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
-                          dask='parallelized', output_dtypes=[float, ])
+                          areas, dask='parallelized', output_dtypes=[float, ])
+    filtered_data = xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
+                                   dask='parallelized',
+                                   output_dtypes=[float, ])
+    # Apply normalization
+    filtered_data /= norm
+    return filtered_data
 
 
 def compute_grid_steps(grid_info: xr.Dataset):
@@ -122,7 +121,8 @@ def compute_grid_steps(grid_info: xr.Dataset):
 
 
 def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
-                 area: bool = False, scale_mode: str = 'factor'):
+                 area: bool = False, scale_mode: str = 'factor', 
+                 debug_mode=False):
     """
     Compute the sub-grid forcing terms.
 
@@ -131,16 +131,20 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     u_v_dataset : xarray dataset
         High-resolution velocity field.
     grid_data : xarray dataset
-        High-resolution grid details.
+        High-resolution grid info, must contain dxu, dyu, and area_u.
     scale : float
-        Scale, in meters, or factor, if scale_mode is set to 'factor'
+        Scale, in meters, or factor, unitless, if scale_mode is set to 'factor'
     method : str, optional
         Coarse-graining method. The default is 'mean'.
     area: bool, optional
         DEPRECIATED do not use
         True if we multiply by the cell area
     scale_mode: str, optional
-        'factor' if we set the factor, 'scale' if we set the scale
+        'factor' if we set the unitless factor, 'scale' if we set the scale
+        in meters.
+        Recommanded method is factor.
+    debug_mode: bool, optional
+        If True, returns all the intermediary quantities
     Returns
     -------
     forcing : xarray dataset
@@ -154,35 +158,43 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     print('Average grid steps: ', grid_steps)
     if scale_mode == 'factor':
         print('Using factor mode')
-        scale_x = scale * grid_steps[0]
-        scale_y = scale * grid_steps[1]
-    # High res advection terms
+        scale_x = scale
+        scale_y = scale
+    else:
+        # !!!Should we take integer part here since we do in the 
+        # coarse-graining?
+        scale_x = scale / grid_steps[0]
+        scale_y = scale / grid_steps[1]
+    # High res advection terms + filtering
     adv = advections(u_v_dataset, grid_data)
-    adv = spatial_filter_dataset(adv, grid_data,
-                                 (scale_x, scale_y))
-    # Filtered u,v field
+    filtered_adv = spatial_filter_dataset(adv, grid_data, (scale_x, scale_y))
+    # Filtered u,v field + advection
     u_v_filtered = spatial_filter_dataset(u_v_dataset,
                                           grid_data, (scale_x, scale_y))
-    # Advection term from filtered velocity field
-    adv_filtered = advections(u_v_filtered, grid_data)
+    adv_of_filtered = advections(u_v_filtered, grid_data)
     # Forcing
-    forcing = adv_filtered - adv
+    forcing = adv_of_filtered - filtered_adv
     forcing = forcing.rename({'adv_x': 'S_x', 'adv_y': 'S_y'})
     # Merge filtered u,v and forcing terms
     forcing = forcing.merge(u_v_filtered)
-    # Reweight using the area of the cell
-    if area:
-        forcing = forcing * grid_data['area_u'] / 1e8
     print(forcing)
     # Coarsen
     print('scale: ', (scale_x, scale_y))
     print('scale factor: ', scale)
     print('step: ', grid_steps)
-    forcing = forcing.coarsen({'xu_ocean': int(scale_x / grid_steps[0]),
-                               'yu_ocean': int(scale_y / grid_steps[1])},
+    forcing = forcing.coarsen({'xu_ocean': int(scale_x),
+                               'yu_ocean': int(scale_y)},
                               boundary='trim')
     if method == 'mean':
         forcing = forcing.mean()
     else:
         raise('Passed coarse-graining method not implemented.')
-    return forcing
+    if not debug_mode:
+        forcing
+    else:
+        filtered_adv.rename({'adv_x': 'f_adv_x', 'adv_y': 'f_adv_y'})
+        adv_of_filtered.rename({'adv_x': 'adv_x_of_f', 'adv_y': 'adv_y_of_f'})
+        forcing = forcing.merge(filtered_adv)
+        forcing = forcing.merge(adv_of_filtered)
+        u_v_dataset = u_v_dataset.merge(adv)
+        return forcing, u_v_dataset
