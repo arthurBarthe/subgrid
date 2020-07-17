@@ -30,15 +30,12 @@ def advections(u_v_field, grid_data):
     """
     gradient_x = u_v_field.diff(dim='xu_ocean') / grid_data['dxu']
     gradient_y = u_v_field.diff(dim='yu_ocean') / grid_data['dyu']
-    # gradient_x = u_v_field.differentiate(coord='xu_ocean')
-    # gradient_y = u_v_field.differentiate(coord='yu_ocean')
     u, v = u_v_field['usurf'], u_v_field['vsurf']
     adv_x = u * gradient_x['usurf'] + v * gradient_y['usurf']
     adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
     # Because we do forward differences we remove extreme-left points
     result = xr.Dataset({'adv_x': adv_x, 'adv_y': adv_y})
-    result = result.isel(yu_ocean=slice(1, -1))
-    result = result.isel(xu_ocean=slice(1, -1))
+    result = result.dropna()
     return result
 
 
