@@ -172,8 +172,8 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         scale_x = scale / grid_steps[0]
         scale_y = scale / grid_steps[1]
     # filter's scale
-    scale_f_x = scale_x / norm.ppf(gaussian_filter_pp / 2.)
-    scale_f_y = scale_y / norm.ppf(gaussian_filter_pp / 2.)
+    scale_f_x = scale_x / norm.ppf(1 - (1 - gaussian_filter_pp) / 2.)
+    scale_f_y = scale_y / norm.ppf(1 - (1 - gaussian_filter_pp) / 2.)
     # High res advection terms + filtering
     adv = advections(u_v_dataset, grid_data)
     filtered_adv = spatial_filter_dataset(adv, grid_data, (scale_f_x,
