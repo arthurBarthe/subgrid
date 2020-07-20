@@ -8,6 +8,7 @@ Created on Wed Feb 19 12:15:35 2020
 
 import xarray as xr
 from scipy.ndimage import gaussian_filter
+from scipy.stats import norm
 import numpy as np
 
 
@@ -126,7 +127,7 @@ def compute_grid_steps(grid_info: xr.Dataset):
 
 def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
                  area: bool = False, scale_mode: str = 'factor', 
-                 debug_mode=False):
+                 debug_mode=False, gaussian_filter_pp=0.8):
     """
     Compute the sub-grid forcing terms.
 
@@ -148,6 +149,9 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         Recommanded method is factor.
     debug_mode: bool, optional
         If True, returns all the intermediary quantities
+    gaussian_filter_pp: float, optional
+        Percentage of information within the "box" [x-scale, x+scale] when
+        applying the gaussian filter at location x.
     Returns
     -------
     forcing : xarray dataset
@@ -167,15 +171,19 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         # coarse-graining?
         scale_x = scale / grid_steps[0]
         scale_y = scale / grid_steps[1]
+    # filter's scale
+    scale_f_x = scale_x / norm.ppf(gaussian_filter_pp / 2.)
+    scale_f_y = scale_y / norm.ppf(gaussian_filter_pp / 2.)
     # High res advection terms + filtering
     adv = advections(u_v_dataset, grid_data)
-    filtered_adv = spatial_filter_dataset(adv, grid_data, (scale_x, scale_y))
+    filtered_adv = spatial_filter_dataset(adv, grid_data, (scale_f_x,
+                                                           scale_f_y))
     if not debug_mode:
         # to avoid oom
         del adv
     # Filter u,v field + advection
     u_v_filtered = spatial_filter_dataset(u_v_dataset, grid_data,
-                                          (scale_x, scale_y))
+                                          (scale_f_x, scale_f_y))
     adv_of_filtered = advections(u_v_filtered, grid_data)
     # Forcing
     forcing = adv_of_filtered - filtered_adv
