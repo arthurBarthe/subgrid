@@ -214,7 +214,6 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     forcing = forcing.rename({'adv_x': 'S_x', 'adv_y': 'S_y'})
     # Merge filtered u,v and forcing terms
     forcing = forcing.merge(u_v_filtered)
-    print(forcing)
     # Coarsening
     print('scale: ', (scale_x, scale_y))
     print('scale factor: ', scale)

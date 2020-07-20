@@ -52,12 +52,12 @@ print(patch_data)
 print(grid_data)
 
 # Calculate eddy-forcing dataset for that particular patch
-scale_m = params.scale * 1e3
 if params.factor != 0:
     scale_m = params.factor
     forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean',
                            scale_mode='factor')
 else:
+    scale_m = params.scale * 1e3
     forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean')
 
 # Progress bar
@@ -74,7 +74,8 @@ forcing['vsurf'].attrs['type'] = 'input'
 bounds = params.bounds
 forcing = forcing.sel(xu_ocean=slice(bounds[2], bounds[3]),
                       yu_ocean=slice(bounds[0], bounds[1]))
-
+print('Preparing forcing data')
+print(forcing)
 # export data
 # forcing = forcing.compute()
 forcing.to_zarr('forcing', mode='w')
