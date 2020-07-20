@@ -38,7 +38,7 @@ def advections(u_v_field, grid_data):
     return result
 
 
-def spatial_filter(data, sigma):
+def spatial_filter(data, sigma, truncate):
     """
     Apply a gaussian filter along all dimensions except first one, which
     corresponds to time.
@@ -59,12 +59,13 @@ def spatial_filter(data, sigma):
     result = np.zeros_like(data)
     for t in range(data.shape[0]):
         data_t = data[t, ...]
-        result_t = gaussian_filter(data_t, sigma, mode='constant')
+        result_t = gaussian_filter(data_t, sigma, mode='constant',
+                                   truncate=truncate)
         result[t, ...] = result_t
     return result
 
 
-def spatial_filter_dataset(dataset, grid_info, sigma: float):
+def spatial_filter_dataset(dataset, grid_info, sigma: float, truncate):
     """
     Apply spatial filtering to the dataset across the spatial dimensions.
 
@@ -92,10 +93,11 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
     dataset = dataset * grid_info['area_u'] / 1e8
     areas = grid_info['area_u'] / 1e8
     # Compute normalization term by applying filter to cell areas only
-    norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'),
+    norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant',
+                                                    truncate=truncate),
                           areas, dask='parallelized', output_dtypes=[float, ])
-    filtered_data = xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
-                                   dask='parallelized',
+    ufunc = lambda x: spatial_filter(x, sigma, truncate)
+    filtered_data = xr.apply_ufunc(ufunc, dataset, dask='parallelized',
                                    output_dtypes=[float, ])
     # Apply normalization
     filtered_data /= norm
@@ -126,8 +128,8 @@ def compute_grid_steps(grid_info: xr.Dataset):
 
 
 def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
-                 area: bool = False, scale_mode: str = 'factor', 
-                 debug_mode=False, gaussian_filter_pp=0.8):
+                 area: bool = False, scale_mode: str = 'factor',
+                 debug_mode=False, gaussian_filter_pp=0.8, truncate=False):
     """
     Compute the sub-grid forcing terms.
 
@@ -172,18 +174,25 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         scale_x = scale / grid_steps[0]
         scale_y = scale / grid_steps[1]
     # filter's scale
-    scale_f_x = scale_x / norm.ppf(1 - (1 - gaussian_filter_pp) / 2.)
-    scale_f_y = scale_y / norm.ppf(1 - (1 - gaussian_filter_pp) / 2.)
+    if not truncate:
+        scale_f_x = scale_x / norm.ppf(1 - (1 - gaussian_filter_pp) / 2.)
+        scale_f_y = scale_y / norm.ppf(1 - (1 - gaussian_filter_pp) / 2.)
+        truncate = 4.
+    else:
+        scale_f_x = scale_x
+        scale_f_y = scale_y
+        truncate = norm.ppf(1 - (1 - gaussian_filter_pp) / 2.)
     # High res advection terms + filtering
     adv = advections(u_v_dataset, grid_data)
     filtered_adv = spatial_filter_dataset(adv, grid_data, (scale_f_x,
-                                                           scale_f_y))
+                                                           scale_f_y),
+                                          truncate)
     if not debug_mode:
         # to avoid oom
         del adv
     # Filter u,v field + advection
     u_v_filtered = spatial_filter_dataset(u_v_dataset, grid_data,
-                                          (scale_f_x, scale_f_y))
+                                          (scale_f_x, scale_f_y), truncate)
     adv_of_filtered = advections(u_v_filtered, grid_data)
     # Forcing
     forcing = adv_of_filtered - filtered_adv
@@ -202,6 +211,7 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         else:
             raise ValueError('Passed coarse-graining method not implemented.')
         return forcing
+    # if debug mode
     forcing_coarse = forcing.coarsen({'xu_ocean': int(scale_x),
                                       'yu_ocean': int(scale_y)},
                                      boundary='trim')
