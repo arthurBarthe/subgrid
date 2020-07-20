@@ -8,8 +8,32 @@ Created on Wed Feb 19 12:15:35 2020
 
 import xarray as xr
 from scipy.ndimage import gaussian_filter
-from scipy.stats import norm
 import numpy as np
+import matplotlib.pyplot as plt
+
+
+def inv_cdf(y, sigma):
+    def k(x):
+        return 1 / np.sqrt(2 * np.pi * sigma**2) * np.exp(-x**2 / (2 * sigma**2))
+    xs = np.arange(1, int(10 * sigma) + 1)
+    s = np.cumsum(k(xs))
+    s = 2 * s + k(0)
+    s /= s[-1]
+    print(s)
+    plt.plot(xs / sigma, s)
+    return (np.argwhere(s >= y))[0][0]
+
+def cdf(y, sigma):
+    def k(x):
+        return 1 / np.sqrt(2 * np.pi * sigma**2) * np.exp(-x**2 / (2 * sigma**2))
+    xs = np.arange(1, int(10 * sigma) + 1)
+    s = np.cumsum(k(xs))
+    s = 2 * s + k(0)
+    s /= s[-1]
+    print(s)
+    plt.plot(xs / sigma, s)
+    plt.show()
+    return (s[int(y)])
 
 
 def advections(u_v_field, grid_data):
@@ -38,7 +62,7 @@ def advections(u_v_field, grid_data):
     return result
 
 
-def spatial_filter(data, sigma, truncate):
+def spatial_filter(data, sigma):
     """
     Apply a gaussian filter along all dimensions except first one, which
     corresponds to time.
@@ -59,13 +83,12 @@ def spatial_filter(data, sigma, truncate):
     result = np.zeros_like(data)
     for t in range(data.shape[0]):
         data_t = data[t, ...]
-        result_t = gaussian_filter(data_t, sigma, mode='constant',
-                                   truncate=truncate)
+        result_t = gaussian_filter(data_t, sigma, mode='constant')
         result[t, ...] = result_t
     return result
 
 
-def spatial_filter_dataset(dataset, grid_info, sigma: float, truncate):
+def spatial_filter_dataset(dataset, grid_info, sigma: float):
     """
     Apply spatial filtering to the dataset across the spatial dimensions.
 
@@ -93,10 +116,9 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float, truncate):
     dataset = dataset * grid_info['area_u'] / 1e8
     areas = grid_info['area_u'] / 1e8
     # Compute normalization term by applying filter to cell areas only
-    norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant',
-                                                    truncate=truncate),
+    norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'),
                           areas, dask='parallelized', output_dtypes=[float, ])
-    ufunc = lambda x: spatial_filter(x, sigma, truncate)
+    ufunc = lambda x: spatial_filter(x, sigma)
     filtered_data = xr.apply_ufunc(ufunc, dataset, dask='parallelized',
                                    output_dtypes=[float, ])
     # Apply normalization
@@ -129,7 +151,7 @@ def compute_grid_steps(grid_info: xr.Dataset):
 
 def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
                  area: bool = False, scale_mode: str = 'factor',
-                 debug_mode=False, gaussian_filter_pp=0.8, truncate=False):
+                 debug_mode=False, gaussian_filter_pp=0.8):
     """
     Compute the sub-grid forcing terms.
 
@@ -173,26 +195,19 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         # coarse-graining?
         scale_x = scale / grid_steps[0]
         scale_y = scale / grid_steps[1]
-    # filter's scale
-    if not truncate:
-        scale_f_x = scale_x / norm.ppf(1 - (1 - gaussian_filter_pp) / 2.)
-        scale_f_y = scale_y / norm.ppf(1 - (1 - gaussian_filter_pp) / 2.)
-        truncate = 4.
-    else:
-        scale_f_x = scale_x
-        scale_f_y = scale_y
-        truncate = norm.ppf(1 - (1 - gaussian_filter_pp) / 2.)
+    # filter's scale is half the coarse-graining
+    scale_f_x = scale_x / 2 
+    scale_f_y = scale_y / 2 
     # High res advection terms + filtering
     adv = advections(u_v_dataset, grid_data)
     filtered_adv = spatial_filter_dataset(adv, grid_data, (scale_f_x,
-                                                           scale_f_y),
-                                          truncate)
+                                                           scale_f_y))
     if not debug_mode:
         # to avoid oom
         del adv
     # Filter u,v field + advection
     u_v_filtered = spatial_filter_dataset(u_v_dataset, grid_data,
-                                          (scale_f_x, scale_f_y), truncate)
+                                          (scale_f_x, scale_f_y))
     adv_of_filtered = advections(u_v_filtered, grid_data)
     # Forcing
     forcing = adv_of_filtered - filtered_adv
