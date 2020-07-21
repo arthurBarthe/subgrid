@@ -110,8 +110,8 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
 
     """
     # Normalize for computational stability. We multiply back after filtering.
-    # stds = dataset.std()
-    # dataset = dataset / stds
+    stds = dataset.std()
+    dataset = dataset / stds
     # Apply weights
     dataset = dataset * grid_info['area_u'] / 1e8
     areas = grid_info['area_u'] / 1e8
@@ -123,7 +123,7 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
                                    output_dtypes=[float, ])
     # Apply normalization
     filtered_data /= norm
-    # filtered_data *= stds
+    filtered_data *= stds
     return filtered_data
 
 
