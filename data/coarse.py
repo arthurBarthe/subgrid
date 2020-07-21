@@ -84,15 +84,13 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
         Filtered dataset.
 
     """
-    stds = dataset.std()
-    dataset /= stds
     dataset = dataset * grid_info['area_u'] / 1e8
     areas = grid_info['area_u'] / 1e8
     norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'),
                           areas, dask='parallelized', output_dtypes=[float, ])
     filtered = xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
                               dask='parallelized', output_dtypes=[float, ])
-    return filtered / norm * stds
+    return filtered / norm
 
 
 def compute_grid_steps(grid_info: xr.Dataset):
@@ -118,7 +116,8 @@ def compute_grid_steps(grid_info: xr.Dataset):
 
 
 def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
-                 area: bool = False, scale_mode: str = 'factor'):
+                 area: bool = False, scale_mode: str = 'factor',
+                 debug_mode=False):
     """
     Compute the sub-grid forcing terms.
 
@@ -155,13 +154,13 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     scale_filter = (scale_x / 2, scale_y / 2)
     # High res advection terms
     adv = advections(u_v_dataset, grid_data)
-    adv = spatial_filter_dataset(adv, grid_data, scale_filter)
+    filtered_adv = spatial_filter_dataset(adv, grid_data, scale_filter)
     # Filtered u,v field
     u_v_filtered = spatial_filter_dataset(u_v_dataset, grid_data, scale_filter)
     # Advection term from filtered velocity field
     adv_filtered = advections(u_v_filtered, grid_data)
     # Forcing
-    forcing = adv_filtered - adv
+    forcing = adv_filtered - filtered_adv
     forcing = forcing.rename({'adv_x': 'S_x', 'adv_y': 'S_y'})
     # Merge filtered u,v and forcing terms
     forcing = forcing.merge(u_v_filtered)
@@ -180,4 +179,12 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         forcing = forcing.mean()
     else:
         raise('Passed coarse-graining method not implemented.')
-    return forcing
+    if not debug_mode:
+        return forcing
+    else:
+        u_v_dataset = u_v_dataset.merge(adv)
+        filtered_adv.rename({'adv_x': 'f_adv_x', 'adv_y': 'f_adv_y'})
+        adv_filtered.rename({'adv_x': 'adv_f_x', 'adv_y': 'adv_f_y'})
+        u_v_dataset.merge(filtered_adv)
+        u_v_dataset.merge(adv_filtered)
+        return u_v_dataset, forcing
