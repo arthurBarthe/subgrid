@@ -84,13 +84,15 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
         Filtered dataset.
 
     """
+    stds = dataset.std()
+    dataset /= stds
     dataset = dataset * grid_info['area_u'] / 1e8
     areas = grid_info['area_u'] / 1e8
     norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'),
                           areas, dask='parallelized', output_dtypes=[float, ])
     filtered = xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
                               dask='parallelized', output_dtypes=[float, ])
-    return filtered / norm
+    return filtered / norm * stds
 
 
 def compute_grid_steps(grid_info: xr.Dataset):
