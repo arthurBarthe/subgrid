@@ -123,7 +123,7 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
                                    output_dtypes=[float, ])
     # Apply normalization
     # filtered_data /= norm
-    filtered_data *= stds
+    # filtered_data *= stds
     return filtered_data
 
 
