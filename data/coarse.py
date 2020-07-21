@@ -110,19 +110,19 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
 
     """
     # Normalize for computational stability. We multiply back after filtering.
-    stds = dataset.std()
-    dataset = dataset / stds
+    # stds = dataset.std()
+    # dataset = dataset / stds
     # Apply weights
     dataset = dataset * grid_info['area_u'] / 1e8
     areas = grid_info['area_u'] / 1e8
     # Compute normalization term by applying filter to cell areas only
-    norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'),
-                          areas, dask='parallelized', output_dtypes=[float, ])
+    # norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'),
+    #                       areas, dask='parallelized', output_dtypes=[float, ])
     ufunc = lambda x: spatial_filter(x, sigma)
     filtered_data = xr.apply_ufunc(ufunc, dataset, dask='parallelized',
                                    output_dtypes=[float, ])
     # Apply normalization
-    filtered_data /= norm
+    # filtered_data /= norm
     filtered_data *= stds
     return filtered_data
 
