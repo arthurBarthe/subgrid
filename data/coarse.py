@@ -183,9 +183,9 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         return forcing_coarse
     else:
         u_v_dataset = u_v_dataset.merge(adv)
-        filtered_adv.rename({'adv_x': 'f_adv_x', 'adv_y': 'f_adv_y'})
-        adv_filtered.rename({'adv_x': 'adv_f_x', 'adv_y': 'adv_f_y'})
-        u_v_dataset.merge(filtered_adv)
-        u_v_dataset.merge(adv_filtered)
-        u_v_dataset.merge(forcing)
+        filtered_adv = filtered_adv.rename({'adv_x': 'f_adv_x',
+                                            'adv_y': 'f_adv_y'})
+        adv_filtered = adv_filtered.rename({'adv_x': 'adv_f_x',
+                                            'adv_y': 'adv_f_y'})
+        u_v_dataset = u_v_dataset.merge(filtered_adv, adv_filtered, forcing)
         return u_v_dataset, forcing_coarse
