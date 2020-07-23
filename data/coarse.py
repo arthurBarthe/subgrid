@@ -90,7 +90,8 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
                           areas, dask='parallelized', output_dtypes=[float, ])
     filtered = xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
                               dask='parallelized', output_dtypes=[float, ])
-    return filtered / norm
+    filtered[norm > 0] = filtered / norm
+    return filtered
 
 
 def compute_grid_steps(grid_info: xr.Dataset):
@@ -178,7 +179,7 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     if method == 'mean':
         forcing_coarse = forcing_coarse.mean()
     else:
-        raise('Passed coarse-graining method not implemented.')
+        raise ValueError('Passed coarse-graining method not implemented.')
     if not debug_mode:
         return forcing_coarse
     else:
