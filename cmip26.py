@@ -17,12 +17,14 @@ from copy import copy
 
 from data.coarse import eddy_forcing
 from data.pangeo_catalog import get_patch
+import logging
 
 # Script parameters
 CATALOG_URL = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
 /master/intake-catalogs/master.yaml'
-DESCRIPTION = 'Read data from the CMIP2.6 from a particular region and \
-    applies coarse graining.'
+DESCRIPTION = 'Read data from the CM2.6 from a particular region and \
+        apply coarse graining. Stores the resulting dataset into an MLFLOW \
+        experiment within a specific run.'
 
 # Parse the command-line parameters
 parser = argparse.ArgumentParser(description=DESCRIPTION)
@@ -32,12 +34,15 @@ parser.add_argument('bounds', type=float, nargs=4, help='min lat, max_lat,\
 parser.add_argument('--ntimes', type=int, default=100, help='number of days,\
                     starting from first day.')
 parser.add_argument('--CO2', type=int, default=0, choices=[0, 1], help='CO2\
-                    level, O (control) or 1.')
+                    level, O (control) or 1 (1 percent CO2 increase)')
 parser.add_argument('--factor', type=int, default=0,
-                    help='Factor of degrading')
+                    help='Factor of degrading. Should be integer > 1.')
+parser.add_argument('--chunk_size', type=int, default=50,
+                    help='Chunk size along the time dimension')
 params = parser.parse_args()
 
-# Use a larger patch to compute the eddy forcing then we will crop
+# Use a larger patch to compute the eddy forcing then we will crop.
+# This is to mitigate effects due to filtering near the border.
 extra_bounds = copy(params.bounds)
 extra_bounds[0] -= 2 * params.scale / 10
 extra_bounds[2] -= 2 * params.scale / 10
@@ -46,7 +51,7 @@ extra_bounds[3] += 2 * params.scale / 10
 # Retrieve the patch of data specified in the command-line args
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
                                   params.CO2, 'usurf', 'vsurf')
-patch_data = patch_data.chunk({'time': 50})
+patch_data = patch_data.chunk({'time': params.chunk_size})
 
 print(patch_data)
 print(grid_data)
