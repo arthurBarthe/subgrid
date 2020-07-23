@@ -90,8 +90,7 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
                           areas, dask='parallelized', output_dtypes=[float, ])
     filtered = xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
                               dask='parallelized', output_dtypes=[float, ])
-    filtered[norm > 0] = filtered / norm
-    return filtered
+    return filtered / norm.where(norm > 0)
 
 
 def compute_grid_steps(grid_info: xr.Dataset):
