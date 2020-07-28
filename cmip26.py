@@ -37,7 +37,7 @@ parser.add_argument('--CO2', type=int, default=0, choices=[0, 1], help='CO2\
                     level, O (control) or 1 (1 percent CO2 increase)')
 parser.add_argument('--factor', type=int, default=0,
                     help='Factor of degrading. Should be integer > 1.')
-parser.add_argument('--chunk_size', type=int, default=50,
+parser.add_argument('--chunk_size', type=str, default='50',
                     help='Chunk size along the time dimension')
 params = parser.parse_args()
 
@@ -51,7 +51,7 @@ extra_bounds[3] += 2 * params.scale / 10
 # Retrieve the patch of data specified in the command-line args
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
                                   params.CO2, 'usurf', 'vsurf')
-patch_data = patch_data.chunk({'time': params.chunk_size})
+# patch_data = patch_data.chunk({'time': params.chunk_size})
 
 print(patch_data)
 print(grid_data)
@@ -79,6 +79,8 @@ forcing['vsurf'].attrs['type'] = 'input'
 bounds = params.bounds
 forcing = forcing.sel(xu_ocean=slice(bounds[2], bounds[3]),
                       yu_ocean=slice(bounds[0], bounds[1]))
+chunk_sizes = params.chunk_size.split('/')
+forcing.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'), chunk_sizes)))
 print('Preparing forcing data')
 print(forcing)
 # export data
