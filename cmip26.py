@@ -51,7 +51,7 @@ extra_bounds[3] += 2 * params.scale / 10
 # Retrieve the patch of data specified in the command-line args
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
                                   params.CO2, 'usurf', 'vsurf')
-# patch_data = patch_data.chunk({'time': params.chunk_size})
+patch_data = patch_data.chunk({'time': 20, 'xu_ocean': 128, 'yu_ocean': 128})
 
 print(patch_data)
 print(grid_data)
