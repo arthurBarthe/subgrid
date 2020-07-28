@@ -51,7 +51,7 @@ extra_bounds[3] += 2 * params.scale / 10
 # Retrieve the patch of data specified in the command-line args
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
                                   params.CO2, 'usurf', 'vsurf')
-patch_data = patch_data.chunk({'time': 20, 'xu_ocean': 128, 'yu_ocean': 128})
+patch_data = patch_data.chunk({'time': 200})
 
 print(patch_data)
 print(grid_data)
@@ -80,6 +80,8 @@ bounds = params.bounds
 forcing = forcing.sel(xu_ocean=slice(bounds[2], bounds[3]),
                       yu_ocean=slice(bounds[0], bounds[1]))
 chunk_sizes = params.chunk_size.split('/')
+while len(chunk_sizes) < 3:
+    chunk_sizes.append('auto')
 forcing = forcing.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'),
                        map(int, chunk_sizes))))
 print('Preparing forcing data')
