@@ -28,10 +28,11 @@ def advections(u_v_field, grid_data):
         Advection components, under variable names adv_x and adv_y.
 
     """
-    gradient_x = u_v_field.diff(dim='xu_ocean') / grid_data['dxu']
-    gradient_y = u_v_field.diff(dim='yu_ocean') / grid_data['dyu']
-    # gradient_x = u_v_field.differentiate(coord='xu_ocean')
-    # gradient_y = u_v_field.differentiate(coord='yu_ocean')
+    # Replace zeros with nan
+    dxu = grid_data['dxu'].where(grid_data['dxu'] > 0)
+    dyu = grid_data['dyu'].where(grid_data['dyu'] > 0)
+    gradient_x = u_v_field.diff(dim='xu_ocean') / dxu
+    gradient_y = u_v_field.diff(dim='yu_ocean') / dyu
     u, v = u_v_field['usurf'], u_v_field['vsurf']
     adv_x = u * gradient_x['usurf'] + v * gradient_y['usurf']
     adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
@@ -87,10 +88,11 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
     dataset = dataset * grid_info['area_u'] / 1e8
     areas = grid_info['area_u'] / 1e8
     norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'),
-                          areas, dask='parallelized', output_dtypes=[float, ])
+                          areas, dask='allowed', output_dtypes=[float, ])
     filtered = xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
-                              dask='parallelized', output_dtypes=[float, ])
-    filtered = filtered.where(abs(filtered) > 0)
+                              dask='allowed', output_dtypes=[float, ])
+    # When the filtered quantity is zero we replace with nan. Thi
+    filtered = filtered.where(abs(filtered) > 0 and norm > 0)
     return filtered / norm.where(norm > 0)
 
 
