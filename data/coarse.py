@@ -88,9 +88,9 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
     dataset = dataset * grid_info['area_u'] / 1e8
     areas = grid_info['area_u'] / 1e8
     norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'),
-                          areas, dask='allowed', output_dtypes=[float, ])
+                          areas, dask='parallelized', output_dtypes=[float, ])
     filtered = xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
-                              dask='allowed', output_dtypes=[float, ])
+                              dask='parallelized', output_dtypes=[float, ])
     # When the filtered quantity is zero we replace with nan. Thi
     filtered = filtered.where(abs(filtered) > 0 and norm > 0)
     return filtered / norm.where(norm > 0)
