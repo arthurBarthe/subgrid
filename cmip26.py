@@ -80,7 +80,7 @@ bounds = params.bounds
 forcing = forcing.sel(xu_ocean=slice(bounds[2], bounds[3]),
                       yu_ocean=slice(bounds[0], bounds[1]))
 chunk_sizes = params.chunk_size.split('/')
-forcing.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'),
+forcing = forcing.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'),
                        map(int, chunk_sizes))))
 print('Preparing forcing data')
 print(forcing)
