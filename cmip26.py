@@ -18,6 +18,8 @@ from copy import copy
 from data.coarse import eddy_forcing
 from data.pangeo_catalog import get_patch
 import logging
+import tempfile
+from os.path import join
 
 # Script parameters
 CATALOG_URL = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
@@ -25,6 +27,8 @@ CATALOG_URL = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
 DESCRIPTION = 'Read data from the CM2.6 from a particular region and \
         apply coarse graining. Stores the resulting dataset into an MLFLOW \
         experiment within a specific run.'
+
+data_location = tempfile.mkdtemp(dir='/scratch/ag7531/temp/')
 
 # Parse the command-line parameters
 parser = argparse.ArgumentParser(description=DESCRIPTION)
@@ -88,8 +92,9 @@ print('Preparing forcing data')
 print(forcing)
 # export data
 # forcing = forcing.compute()
-forcing.to_zarr('forcing', mode='w')
+forcing.to_zarr(join(data_location, 'forcing'), mode='w')
 
 # Log as an artifact the forcing data
-mlflow.log_artifact('forcing')
+print('Logging processed dataset as an artifact...')
+mlflow.log_artifact(join(data_location, 'forcing'))
 print('Completed...')
