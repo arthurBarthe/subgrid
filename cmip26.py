@@ -88,7 +88,8 @@ print('Preparing forcing data')
 print(forcing)
 # export data
 # forcing = forcing.compute()
-forcing.to_zarr('forcing', mode='w')
+# forcing.to_zarr('forcing', mode='w')
+forcing.to_netcdf('forcing.nc', mode='w')
 
 # Log as an artifact the forcing data
 mlflow.log_artifact('forcing')
