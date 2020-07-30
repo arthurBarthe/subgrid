@@ -155,7 +155,7 @@ while True:
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
     n_test_times = n_test_times if n_test_times else (len(dataset)
-                                                      - test_index + 1)
+                                                      - test_index)
     train_dataset = Subset_(dataset, np.arange(train_index))
 
     features_transform_ = deepcopy(features_transform)
