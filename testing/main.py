@@ -139,7 +139,8 @@ while True:
     mlflow.log_param('n_epochs', n_epochs)
 
     # Read the dataset file
-    xr_dataset = xr.open_zarr(data_file).load()
+    print('loading dataset...')
+    xr_dataset = xr.open_zarr(data_file)
 
     # To PyTorch Dataset
     dataset = RawDataFromXrDataset(xr_dataset)
@@ -158,7 +159,8 @@ while True:
     n_test_times = n_test_times if n_test_times else (len(dataset)
                                                       - test_index)
     train_dataset = Subset_(dataset, np.arange(train_index))
-
+    
+    print('Adding transforms...')
     features_transform_ = deepcopy(features_transform)
     targets_transform_ = deepcopy(targets_transform)
     transform = DatasetTransformer(features_transform_, targets_transform_)
