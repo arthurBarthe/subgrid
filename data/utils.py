@@ -11,7 +11,7 @@ import xarray as xr
 def load_data_from_run(run_id):
     mlflow_client = mlflow.tracking.MlflowClient()
     data_file = mlflow_client.download_artifacts(run_id, 'forcing')
-    xr_dataset = xr.open_zarr(data_file).load()
+    xr_dataset = xr.open_zarr(data_file)
     return xr_dataset
 
 def load_data_from_runs(run_ids):
