@@ -142,7 +142,7 @@ while True:
     mlflow.log_param('n_epochs', n_epochs)
 
     # Read the dataset file
-    xr_dataset = xr.open_zarr(data_file)
+    xr_dataset = xr.open_zarr(data_file).load()
 
     # To PyTorch Dataset
     dataset = RawDataFromXrDataset(xr_dataset)
