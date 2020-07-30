@@ -154,8 +154,8 @@ while True:
         train_index = int(train_split * len(dataset))
         test_index = int(test_split * len(dataset))
     else:
-        train_index = 0
-        test_index = 0
+        train_index = 1
+        test_index = 1
     n_test_times = n_test_times if n_test_times else (len(dataset)
                                                       - test_index)
     train_dataset = Subset_(dataset, np.arange(train_index))
