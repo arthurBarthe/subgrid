@@ -48,7 +48,6 @@ from copy import deepcopy
 from sys import modules
 
 # Parse arguments
-# n_epochs : Number of epochs we fine-tune the model on the new data
 parser = argparse.ArgumentParser()
 parser.add_argument('--n_epochs', type=int, default=0)
 parser.add_argument('--lr_ratio', type=float, default=1)
@@ -56,7 +55,6 @@ parser.add_argument('--train_mode', type=str, default='all')
 parser.add_argument('--n_test_times', type=int, default=None)
 parser.add_argument('--batch_size', type=int, default=None)
 parser.add_argument('--to_experiment', type=str, default='test')
-# parser.add_argument('--models_experiment_name', type=str, default='training')
 
 script_params = parser.parse_args()
 n_epochs = script_params.n_epochs
@@ -64,7 +62,6 @@ lr_ratio = script_params.lr_ratio
 to_experiment = script_params.to_experiment
 n_test_times = script_params.n_test_times
 batch_size = script_params.batch_size
-# models_experiment_name = script_params.models_experiment_name
 
 # Location used to write generated data before it is logged through MLFlow
 data_location = tempfile.mkdtemp(dir='/scratch/ag7531/temp/')
@@ -152,8 +149,12 @@ while True:
     dataset.add_output('S_x')
     dataset.add_output('S_y')
 
-    train_index = int(train_split * len(dataset))
-    test_index = int(test_split * len(dataset))
+    if n_epochs > 0:
+        train_index = int(train_split * len(dataset))
+        test_index = int(test_split * len(dataset))
+    else:
+        train_index = 0
+        test_index = 0
     n_test_times = n_test_times if n_test_times else (len(dataset)
                                                       - test_index)
     train_dataset = Subset_(dataset, np.arange(train_index))
@@ -176,7 +177,7 @@ while True:
 
     # Set inverse transform for metrics
     for metric in metrics.values():
-        metric.inv_transform = (lambda x: 
+        metric.inv_transform = (lambda x:
                                 test_dataset.inverse_transform_target(x))
 
     # On first testdataset load the model. Or if we train to reset the model
@@ -236,17 +237,15 @@ while True:
         print('Epoch {}'.format(i_epoch))
         print('Train loss for this epoch is {}'.format(train_loss))
         print('Test loss for this epoch is {}'.format(test_loss))
-        # mlflow.log_metric('train loss', train_loss, i_epoch)
-        # mlflow.log_metric('test loss', test_loss, i_epoch)
-        # mlflow.log_metrics(metrics_results)
 
     # Final test
     print('Testing on train and validation data...')
-    train_loss, train_metrics_results = trainer.test(train_dataloader)
+    if n_epochs > 0:
+        train_loss, train_metrics_results = trainer.test(train_dataloader)
+        print(f'Final train loss is {train_loss}')
     test_loss, test_metrics_results = trainer.test(test_dataloader)
     mlflow.log_metric('validation loss', n_epochs)
     mlflow.log_metrics(test_metrics_results, i_test - 1)
-    print(f'Final train loss is {train_loss}')
     print(f'Final test loss is {test_loss}')
     for metric_name, metric_value in test_metrics_results.items():
         print(f'{metric_name} : {metric_value}')
