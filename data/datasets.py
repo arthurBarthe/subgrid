@@ -135,13 +135,10 @@ class ComposeTransforms(ArrayTransform):
 
     def fit(self, x):
         for transform in self.transforms:
-            print(x.shape)
-            print(transform)
             transform.fit(x)
             y = []
             for i in range(x.shape[0]):
                 y.append(transform(x[i, ...]))
-                print(y[i].shape)
             x = np.stack(y)
 
     def transform(self, x):
@@ -184,7 +181,6 @@ class CropToNewShape(ArrayTransform):
         return slice(d_left, length - d_right)
 
     def transform(self, x):
-        print(self.width, self.height)
         if self.height is None:
             self.fit(x)
         height, width = x.shape[1:]
@@ -426,6 +422,9 @@ class RawDataFromXrDataset(Dataset):
             e.msg = e.msg + '\n Make sure you have defined the index, inputs,\
                 and outputs.'
             raise e
+        if hasattr(features, 'compute'):
+            features = features.compute()
+            targets = targets.compute()
         return features, targets
 
     def __len__(self):
