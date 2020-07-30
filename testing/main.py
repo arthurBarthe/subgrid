@@ -53,6 +53,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--n_epochs', type=int, default=0)
 parser.add_argument('--lr_ratio', type=float, default=1)
 parser.add_argument('--train_mode', type=str, default='all')
+parser.add_argument('--n_test_times', type=int, default=None)
+parser.add_argument('--batch_size', type=int, default=None)
 parser.add_argument('--to_experiment', type=str, default='test')
 # parser.add_argument('--models_experiment_name', type=str, default='training')
 
@@ -60,6 +62,8 @@ script_params = parser.parse_args()
 n_epochs = script_params.n_epochs
 lr_ratio = script_params.lr_ratio
 to_experiment = script_params.to_experiment
+n_test_times = script_params.n_test_times
+batch_size = script_params.batch_size
 # models_experiment_name = script_params.models_experiment_name
 
 # Location used to write generated data before it is logged through MLFlow
@@ -90,7 +94,7 @@ model_run = select_run(sort_by='start_time', cols=cols,
 time_indices = [0, ]
 train_split = float(model_run['params.train_split'])
 test_split = float(model_run['params.test_split'])
-batch_size = int(model_run['params.batchsize'])
+batch_size = batch_size if batch_size else int(model_run['params.batchsize'])
 source_data_id = model_run['params.source.run_id']
 model_module_name = model_run['params.model_module_name']
 model_cls_name = model_run['params.model_cls_name']
@@ -138,7 +142,7 @@ while True:
     mlflow.log_param('n_epochs', n_epochs)
 
     # Read the dataset file
-    xr_dataset = xr.open_zarr(data_file).load()
+    xr_dataset = xr.open_zarr(data_file)
 
     # To PyTorch Dataset
     dataset = RawDataFromXrDataset(xr_dataset)
@@ -150,6 +154,8 @@ while True:
 
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
+    n_test_times = n_test_times if n_test_times else (len(dataset)
+                                                      - test_index + 1)
     train_dataset = Subset_(dataset, np.arange(train_index))
 
     features_transform_ = deepcopy(features_transform)
@@ -160,7 +166,8 @@ while True:
     dataset = MultipleTimeIndices(dataset)
     dataset.time_indices = [0, ]
     train_dataset = Subset_(dataset, np.arange(train_index))
-    test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
+    test_dataset = Subset_(dataset, np.arange(test_index,
+                                              test_index + n_test_times))
 
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
                                   shuffle=True, drop_last=True)
