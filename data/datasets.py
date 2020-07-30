@@ -135,11 +135,14 @@ class ComposeTransforms(ArrayTransform):
 
     def fit(self, x):
         for transform in self.transforms:
+            print(x.shape)
+            print(transform)
             transform.fit(x)
             y = []
             for i in range(x.shape[0]):
                 y.append(transform(x[i, ...]))
-            x = np.array(y)
+                print(y[i].shape)
+            x = np.stack(y)
 
     def transform(self, x):
         for transform in self.transforms:
@@ -163,23 +166,6 @@ class ComposeTransforms(ArrayTransform):
         self.transforms.append(transform)
 
 
-class Randommult(ArrayTransform):
-    def __init__(self):
-        self.min = 0.1
-        self.max = 2
-        self.i = 0
-
-    def fit(self, x):
-        size = x.shape[0]
-        self._multipliers = np.random.rand(size) * (self.max - self.min)
-        self._multipliers += self.min
-
-    def transform(self, x):
-        x = x * self._multipliers[self.i]
-        self.i += 1
-        return x
-
-
 class CropToNewShape(ArrayTransform):
     """Crops to a new shape. Keeps the array centered, modulo 1 in which case
     the top left is priviledged. If the passed data is smaller than the
@@ -198,6 +184,7 @@ class CropToNewShape(ArrayTransform):
         return slice(d_left, length - d_right)
 
     def transform(self, x):
+        print(self.width, self.height)
         if self.height is None:
             self.fit(x)
         height, width = x.shape[1:]
@@ -222,8 +209,8 @@ class CropToMultipleof(CropToNewShape):
 
     def fit(self, x):
         shape = x.shape
-        self.height = shape[1] // self.multiple_of * self.multiple_of
-        self.width = shape[2] // self.multiple_of * self.multiple_of
+        self.height = shape[2] // self.multiple_of * self.multiple_of
+        self.width = shape[3] // self.multiple_of * self.multiple_of
 
     def __repr__(self):
         return f'CropToMultipleOf({self.multiple_of})'
@@ -845,6 +832,7 @@ if __name__ == '__main__':
                    coords={'time': np.arange(20),
                            'xu_ocean': np.arange(48) * 5, 
                            'yu_ocean': np.arange(32) * 2})
+    ds = ds.chunk({'time': 2})
     dataset = RawDataFromXrDataset(ds)
     dataset.index = 'time'
     dataset.add_input('in0')
