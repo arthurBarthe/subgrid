@@ -69,7 +69,10 @@ class Metric(ABC):
 
 class MSEMetric(Metric):
     def __init__(self):
-        super(MSEMetric, self).__init__(mse_loss)
+        def func(x, y):
+            squared_error = (x-y)**2
+            return squared_error[~torch.isnan(y)].mean()
+        super(MSEMetric, self).__init__(func)
         self._mse_zero_estimator = 0
         self._mse = 0
 
@@ -99,7 +102,9 @@ class MSEMetric(Metric):
 class MaxMetric(Metric):
     def __init__(self):
         def func(x, y):
-            return torch.max(torch.abs(x - y))
+            diff = torch.abs(x - y)
+            diff = diff[~torch.isnan(y)]
+            return torch.max(diff)
         super(MaxMetric, self).__init__(func)
 
     def update(self, y_hat, y):
