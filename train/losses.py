@@ -52,11 +52,13 @@ class HeteroskedasticGaussianLossV2(_Loss):
                                  {}'.format(torch.min(precision)))
         term1 = - torch.log(precision)
         term2 = 1 / 2 * (target - (mean + self.bias))**2 * precision**2
-        return term1 + term2        
+        return term1 + term2  
 
     def forward(self, input: torch.Tensor, target: torch.Tensor):
         # Split the target into mean (first half of channels) and scale
         lkhs = self.pointwise_likelihood(input, target)
+        # Ignore nan values in targets.
+        lkhs = lkhs[~torch.isnan(target)]
         return lkhs.mean()
 
     def predict(self, input: torch.Tensor):
