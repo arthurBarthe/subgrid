@@ -18,9 +18,8 @@ import dask.array as da
 import dask
 
 
-@dask.delayed
 def apply_net(net, test_dataloader, device):
-    """Return a delayed object that applies the net on the provided
+    """Return an object that applies the net on the provided
     DataLoader"""
     output = []
     net.eval()
@@ -51,10 +50,12 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device):
     outputs = []
     for i, loader in enumerate(test_loaders):
         test_dataset = test_datasets[i]
-        output = apply_net(net, loader, device)
+        delayed_apply = dask.delayed(apply_net, nout=len(test_dataset))
+        output = delayed_apply(net, loader, device)
         shape = (loader.batch_size, 4, test_dataset.output_height,
                  test_dataset.output_width)
-        output = [da.from_delayed(d, shape=shape) for d in output]
+        output = [da.from_delayed(d, shape=shape, dtype=np.float64)
+                  for d in output]
         output = da.concatenate(output)
         # Now we make a proper dataset out of the dask array
         new_dims = ('time', 'latitude', 'longitude')
