@@ -27,6 +27,7 @@ from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
                            Subset_, DatasetWithTransform,
                            MultipleTimeIndices, DatasetPartitioner)
 from train.base import Trainer
+from train.losses import HeteroskedasticGaussianLossV2
 
 from testing.utils import (create_test_dataset, create_large_test_dataset,
                            pickle_artifact)
