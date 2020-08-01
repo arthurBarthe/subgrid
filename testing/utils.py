@@ -37,7 +37,7 @@ def _dataset_from_channels(array, channels_names: list, dims, coords):
                    for i in range(len(channels_names))]
     data = {name: d_array for (name, d_array) in zip(channels_names,
                                                      data_arrays)}
-    return xr.Dataset(data, dims=dims, coords=coords)
+    return xr.Dataset(data)
 
 
 def create_large_test_dataset(net, test_datasets, test_loaders, device):
