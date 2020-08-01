@@ -563,6 +563,25 @@ class Subset_(Subset):
             raise AttributeError()
 
 
+class DatasetPartitioner:
+    """Helper class to create partitions of a Dataset with each subset
+    having a memory size small enough to fit in memory"""
+
+    def __init__(self, n_splits: int):
+        self.n_splits = n_splits
+
+    def get_partition(self, dataset):
+        length = len(dataset)
+        split_length = int(length / self.n_splits)
+        indexes = np.arange(0, length, split_length)
+        l_subsets = []
+        for i in indexes:
+            start = i
+            end = max(i + split_length, length)
+            l_subsets.append(Subset_(dataset, np.arange(start, end)))
+        return l_subsets
+
+
 class ConcatDataset_(ConcatDataset):
     def __init__(self, datasets, enforce_same_dims=True):
         super(ConcatDataset_, self).__init__(datasets)

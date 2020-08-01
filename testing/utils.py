@@ -12,7 +12,61 @@ import progressbar
 import mlflow
 import pickle
 
-# TODO correct coordinates
+# Use dask for large datasets that won't fit in RAM
+
+import dask.array as da
+import dask
+
+
+@dask.delayed
+def apply_net(net, test_dataloader, device):
+    """Return a delayed object that applies the net on the provided
+    DataLoader"""
+    output = []
+    net.eval()
+    with torch.no_grad():
+        for i, data in enumerate(test_dataloader):
+            features, targets = data
+            features = features.to(device, dtype=torch.float)
+            prediction = (net(features)).cpu().numpy()
+            output.append(prediction)
+    return output
+
+
+def _dataset_from_channels(array, channels_names: list, dims, coords):
+    data_arrays = [xr.DataArray(array[:, i, ...], dims=dims, coords=coords)
+                   for i in range(len(channels_names))]
+    data = {name: d_array for (name, d_array) in zip(channels_names,
+                                                     data_arrays)}
+    return xr.Dataset(data, dims=dims, coords=coords)
+
+
+def create_large_test_dataset(net, test_datasets, test_loaders, device):
+    """Return an xarray dataset with the predictions carried out on the
+    provided test datasets. The data of this dataset are dask arrays,
+    therefore postponing computations (for instance to the time of writing
+    to disk). This means that if we correctly split an initial large test
+    dataset into smaller test datasets, each of which fits in RAM, there
+    should be no issue."""
+    outputs = []
+    for i, loader in enumerate(test_loaders):
+        test_dataset = test_datasets[i]
+        output = apply_net(net, loader, device)
+        shape = (loader.batch_size, 4, test_dataset.output_height,
+                 test_dataset.output_width)
+        output = [da.from_delayed(d, shape=shape) for d in output]
+        output = da.concatenate(output)
+        # Now we make a proper dataset out of the dask array
+        new_dims = ('time', 'latitude', 'longitude')
+        coords_s = test_dataset.output_coords
+        coords_s['latitude'] = coords_s.pop('yu_ocean')
+        coords_s['longitude'] = coords_s.pop('xu_ocean')
+        var_names = ['S_xpred', 'S_ypred', 'S_xscale', 'S_yscale']
+        output_dataset = _dataset_from_channels(output, var_names, new_dims,
+                                                coords_s)
+        outputs.append(output_dataset)
+    return xr.concat(outputs, 'time')
+
 
 def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
                         test_index, device):

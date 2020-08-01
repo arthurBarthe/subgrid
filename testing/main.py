@@ -18,23 +18,19 @@ TODO:
 import mlflow
 import torch
 import torch.nn
-from torch.utils.data import DataLoader, Subset
+from torch.utils.data import DataLoader
 import numpy as np
 import xarray as xr
 from analysis.utils import select_run, select_experiment
 from train.utils import learning_rates_from_string
 from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
-                            Subset_, ConcatDataset_, DatasetWithTransform,
-                            MultipleTimeIndices, CropToMultipleof)
+                           Subset_, DatasetWithTransform,
+                           MultipleTimeIndices, DatasetPartitioner)
 from train.base import Trainer
-from train.losses import (HeteroskedasticGaussianLoss, 
-                          HeteroskedasticGaussianLossV2)
 
-from testing.utils import create_test_dataset, pickle_artifact
+from testing.utils import (create_test_dataset, create_large_test_dataset,
+                           pickle_artifact)
 from testing.metrics import MSEMetric, MaxMetric
-
-
-from analysis.base import TestDataset
 
 from models.utils import load_model_cls
 
@@ -106,7 +102,7 @@ client = mlflow.tracking.MlflowClient()
 model_file = client.download_artifacts(model_run.run_id,
                                        'models/trained_model.pth')
 transformation = pickle_artifact(model_run.run_id, 'models/transformation')
-features_transform = pickle_artifact(model_run.run_id, 
+features_transform = pickle_artifact(model_run.run_id,
                                      'models/features_transform')
 targets_transform = pickle_artifact(model_run.run_id,
                                     'models/targets_transform')
@@ -159,7 +155,7 @@ while True:
     n_test_times = n_test_times if n_test_times else (len(dataset)
                                                       - test_index)
     train_dataset = Subset_(dataset, np.arange(train_index))
-    
+
     print('Adding transforms...')
     features_transform_ = deepcopy(features_transform)
     targets_transform_ = deepcopy(targets_transform)
@@ -174,6 +170,10 @@ while True:
 
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
                                   shuffle=True, drop_last=True)
+    partitioner = DatasetPartitioner(50)
+    partition = partitioner.get_partition(test_dataset)
+    loaders = (DataLoader(d, batch_size=batch_size, shuffle=False,
+                          drop_last=False) for d in partition)
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                                  shuffle=False, drop_last=True)
 
@@ -245,16 +245,18 @@ while True:
     if n_epochs > 0:
         train_loss, train_metrics_results = trainer.test(train_dataloader)
         print(f'Final train loss is {train_loss}')
-    test_loss, test_metrics_results = trainer.test(test_dataloader)
+    # TODO put this back
+    # test_loss, test_metrics_results = trainer.test(test_dataloader)
     mlflow.log_metric('validation loss', n_epochs)
-    mlflow.log_metrics(test_metrics_results, i_test - 1)
-    print(f'Final test loss is {test_loss}')
-    for metric_name, metric_value in test_metrics_results.items():
-        print(f'{metric_name} : {metric_value}')
+    # mlflow.log_metrics(test_metrics_results, i_test - 1)
+    # print(f'Final test loss is {test_loss}')
+    # for metric_name, metric_value in test_metrics_results.items():
+    #     print(f'{metric_name} : {metric_value}')
 
     # Do the predictions for that dataset using the loaded model
-    out = create_test_dataset(net, xr_dataset, test_dataset,
-                              test_dataloader, test_index, device)
+    # out = create_test_dataset(net, xr_dataset, test_dataset,
+    #                           test_dataloader, test_index, device)
+    out = create_large_test_dataset(net, partition, loaders, device)
     file_path = os.path.join(data_location, f'test_output_{i_test - 1}')
     out.to_zarr(file_path)
     mlflow.log_artifact(file_path)
