@@ -43,6 +43,9 @@ import argparse
 from copy import deepcopy
 from sys import modules
 
+from dask.diagnostics import ProgressBar
+
+
 # Parse arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--n_epochs', type=int, default=0)
@@ -258,6 +261,7 @@ while True:
     #                           test_dataloader, test_index, device)
     out = create_large_test_dataset(net, partition, loaders, device)
     file_path = os.path.join(data_location, f'test_output_{i_test - 1}')
+    ProgressBar().register()
     out.to_zarr(file_path)
     mlflow.log_artifact(file_path)
     print(f'Size of output data is {out.nbytes/1e9} GB')
