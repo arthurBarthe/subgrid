@@ -50,7 +50,7 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device):
     outputs = []
     for i, loader in enumerate(test_loaders):
         test_dataset = test_datasets[i]
-        delayed_apply = dask.delayed(apply_net, nout=len(test_dataset))
+        delayed_apply = dask.delayed(apply_net, nout=len(loader))
         output = delayed_apply(net, loader, device)
         shape = (loader.batch_size, 4, test_dataset.output_height,
                  test_dataset.output_width)
