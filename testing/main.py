@@ -55,6 +55,7 @@ parser.add_argument('--train_mode', type=str, default='all')
 parser.add_argument('--n_test_times', type=int, default=None)
 parser.add_argument('--batch_size', type=int, default=None)
 parser.add_argument('--to_experiment', type=str, default='test')
+parser.add_argument('--n_splits', type=int, default=1)
 
 script_params = parser.parse_args()
 n_epochs = script_params.n_epochs
@@ -62,6 +63,7 @@ lr_ratio = script_params.lr_ratio
 to_experiment = script_params.to_experiment
 n_test_times = script_params.n_test_times
 batch_size = script_params.batch_size
+n_splits = script_params.n_splits
 
 # Location used to write generated data before it is logged through MLFlow
 data_location = tempfile.mkdtemp(dir='/scratch/ag7531/temp/')
@@ -174,7 +176,7 @@ while True:
 
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
                                   shuffle=True, drop_last=True)
-    partitioner = DatasetPartitioner(50)
+    partitioner = DatasetPartitioner(n_splits)
     partition = partitioner.get_partition(test_dataset)
     loaders = (DataLoader(d, batch_size=batch_size, shuffle=False,
                           drop_last=False) for d in partition)
