@@ -199,6 +199,10 @@ class CropToNewShape(ArrayTransform):
 
 
 class CropToMultipleof(CropToNewShape):
+    """Transformation that crops arrays to ensure that they have width and
+    height multiple of the passed parameter. This is used for instance
+    for Unet"""
+
     def __init__(self, multiple_of: int = 2):
         super().__init__()
         self.multiple_of = multiple_of
@@ -310,21 +314,20 @@ class PerInputNormalizer(ArrayTransform):
 class RawDataFromXrDataset(Dataset):
     """This class allows to define a Pytorch Dataset based on an xarray 
     dataset easily, specifying features and targets."""
+
     def __init__(self, dataset: xr.Dataset):
         self.xr_dataset = dataset
-        self._input_arrays = list()
-        self._output_arrays = list()
-        self._index = None
+        self.input_arrays = list()
+        self.output_arrays = list()
+        self.index = None
 
     @property
     def output_coords(self):
-        return dict([(k, v.data) for k,v in 
-                     self.xr_dataset.coords.items()])
+        return dict([(k, v.data) for k, v in self.xr_dataset.coords.items()])
 
     @property
     def input_coords(self):
-        return dict([(k, v.data) for k,v in 
-                     self.xr_dataset.coords.items()])
+        return dict([(k, v.data) for k, v in self.xr_dataset.coords.items()])
 
     @property
     def index(self):
@@ -380,10 +383,8 @@ class RawDataFromXrDataset(Dataset):
 
     @property
     def width(self):
-        candidates = []
-        for dim_name in self.xr_dataset.dims:
-            if dim_name.startswith('x'):
-                candidates.append(dim_name)
+        dims = self.xr_dataset.dims
+        candidates = list(filter(lambda x: x.startswith('x'), dims))
         if len(candidates) == 1:
             x_dim_name = candidates[0]
         elif 'x' in candidates:
@@ -395,10 +396,8 @@ class RawDataFromXrDataset(Dataset):
 
     @property
     def height(self):
-        candidates = []
-        for dim_name in self.xr_dataset.dims:
-            if dim_name.startswith('y'):
-                candidates.append(dim_name)
+        dims = self.xr_dataset.dims
+        candidates = list(filter(lambda x: x.startswith('y'), dims))
         if len(candidates) == 1:
             y_dim_name = candidates[0]
         elif 'y' in candidates:
@@ -418,10 +417,9 @@ class RawDataFromXrDataset(Dataset):
             if not isinstance(index, (int, np.int64, np.int_)):
                 features = features.swapaxes(0, 1)
                 targets = targets.swapaxes(0, 1)
-        except KeyError as e:
-            e.msg = e.msg + '\n Make sure you have defined the index, inputs,\
-                and outputs.'
-            raise e
+        except ValueError as e:
+            raise type(e)('Make sure you have defined the index, inputs,\
+                          and outputs: ' + str(e))
         if hasattr(features, 'compute'):
             features = features.compute()
             targets = targets.compute()
@@ -577,12 +575,19 @@ class DatasetPartitioner:
         l_subsets = []
         for i in indexes:
             start = i
-            end = max(i + split_length, length)
+            end = min(i + split_length, length)
             l_subsets.append(Subset_(dataset, np.arange(start, end)))
         return l_subsets
 
 
 class ConcatDataset_(ConcatDataset):
+    """Extends the Pytorch Concat Dataset in two ways:
+        - enforces (by default) the concatenated dataset to have the same
+        shapes
+        - passes on attributes (from the first dataset, assuming they are
+                                equal accross concatenated datasets)
+        """
+
     def __init__(self, datasets, enforce_same_dims=True):
         super(ConcatDataset_, self).__init__(datasets)
         self.enforce_same_dims = enforce_same_dims
