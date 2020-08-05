@@ -19,6 +19,25 @@ import dask
 
 
 def apply_net(net, test_dataloader, device):
+    """
+    Return the predictions obtained by applying the provided NN on the data
+    provided by the data loader.
+
+    Parameters
+    ----------
+    net : torch.nn.Module
+        Neural Network used to make the predictions.
+    test_dataloader : torch.utils.data.DataLoader
+        Loader providing the mini-batches.
+    device : torch.device
+        Device on which to put the data.
+
+    Returns
+    -------
+    output : list
+        List of predictions, with each element corresponding to a mini-batch.
+
+    """
     """Return an object that applies the net on the provided
     DataLoader"""
     output = []
@@ -33,6 +52,26 @@ def apply_net(net, test_dataloader, device):
 
 
 def _dataset_from_channels(array, channels_names: list, dims, coords):
+    """
+    Return a dataset where variables are obtained by assigning a name to
+    different channels of the passed numpy/dask array.
+
+    Parameters
+    ----------
+    array : TYPE
+        DESCRIPTION.
+    channels_names : list
+        DESCRIPTION.
+    dims : list
+        List of dimensions of the resulting dataset.
+    coords : list
+        List of coordinates of the resulting dataset.
+
+    Returns
+    -------
+    xarray.Dataset
+        Dataset.
+    """
     data_arrays = [xr.DataArray(array[:, i, ...], dims=dims, coords=coords)
                    for i in range(len(channels_names))]
     data = {name: d_array for (name, d_array) in zip(channels_names,
@@ -41,12 +80,31 @@ def _dataset_from_channels(array, channels_names: list, dims, coords):
 
 
 def create_large_test_dataset(net, test_datasets, test_loaders, device):
-    """Return an xarray dataset with the predictions carried out on the
+    """
+    Return an xarray dataset with the predictions carried out on the
     provided test datasets. The data of this dataset are dask arrays,
     therefore postponing computations (for instance to the time of writing
     to disk). This means that if we correctly split an initial large test
     dataset into smaller test datasets, each of which fits in RAM, there
-    should be no issue."""
+    should be no issue.
+
+    Parameters
+    ----------
+    net : torch.nn.Module
+        Neural net used to make predictions
+    test_datasets : list
+        List of PytTorch datasets containing the input data.
+    test_loaders : list
+        List of Pytorch DataLoaders corresponding to the datasets
+    device : torch.device
+        Device on which to put the tensors.
+
+    Returns
+    -------
+    xarray.Dataset
+        Dataset of predictions.
+
+    """
     outputs = []
     for i, loader in enumerate(test_loaders):
         test_dataset = test_datasets[i]

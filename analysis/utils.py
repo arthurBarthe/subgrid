@@ -18,17 +18,32 @@ from enum import Enum
 
 
 
-def correlation_map(truth : np.ndarray, pred : np.ndarray):
-    """Computes the correlation at each point of the domain between the
-    truth and the prediction."""
+def correlation_map(truth: np.ndarray, pred: np.ndarray):
+    """
+    Return the correlation map.
+
+    Parameters
+    ----------
+    truth : np.ndarray
+        True values.
+    pred : np.ndarray
+        Predicted values
+
+    Returns
+    -------
+    correlation_map : np.ndarray
+        Correlation between true and predictions.
+
+    """
+
     correlation_map = np.mean(truth * pred, axis=0)
     correlation_map -= np.mean(truth, axis=0) * np.mean(pred, axis=0)
     correlation_map /= np.std(truth, axis=0) * np.std(pred, axis=0)
     return correlation_map
 
 
-def rmse_map(targets: np.ndarray, predictions: np.ndarray, 
-             normalized : bool = False):
+def rmse_map(targets: np.ndarray, predictions: np.ndarray,
+             normalized: bool = False):
     """Computes the rmse of the prediction time series at each point."""
     error = predictions - targets
     stds = np.std(targets, axis = 0)
@@ -41,8 +56,16 @@ def rmse_map(targets: np.ndarray, predictions: np.ndarray,
 
 
 def select_experiment():
-    """Allow user to select an experiment among those prompted. Return
-    the name of the selected experiment"""
+    """
+    Prompt user to select an experiment among all experiments in store. Return
+    the name of the selected experiment.
+
+    Returns
+    -------
+    str
+        Name of the experiment selected by the user.
+
+    """
     client = MlflowClient()
     list_of_exp = client.list_experiments()
     dict_of_exp = {exp.experiment_id: exp.name for exp in list_of_exp}
@@ -52,8 +75,45 @@ def select_experiment():
     return dict_of_exp[selection]
 
 
+# def merge_predictions_and_data(predictions: xr.Dataset, 
+
+
 def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
-    """Allows to select a run from the tracking store interactively"""
+    """
+    Allows to select a run from the tracking store interactively.
+
+    Parameters
+    ----------
+    sort_by : str, optional
+        Name of the column used for sorting the returned runs.
+        The default is None.
+    cols : list[str], optional
+        List of column names printed to user. The default is None.
+    merge : list of length-3 tuples, optional
+        Describe how to merge information with other experiments.
+        Each element of the list is a tuple 
+        (experiment_name, key_left, key_right), according to which the 
+        initial dataframe of runs will be merged with that corresponding
+        to experiment_name, using key_left (from the first dataframe) and
+        key_right (from the second dataframe).
+    *args : list
+        List of args passed on to mlflow.search_runs.
+    **kargs : dictionary
+        Dictionary of args passed on to mlflow.search_runs. In particular
+        one may want to specify experiment_ids to select runs from a given
+        list of experiments.
+
+    Raises
+    ------
+    Exception
+        DESCRIPTION.
+
+    Returns
+    -------
+    pandas.Series
+        Series describing the interactively selected run.
+
+    """
     mlflow_runs = mlflow.search_runs(*args, **kargs)
     if cols is None:
         cols = list()
@@ -151,16 +211,34 @@ def sample(data : np.ndarray, step_time : int = 1, nb_per_time: int = 5):
     channel_indices = np.zeros_like(x_indices)
     channel_indices[:, 1, :] = 1
     time_indices = time_indices.reshape((-1, 1, 1))
-    time_indices = time_indices.repeat(2, axis = 1)
-    time_indices = time_indices.repeat(nb_per_time, axis = 2)
-    
+    time_indices = time_indices.repeat(2, axis=1)
+    time_indices = time_indices.repeat(nb_per_time, axis=2)
+
     selection = time_indices, channel_indices, x_indices, y_indices
     sample = data[selection]
     return sample
 
 
 def plot_dataset(dataset: xr.Dataset, plot_type = None, *args, **kargs):
-    """Calls the plot function of each variable in the dataset"""
+    """
+    Calls the plot function of each variable in the dataset.
+
+    Parameters
+    ----------
+    dataset : xr.Dataset
+        Dataset whose variables we wish to plot.
+    plot_type : str, optional
+        Plot type used for each variable in the dataset. The default is None.
+    *args : list
+        List of args passed on to the plot function.
+    **kargs : dictionary
+        Dictionary of args passed on to the plot function.
+
+    Returns
+    -------
+    None.
+
+    """
     plt.figure(figsize = (20, 5 * int(len(dataset) / 2)))
     kargs_ = [dict() for i in range(len(dataset))]
     def process_list_of_args(name: str):
@@ -212,8 +290,9 @@ def dataset_to_movie(dataset : xr.Dataset, interval : int = 50,
                                     repeat_delay=1000)
     return ani
 
-def play_movie(predictions: np.ndarray, title : str = '', 
-               interval : int = 500):
+
+def play_movie(predictions: np.ndarray, title: str = '',
+               interval: int = 500):
     fig = plt.figure()
     ims = list()
     mean = np.mean(predictions)

@@ -569,6 +569,22 @@ class DatasetPartitioner:
         self.n_splits = n_splits
 
     def get_partition(self, dataset):
+        """
+        Return a partition of the passed dataset, with a number of splits
+        specified by the objet's corresponding attribute.
+
+        Parameters
+        ----------
+        dataset : torch.utils.data.Dataset
+            Dataset to be partitioned
+
+        Returns
+        -------
+        l_subsets : list[Subset_]
+            List of self.n_splits subsets, the union of which is equal to
+            dataset.
+
+        """
         length = len(dataset)
         split_length = int(length / self.n_splits)
         indexes = np.arange(0, length, split_length)
@@ -843,17 +859,19 @@ if __name__ == '__main__':
     import xarray as xr
     from xarray import DataArray
     from xarray import Dataset as xrDataset
-    from torch.utils.data import DataLoader
     from numpy.random import randint
-    from copy import deepcopy
-    da = DataArray(data=randint(0, 10, (20, 32, 48)), dims=('time', 'yu_ocean', 'xu_ocean'))
-    da2 = DataArray(data=randint(0, 3, (20, 32, 48)), dims=('time', 'yu_ocean', 'xu_ocean'))
-    da3 = DataArray(data=randint(0, 100, (20, 32, 48)) * 10, dims=('time', 'yu_ocean', 'xu_ocean'))
-    da4 = DataArray(data=randint(0, 2, (20, 32, 48)) * 20, dims=('time', 'yu_ocean', 'xu_ocean'))
+    da = DataArray(data=randint(0, 10, (20, 32, 48)),
+                   dims=('time', 'yu_ocean', 'xu_ocean'))
+    da2 = DataArray(data=randint(0, 3, (20, 32, 48)),
+                    dims=('time', 'yu_ocean', 'xu_ocean'))
+    da3 = DataArray(data=randint(0, 100, (20, 32, 48)) * 10,
+                    dims=('time', 'yu_ocean', 'xu_ocean'))
+    da4 = DataArray(data=randint(0, 2, (20, 32, 48)) * 20,
+                    dims=('time', 'yu_ocean', 'xu_ocean'))
     ds = xrDataset({'in0': da, 'in1': da2,
-                    'out0': da3, 'out1': da4}, 
+                    'out0': da3, 'out1': da4},
                    coords={'time': np.arange(20),
-                           'xu_ocean': np.arange(48) * 5, 
+                           'xu_ocean': np.arange(48) * 5,
                            'yu_ocean': np.arange(32) * 2})
     ds = ds.chunk({'time': 2})
     dataset = RawDataFromXrDataset(ds)
@@ -862,9 +880,9 @@ if __name__ == '__main__':
     dataset.add_input('in1')
     dataset.add_output('out0')
     dataset.add_output('out1')
-    
+
     loader = DataLoader(dataset, batch_size=7, drop_last=True)
-    
+
     ds2 = ds.isel(yu_ocean=slice(0, 28), xu_ocean=slice(0, 37))
     dataset2 = RawDataFromXrDataset(ds2)
     dataset2.index = 'time'

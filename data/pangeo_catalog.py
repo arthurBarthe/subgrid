@@ -55,7 +55,7 @@ def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
         source = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_one_percent_ocean_surface
         cache_folder = CACHE_FOLDER + '1percent'
     else:
-        raise ValueError('Unrecognized cO2 level.')
+        raise ValueError('Unrecognized cO2 level. Should be O or 1.')
     s_grid = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_grid
     uv_data = source.get()
     grid_data = s_grid.get()
@@ -99,4 +99,4 @@ if __name__ == '__main__':
 access_key.json"
     CATALOG_URL = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
         /master/intake-catalogs/master.yaml'
-    data = get_whole_data(CATALOG_URL)
+    data = get_whole_data(CATALOG_URL, 0)

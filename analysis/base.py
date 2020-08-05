@@ -59,13 +59,12 @@ def get_test_datasets(run_id: str):
             test_outputs.append(TestDataset(ds))
     return test_outputs
 
-def get_merged_errors(test_datasets, error_func, dim, *args):
-    """Compute the summary errors for a list of test datasets and merge those
-    errors"""
-    errors = list()
-    for i, ds in enumerate(test_datasets):
-        error = getattr(ds, error_func)(dim, *args)
-        error.name = error_func
-        errors.append(error)
-    return xr.merge(errors)
-    
+
+class DatasetsOnGlobalGrid(xr.Dataset):
+    def __init__(self, latitudes, longitudes):
+        self.lat = latitudes
+        self.lon = longitudes
+        self._datasets = []
+
+    def add_dataset(self, dataset: xr.Dataset):
+        

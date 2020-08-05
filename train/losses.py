@@ -178,7 +178,4 @@ class TrimodalGaussianLossV2(MultimodalLoss):
 class PentamodalGaussianLoss(MultimodalLoss):
     def __init__(self, n_target_channels: int):
         super().__init__(5, n_target_channels,
-                         base_loss_cls=HeteroskedasticGaussianLossV2,
-                         base_loss_params=[dict(bias=0), dict(bias=-10),
-                                           dict(bias=-5), dict(bias=5),
-                                           dict(bias=10)])
+                         base_loss_cls=HeteroskedasticGaussianLossV2)

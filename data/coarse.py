@@ -167,9 +167,6 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     forcing = forcing.rename({'adv_x': 'S_x', 'adv_y': 'S_y'})
     # Merge filtered u,v and forcing terms
     forcing = forcing.merge(u_v_filtered)
-    # Reweight using the area of the cell
-    if area:
-        forcing = forcing * grid_data['area_u'] / 1e8
     print(forcing)
     # Coarsen
     print('scale: ', (scale_x, scale_y))

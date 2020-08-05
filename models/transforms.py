@@ -64,13 +64,6 @@ class PrecisionTransform(Transform):
         result[:, self.indices, :, :] = self.transform_precision(
             input_[:, self.indices, :, :]) + softplus(self.min_value)
         return result
-        # mean, precision = torch.split(input_, 2, dim=1)
-        # if (precision != precision).any():
-        #     print(self._min_value)
-        #     raise ValueError('Pre-processed precision contains nan')
-        # precision = self.transform_precision(precision)
-        # precision = precision + softplus(self.min_value)
-        # return torch.cat((mean, precision), dim=1)
 
     @staticmethod
     @abstractmethod

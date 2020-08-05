@@ -91,7 +91,6 @@ forcing = forcing.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'),
 print('Preparing forcing data')
 print(forcing)
 # export data
-# forcing = forcing.compute()
 forcing.to_zarr(join(data_location, 'forcing'), mode='w')
 
 # Log as an artifact the forcing data
