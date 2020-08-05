@@ -6,16 +6,16 @@ Created on Tue Feb  4 14:00:45 2020
 """
 import numpy as np
 import mlflow
-from  mlflow.tracking import MlflowClient
+from mlflow.tracking import MlflowClient
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import pandas as pd
-import sys
 from analysis.analysis import TimeSeriesForPoint
 import xarray as xr
+from scipy.ndimage import gaussian_filter
+
 
 from enum import Enum
-
 
 
 def correlation_map(truth: np.ndarray, pred: np.ndarray):
@@ -46,7 +46,7 @@ def rmse_map(targets: np.ndarray, predictions: np.ndarray,
              normalized: bool = False):
     """Computes the rmse of the prediction time series at each point."""
     error = predictions - targets
-    stds = np.std(targets, axis = 0)
+    stds = np.std(targets, axis=0)
     if normalized:
         stds = np.clip(stds, np.min(stds[stds > 0]), np.inf)
     else:
@@ -75,9 +75,6 @@ def select_experiment():
     return dict_of_exp[selection]
 
 
-# def merge_predictions_and_data(predictions: xr.Dataset, 
-
-
 def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
     """
     Allows to select a run from the tracking store interactively.
@@ -91,8 +88,8 @@ def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
         List of column names printed to user. The default is None.
     merge : list of length-3 tuples, optional
         Describe how to merge information with other experiments.
-        Each element of the list is a tuple 
-        (experiment_name, key_left, key_right), according to which the 
+        Each element of the list is a tuple
+        (experiment_name, key_left, key_right), according to which the
         initial dataframe of runs will be merged with that corresponding
         to experiment_name, using key_left (from the first dataframe) and
         key_right (from the second dataframe).
@@ -149,7 +146,10 @@ class DisplayMode(Enum):
     """Enumeration of the different display modes for viewing methods"""
     correlation = correlation_map
     rmse = rmse_map
-    difference = lambda x, y: np.mean(x-y, axis=0)
+
+    def diff_func(x, y):
+        return np.mean(x - y, axis=0)
+    difference = diff_func
 
 
 def view_predictions(predictions: np.ndarray, targets: np.ndarray,
@@ -173,27 +173,27 @@ def view_predictions(predictions: np.ndarray, targets: np.ndarray,
     fig.canvas.mpl_connect('button_press_event', onClick)
 
 
-def sample(data : np.ndarray, step_time : int = 1, nb_per_time: int = 5):
+def sample(data: np.ndarray, step_time: int = 1, nb_per_time: int = 5):
     """Samples points from the data, where it is assumed that the data
     is 4-D, with the first dimension representing time , the second
-    the channel, and the others representing spatial dimensions. 
-    The sampling is done for every step_time image, and for each image 
+    the channel, and the others representing spatial dimensions.
+    The sampling is done for every step_time image, and for each image
     nb_per_time points are randomly selected.
 
     Parameters
     ----------
-    
+
     :data: ndarray, (n_time, n_channels, n_x, n_y)
         The time series of images to sample from.
-    
+
     :step_time: int,
-        The distance in time between two consecutive images used for the 
+        The distance in time between two consecutive images used for the
         sampling.
 
     :nb_per_time: int,
-        Number of points used (chosen randomly according to a uniform 
+        Number of points used (chosen randomly according to a uniform
         distribution over the spatial domain) for each image.
-    
+
 
     Returns
     -------
@@ -219,7 +219,7 @@ def sample(data : np.ndarray, step_time : int = 1, nb_per_time: int = 5):
     return sample
 
 
-def plot_dataset(dataset: xr.Dataset, plot_type = None, *args, **kargs):
+def plot_dataset(dataset: xr.Dataset, plot_type=None, *args, **kargs):
     """
     Calls the plot function of each variable in the dataset.
 
@@ -239,8 +239,9 @@ def plot_dataset(dataset: xr.Dataset, plot_type = None, *args, **kargs):
     None.
 
     """
-    plt.figure(figsize = (20, 5 * int(len(dataset) / 2)))
+    plt.figure(figsize=(20, 5 * int(len(dataset) / 2)))
     kargs_ = [dict() for i in range(len(dataset))]
+
     def process_list_of_args(name: str):
         if name in kargs:
             if isinstance(kargs[name], list):
@@ -259,18 +260,36 @@ def plot_dataset(dataset: xr.Dataset, plot_type = None, *args, **kargs):
                 # By default we set the cmap to coolwarm
                 kargs.setdefault('cmap', 'coolwarm')
                 dataset[variable].plot(*args, **kargs_[i], **kargs)
-            except AttributeError as e:
+            except AttributeError:
                 kargs.pop('cmap', None)
                 dataset[variable].plot(*args, **kargs)
         else:
             plt_func = getattr(dataset[variable].plot, plot_type)
             plt_func(*args, **kargs)
-import matplotlib.animation as animation
 
-def dataset_to_movie(dataset : xr.Dataset, interval : int = 50,
-                    *args, **kargs):
-    """Generates animations for all the variables in the dataset"""
-    fig = plt.figure(figsize = (20, 5 * int(len(dataset) / 2)))
+
+def dataset_to_movie(dataset: xr.Dataset, interval: int = 50, *args, **kargs):
+    """
+    Generates animations for all the variables in the dataset
+
+    Parameters
+    ----------
+    dataset : xr.Dataset
+        Dataset used to generate movie. Must contain dimension 'time'.
+    interval : int, optional
+        Interval between frames in milliseconds. The default is 50.
+    *args : list
+        Positional args passed on to plot function.
+    **kargs : dictionary
+        keyword args passed on to plot function.
+
+    Returns
+    -------
+    ani : TYPE
+        Movie animation.
+
+    """
+    fig = plt.figure(figsize=(20, 5 * int(len(dataset) / 2)))
     axes = list()
     ims = list()
     for i, variable in enumerate(dataset.keys()):
@@ -279,14 +298,12 @@ def dataset_to_movie(dataset : xr.Dataset, interval : int = 50,
         im = list()
         for axis, variable in zip(axes, dataset.keys()):
             plt.sca(axis)
-            img = dataset[variable].isel(time=i).plot(vmin=-2, vmax=2,
-                                                      cmap='coolwarm')
+            img = dataset[variable].isel(time=i).plot(*args, **kargs)
             cb = img.colorbar
             cb.remove()
             im.append(img)
         ims.append(im)
-    ani = animation.ArtistAnimation(fig, ims, 
-                                    interval=interval, blit=True,
+    ani = animation.ArtistAnimation(fig, ims, interval=interval, blit=True,
                                     repeat_delay=1000)
     return ani
 
@@ -302,9 +319,37 @@ def play_movie(predictions: np.ndarray, title: str = '',
         ims.append([plt.imshow(im, vmin=vmin, vmax=vmax,
                                cmap='YlOrRd',
                                origin='lower', animated=True)])
-    ani = animation.ArtistAnimation(fig, ims, 
-                                    interval=interval, blit=True,
+    ani = animation.ArtistAnimation(fig, ims, interval=interval, blit=True,
                                     repeat_delay=1000)
     plt.title(title)
     plt.show()
     return ani
+
+
+def continent_borders(velocity_component: xr.DataArray, margin: int,
+                   distance: Distance = 'l1'):
+    """
+    Returns a boolean xarray DataArray corresponding to a mask of the
+    continents vs oceans.
+
+    Parameters
+    ----------
+    velocity_component : xr.DataArray
+        DESCRIPTION.
+    margin : int
+        DESCRIPTION.
+    distance : Distance, optional
+        DESCRIPTION. The default is 'l1'.
+
+    Returns
+    -------
+    mask : xr.DataArray
+        Boolean DataArray taking value True for continents.
+
+    """
+    assert margin >= 0, 'The margin parameter should be a non-negative integer'
+    assert velocity_component.ndim <= 2, 'Velocity array should have two dims'
+    mask = xr.apply_ufunc(lambda x: gaussian_filter(x, 1., truncate=margin),
+                          velocity_component)
+    return np.logical_and(np.isnan(mask),  ~np.isnan(velocity_component))
+    
