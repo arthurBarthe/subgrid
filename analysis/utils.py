@@ -326,8 +326,7 @@ def play_movie(predictions: np.ndarray, title: str = '',
     return ani
 
 
-def continent_borders(velocity_component: xr.DataArray, margin: int,
-                   distance: Distance = 'l1'):
+def continent_borders(velocity_component: xr.DataArray, margin: int):
     """
     Returns a boolean xarray DataArray corresponding to a mask of the
     continents vs oceans.
@@ -338,8 +337,6 @@ def continent_borders(velocity_component: xr.DataArray, margin: int,
         DESCRIPTION.
     margin : int
         DESCRIPTION.
-    distance : Distance, optional
-        DESCRIPTION. The default is 'l1'.
 
     Returns
     -------
