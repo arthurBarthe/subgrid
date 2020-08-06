@@ -111,18 +111,18 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device):
     outputs = []
     for i, loader in enumerate(test_loaders):
         test_dataset = test_datasets[i]
-        delayed_apply = dask.delayed(apply_net, nout=len(loader))
-        input_, output = delayed_apply(net, loader, device)
+        delayed_apply = dask.delayed(apply_net)
+        temp = delayed_apply(net, loader, device)
         shape = (loader.batch_size, 4, test_dataset.output_height,
                  test_dataset.output_width)
-        output = [da.from_delayed(d, shape=shape, dtype=np.float64)
-                  for d in output]
+        output = [da.from_delayed(temp[0][i], shape=shape, dtype=np.float64)
+                  for i in range(len(loader))]
         output = da.concatenate(output)
         # Same for input
         shape = (loader.batch_size, 4, test_dataset.input_height,
                  test_dataset.input_width)
-        input_ = [da.from_delayed(d, shape=shape, dtype=np.float64)
-                  for d in input_]
+        input_ = [da.from_delayed(temp[1][i], shape=shape, dtype=np.float64)
+                  for i in range(len(loader))]
         input_ = da.concatenate(input_)
         # Now we make a proper dataset out of the dask array
         new_dims = ('time', 'latitude', 'longitude')
