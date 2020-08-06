@@ -140,7 +140,7 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device):
                                                coords_uv)
         outputs.append(output_dataset)
         inputs.append(input_dataset)
-    return xr.merge((xr.concat(outputs, 'time'), xr.concat(inputs)))
+    return xr.merge((xr.concat(outputs, 'time'), xr.concat(inputs,'time')))
 
 
 def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
