@@ -40,15 +40,17 @@ def apply_net(net, test_dataloader, device):
     """
     """Return an object that applies the net on the provided
     DataLoader"""
+    input_ = []
     output = []
     net.eval()
     with torch.no_grad():
         for i, data in enumerate(test_dataloader):
             features, targets = data
+            input_.append(features)
             features = features.to(device, dtype=torch.float)
             prediction = (net(features)).cpu().numpy()
             output.append(prediction)
-    return output
+    return input_, output
 
 
 def _dataset_from_channels(array, channels_names: list, dims, coords):
@@ -105,16 +107,23 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device):
         Dataset of predictions.
 
     """
+    inputs = []
     outputs = []
     for i, loader in enumerate(test_loaders):
         test_dataset = test_datasets[i]
         delayed_apply = dask.delayed(apply_net, nout=len(loader))
-        output = delayed_apply(net, loader, device)
+        input_, output = delayed_apply(net, loader, device)
         shape = (loader.batch_size, 4, test_dataset.output_height,
                  test_dataset.output_width)
         output = [da.from_delayed(d, shape=shape, dtype=np.float64)
                   for d in output]
         output = da.concatenate(output)
+        # Same for input
+        shape = (loader.batch_size, 4, test_dataset.input_height,
+                 test_dataset.input_width)
+        input_ = [da.from_delayed(d, shape=shape, dtype=np.float64)
+                  for d in input_]
+        input_ = da.concatenate(input_)
         # Now we make a proper dataset out of the dask array
         new_dims = ('time', 'latitude', 'longitude')
         coords_s = test_dataset.output_coords
@@ -123,8 +132,16 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device):
         var_names = ['S_xpred', 'S_ypred', 'S_xscale', 'S_yscale']
         output_dataset = _dataset_from_channels(output, var_names, new_dims,
                                                 coords_s)
+        # same for input
+        coords_uv = test_dataset.input_coords
+        coords_uv['latitude'] = coords_uv.pop('yu_ocean')
+        coords_uv['longitude'] = coords_uv.pop('xu_ocean')
+        var_names = ['usurf', 'vsurf']
+        input_dataset = _dataset_from_channels(input_, var_names, new_dims,
+                                               coords_uv)
         outputs.append(output_dataset)
-    return xr.concat(outputs, 'time')
+        inputs.append(input_dataset)
+    return xr.merge((xr.concat(outputs, 'time'), xr.concat(inputs)))
 
 
 def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
