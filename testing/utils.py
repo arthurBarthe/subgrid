@@ -119,7 +119,7 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device):
                   for i in range(len(loader))]
         output = da.concatenate(output)
         # Same for input
-        shape = (loader.batch_size, 4, test_dataset.height, test_dataset.width)
+        shape = (loader.batch_size, 2, test_dataset.height, test_dataset.width)
         input_ = [da.from_delayed(temp[1][i], shape=shape, dtype=np.float64)
                   for i in range(len(loader))]
         input_ = da.concatenate(input_)
