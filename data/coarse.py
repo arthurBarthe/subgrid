@@ -145,11 +145,8 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         Dataset containing the low-resolution velocity field and forcing.
 
     """
-    # Replace nan values with zeros. 
-    u_v_dataset = u_v_dataset.fillna(0.0)
-    # Grid steps
-    grid_steps = compute_grid_steps(grid_data)
-    print('Average grid steps: ', grid_steps)
+    # Replace nan values with zeros.
+    # u_v_dataset = u_v_dataset.fillna(0.0)
     if scale_mode == 'factor':
         print('Using factor mode')
         scale_x = scale
@@ -171,7 +168,6 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     # Coarsen
     print('scale: ', (scale_x, scale_y))
     print('scale factor: ', scale)
-    print('step: ', grid_steps)
     forcing_coarse = forcing.coarsen({'xu_ocean': int(scale_x),
                                       'yu_ocean': int(scale_y)},
                                      boundary='trim')
