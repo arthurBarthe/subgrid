@@ -174,13 +174,13 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     forcing_coarse = forcing.coarsen({'xu_ocean': int(scale_x),
                                       'yu_ocean': int(scale_y)},
                                      boundary='trim')
-    if nan_or_zero == 'zero':
-        # Replace zeros with nans for consistency
-        forcing_coarse = forcing_coarse.where(forcing_coarse['usurf'] != 0)
     if method == 'mean':
         forcing_coarse = forcing_coarse.mean()
     else:
         raise ValueError('Passed coarse-graining method not implemented.')
+    if nan_or_zero == 'zero':
+        # Replace zeros with nans for consistency
+        forcing_coarse = forcing_coarse.where(forcing_coarse['usurf'] != 0)
     if not debug_mode:
         return forcing_coarse
     else:
