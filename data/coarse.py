@@ -29,8 +29,8 @@ def advections(u_v_field, grid_data):
 
     """
     # Replace zeros with nan
-    dxu = grid_data['dxu'].where(grid_data['dxu'] > 0)
-    dyu = grid_data['dyu'].where(grid_data['dyu'] > 0)
+    dxu = grid_data['dxu']
+    dyu = grid_data['dyu']
     gradient_x = u_v_field.diff(dim='xu_ocean') / dxu
     gradient_y = u_v_field.diff(dim='yu_ocean') / dyu
     u, v = u_v_field['usurf'], u_v_field['vsurf']
@@ -85,15 +85,13 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
         Filtered dataset.
 
     """
-    dataset = dataset * grid_info['area_u'] / 1e8
-    areas = grid_info['area_u'] / 1e8
+    area_u = grid_info['dxu'] * grid_info['dyu'] / 1e8
+    dataset = dataset * area_u
     norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'),
-                          areas, dask='parallelized', output_dtypes=[float, ])
+                          area_u, dask='parallelized', output_dtypes=[float, ])
     filtered = xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
                               dask='parallelized', output_dtypes=[float, ])
-    # When the filtered quantity is zero we replace with nan. Thi
-    filtered = filtered.where(abs(filtered) > 0 and norm > 0)
-    return filtered / norm.where(norm > 0)
+    return filtered / norm
 
 
 def compute_grid_steps(grid_info: xr.Dataset):
@@ -119,7 +117,7 @@ def compute_grid_steps(grid_info: xr.Dataset):
 
 
 def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
-                 area: bool = False, scale_mode: str = 'factor',
+                 nan_or_zero: str = 'nan', scale_mode: str = 'factor',
                  debug_mode=False):
     """
     Compute the sub-grid forcing terms.
@@ -134,9 +132,13 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         Scale, in meters, or factor, if scale_mode is set to 'factor'
     method : str, optional
         Coarse-graining method. The default is 'mean'.
-    area: bool, optional
-        DEPRECIATED do not use
-        True if we multiply by the cell area
+    nan_or_zero: str, optional
+        String set to either 'nan' or 'zero'. Determines whether we keep the
+        nan values in the initial surface velocities array or whether we
+        replace them by zeros before applying the procedure.
+        In the second case, remaining zeros after applying the procedure will
+        be replaced by nans for consistency.
+        The default is 'nan'.
     scale_mode: str, optional
         'factor' if we set the factor, 'scale' if we set the scale
     Returns
@@ -146,7 +148,8 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
 
     """
     # Replace nan values with zeros.
-    # u_v_dataset = u_v_dataset.fillna(0.0)
+    if nan_or_zero == 'zero':
+        u_v_dataset = u_v_dataset.fillna(0.0)
     if scale_mode == 'factor':
         print('Using factor mode')
         scale_x = scale
@@ -171,6 +174,9 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     forcing_coarse = forcing.coarsen({'xu_ocean': int(scale_x),
                                       'yu_ocean': int(scale_y)},
                                      boundary='trim')
+    if nan_or_zero == 'zero':
+        # Replace zeros with nans for consistency
+        forcing_coarse = forcing_coarse.where(forcing_coarse['usurf'] != 0)
     if method == 'mean':
         forcing_coarse = forcing_coarse.mean()
     else:
