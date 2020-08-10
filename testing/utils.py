@@ -56,7 +56,7 @@ def apply_net(net, test_dataloader, device, save_input=False):
     if save_input:
         return output, input_
     else:
-        return output
+        return output,
 
 
 def _dataset_from_channels(array, channels_names: list, dims, coords):
@@ -143,6 +143,7 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device,
         var_names = ['S_xpred', 'S_ypred', 'S_xscale', 'S_yscale']
         output_dataset = _dataset_from_channels(output, var_names, new_dims,
                                                 coords_s)
+        outputs.append(output_dataset)
         # same for input
         if save_input:
             coords_uv = test_dataset.input_coords
@@ -151,7 +152,6 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device,
             var_names = ['usurf', 'vsurf']
             input_dataset = _dataset_from_channels(input_, var_names, new_dims,
                                                    coords_uv)
-            outputs.append(output_dataset)
             inputs.append(input_dataset)
     if save_input:
         return xr.merge((xr.concat(outputs, 'time'),
