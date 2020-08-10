@@ -18,7 +18,7 @@ import dask.array as da
 import dask
 
 
-def apply_net(net, test_dataloader, device):
+def apply_net(net, test_dataloader, device, save_input=False):
     """
     Return the predictions obtained by applying the provided NN on the data
     provided by the data loader.
@@ -31,6 +31,8 @@ def apply_net(net, test_dataloader, device):
         Loader providing the mini-batches.
     device : torch.device
         Device on which to put the data.
+    save_input : bool, optional
+        True if we want to get the input as well. The Default is False.
 
     Returns
     -------
@@ -46,11 +48,15 @@ def apply_net(net, test_dataloader, device):
     with torch.no_grad():
         for i, data in enumerate(test_dataloader):
             features, targets = data
-            input_.append(features)
+            if save_input:
+                input_.append(features)
             features = features.to(device, dtype=torch.float)
             prediction = (net(features)).cpu().numpy()
             output.append(prediction)
-    return input_, output
+    if save_input:
+        return input_, output
+    else:
+        return output
 
 
 def _dataset_from_channels(array, channels_names: list, dims, coords):
@@ -81,7 +87,8 @@ def _dataset_from_channels(array, channels_names: list, dims, coords):
     return xr.Dataset(data)
 
 
-def create_large_test_dataset(net, test_datasets, test_loaders, device):
+def create_large_test_dataset(net, test_datasets, test_loaders, device,
+                              save_input: bool = False):
     """
     Return an xarray dataset with the predictions carried out on the
     provided test datasets. The data of this dataset are dask arrays,
@@ -100,6 +107,8 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device):
         List of Pytorch DataLoaders corresponding to the datasets
     device : torch.device
         Device on which to put the tensors.
+    save_input: bool, optional
+        True if we want to save the input as well. The default is False.
 
     Returns
     -------
@@ -119,10 +128,13 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device):
                   for i in range(len(loader))]
         output = da.concatenate(output)
         # Same for input
-        shape = (loader.batch_size, 2, test_dataset.height, test_dataset.width)
-        input_ = [da.from_delayed(temp[0][i], shape=shape, dtype=np.float64)
-                  for i in range(len(loader))]
-        input_ = da.concatenate(input_)
+        if save_input:
+            shape = (loader.batch_size, 2, test_dataset.height,
+                     test_dataset.width)
+            input_ = [da.from_delayed(temp[0][i], shape=shape,
+                                      dtype=np.float64)
+                      for i in range(len(loader))]
+            input_ = da.concatenate(input_)
         # Now we make a proper dataset out of the dask array
         new_dims = ('time', 'latitude', 'longitude')
         coords_s = test_dataset.output_coords
@@ -132,15 +144,20 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device):
         output_dataset = _dataset_from_channels(output, var_names, new_dims,
                                                 coords_s)
         # same for input
-        coords_uv = test_dataset.input_coords
-        coords_uv['latitude'] = coords_uv.pop('yu_ocean')
-        coords_uv['longitude'] = coords_uv.pop('xu_ocean')
-        var_names = ['usurf', 'vsurf']
-        input_dataset = _dataset_from_channels(input_, var_names, new_dims,
-                                               coords_uv)
-        outputs.append(output_dataset)
-        inputs.append(input_dataset)
-    return xr.merge((xr.concat(outputs, 'time'), xr.concat(inputs,'time')))
+        if save_input:
+            coords_uv = test_dataset.input_coords
+            coords_uv['latitude'] = coords_uv.pop('yu_ocean')
+            coords_uv['longitude'] = coords_uv.pop('xu_ocean')
+            var_names = ['usurf', 'vsurf']
+            input_dataset = _dataset_from_channels(input_, var_names, new_dims,
+                                                   coords_uv)
+            outputs.append(output_dataset)
+            inputs.append(input_dataset)
+    if save_input:
+        return xr.merge((xr.concat(outputs, 'time'),
+                         xr.concat(inputs, 'time')))
+    else:
+        return xr.concat(outputs, dim='time')
 
 
 def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
@@ -195,7 +212,6 @@ def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
                                  'S_ypred': s_y_pred, 'S_xscale': s_x_pred_scale,
                                  'S_yscale': s_y_pred_scale})
     return output_dataset
-
 
 
 def pickle_artifact(run_id: str, path: str):
