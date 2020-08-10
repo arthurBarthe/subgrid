@@ -54,7 +54,7 @@ def apply_net(net, test_dataloader, device, save_input=False):
             prediction = (net(features)).cpu().numpy()
             output.append(prediction)
     if save_input:
-        return input_, output
+        return output, input_
     else:
         return output
 
@@ -124,14 +124,14 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device,
         temp = delayed_apply(net, loader, device)
         shape = (loader.batch_size, 4, test_dataset.output_height,
                  test_dataset.output_width)
-        output = [da.from_delayed(temp[1][i], shape=shape, dtype=np.float64)
+        output = [da.from_delayed(temp[0][i], shape=shape, dtype=np.float64)
                   for i in range(len(loader))]
         output = da.concatenate(output)
         # Same for input
         if save_input:
             shape = (loader.batch_size, 2, test_dataset.height,
                      test_dataset.width)
-            input_ = [da.from_delayed(temp[0][i], shape=shape,
+            input_ = [da.from_delayed(temp[1][i], shape=shape,
                                       dtype=np.float64)
                       for i in range(len(loader))]
             input_ = da.concatenate(input_)
