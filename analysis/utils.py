@@ -13,9 +13,14 @@ import pandas as pd
 from analysis.analysis import TimeSeriesForPoint
 import xarray as xr
 from scipy.ndimage import gaussian_filter
+from data.pangeo_catalog import get_whole_data
+from cartopy.crs import Projection, PlateCarree
 
 
 from enum import Enum
+
+CATALOG_URL = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
+/master/intake-catalogs/master.yaml'
 
 
 def correlation_map(truth: np.ndarray, pred: np.ndarray):
@@ -326,27 +331,148 @@ def play_movie(predictions: np.ndarray, title: str = '',
     return ani
 
 
-def continent_borders(velocity_component: xr.DataArray, margin: int):
-    """
-    Returns a boolean xarray DataArray corresponding to a mask of the
-    continents vs oceans.
+class GlobalPlotter:
+    """General class to makes plots for global data. Handles masking of 
+    continental data + showing a band near coastlines."""
 
-    Parameters
-    ----------
-    velocity_component : xr.DataArray
-        DESCRIPTION.
-    margin : int
-        DESCRIPTION.
+    def __init__(self, margin: int = 10):
+        self.mask = self._get_global_u_mask()
+        self.margin = margin
 
-    Returns
-    -------
-    mask : xr.DataArray
-        Boolean DataArray taking value True for continents.
+    @property
+    def mask(self):
+        return self._mask
 
-    """
-    assert margin >= 0, 'The margin parameter should be a non-negative integer'
-    assert velocity_component.ndim <= 2, 'Velocity array should have two dims'
-    mask = xr.apply_ufunc(lambda x: gaussian_filter(x, 1., truncate=margin),
-                          velocity_component)
-    return np.logical_and(np.isnan(mask),  ~np.isnan(velocity_component))
+    @mask.setter
+    def mask(self, value):
+        self._mask = value
+
+    @property
+    def borders(self):
+        return self._borders
+
+    @borders.setter
+    def borders(self, value):
+        self._borders = value
+
+
+    @property
+    def margin(self):
+        return self._margin
+
+    @margin.setter
+    def margin(self, margin):
+        self._margin = margin
+        self.borders = self._get_continent_borders(self.mask, self.margin)
+
+    def plot_global_velocity(self, u: xr.DataArray,
+                             projection_cls = PlateCarree,
+                             lon: float = -100.0, lat: float = None,
+                             ax = None,
+                             animated = False,
+                             **plot_func_kw):
+        """
+        Plots the passed velocity component on a map, using the specified
+        projection. Uses the instance's mask to set as nan some values.
+
+        Parameters
+        ----------
+        u : xr.DataArray
+            Velocity array.
+        projection : Projection
+            Projection used for the 2D plot.
+        lon : float, optional
+            Central longitude. The default is 0.
+        lat : float, optional
+            Central latitude. The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
+        mask = self.mask.interp({k: u.coords[k] for k in ('longitude', 
+                                                          'latitude')})
+        u = u * mask
+        projection = projection_cls(lon)
+        if ax is None:
+            ax = plt.axes(projection=projection)
+        mesh_x, mesh_y = np.meshgrid(u['longitude'], u['latitude'])
+        ax.pcolormesh(mesh_x, mesh_y, u.values, transform = ccrs.PlateCarree(),
+                      animated=animated, **plot_func_kw)
+        ax.set_global()
+        ax.coastlines()
+        if self.margin > 0:
+            borders = self.borders.interp({k: u.coords[k] for k in ('longitude', 
+                                                          'latitude')})
+            ax.pcolormesh(mesh_x, mesh_y, borders, animated=animated,
+                          transform=ccrs.PlateCarree(), alpha=0.1)
+        
+
+    @staticmethod
+    def _get_global_u_mask(factor: int = 4, base_mask: xr.DataArray = None):
+        """
+        Return the global mask of the low-resolution surface velocities for
+        plots. While the coarse-grained velocities might be defined on
+        continental points due to the coarse-graining procedures, these are
+        not shown as we do not use them -- the mask for the forcing is even
+        more restrictive, as it removes any point within some margin of the
+        velocities mask.
+
+        Parameters
+        ----------
+        factor : int, optional
+            Coarse-graining factor. The default is 4.
+
+        base_mask: xr.DataArray, optional
+            # TODO
+            Not implemented for now.
+
+        Returns
+        -------
+        None.
+
+        """
+        if base_mask is not None:
+            mask = base_mask
+        else:
+            _, grid_info = get_whole_data(CATALOG_URL, 0)
+            mask = grid_info['wet']
+            mask = mask.coarsen(dict(xt_ocean=factor, yt_ocean=factor))
+        mask_ = mask.max()
+        mask_ = mask_.where(mask_ > 0.1)
+        mask_ = mask_.rename(dict(xt_ocean='longitude', yt_ocean='latitude'))
+        return mask_.compute()
+
+    @staticmethod
+    def _get_continent_borders(base_mask: xr.DataArray, margin: int):
+        """
+        Returns a boolean xarray DataArray corresponding to a mask of the
+        continents' coasts, which we do not process.
+        Hence margin should be set according to the model.
     
+        Parameters
+        ----------
+        mask : xr.DataArray
+            Mask taking value 1 where coarse velocities are defined and used
+            as input and nan elsewhere.
+        margin : int
+            Margin imposed by the model used, i.e. number of points lost on
+            one side of a square.
+    
+        Returns
+        -------
+        mask : xr.DataArray
+            Boolean DataArray taking value True for continents.
+    
+        """
+        assert margin >= 0, 'The margin parameter should be a non-negative' \
+                            ' integer'
+        assert base_mask.ndim <= 2, 'Velocity array should have two'\
+                                    ' dims'
+        # Small trick using the guassian filter function
+        mask = xr.apply_ufunc(lambda x: gaussian_filter(x, 1., truncate=margin),
+                              base_mask)
+        mask =  np.logical_and(np.isnan(mask),  ~np.isnan(base_mask))
+        mask = mask.where(mask)
+        return mask.compute()
