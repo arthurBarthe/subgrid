@@ -80,7 +80,7 @@ def select_experiment():
     return dict_of_exp[selection]
 
 
-def select_run(sort_by=None, cols=None, merge=None, *args, **kargs):
+def select_run(sort_by=None, cols=None, merge=None, *args, **kargs) -> object:
     """
     Allows to select a run from the tracking store interactively.
 
@@ -332,7 +332,7 @@ def play_movie(predictions: np.ndarray, title: str = '',
 
 
 class GlobalPlotter:
-    """General class to makes plots for global data. Handles masking of 
+    """General class to make plots for global data. Handles masking of
     continental data + showing a band near coastlines."""
 
     def __init__(self, margin: int = 10):
@@ -355,7 +355,6 @@ class GlobalPlotter:
     def borders(self, value):
         self._borders = value
 
-
     @property
     def margin(self):
         return self._margin
@@ -366,11 +365,9 @@ class GlobalPlotter:
         self.borders = self._get_continent_borders(self.mask, self.margin)
 
     def plot_global_velocity(self, u: xr.DataArray,
-                             projection_cls = PlateCarree,
+                             projection_cls=PlateCarree,
                              lon: float = -100.0, lat: float = None,
-                             ax = None,
-                             animated = False,
-                             **plot_func_kw):
+                             ax=None, animated=False, **plot_func_kw):
         """
         Plots the passed velocity component on a map, using the specified
         projection. Uses the instance's mask to set as nan some values.
@@ -382,7 +379,7 @@ class GlobalPlotter:
         projection : Projection
             Projection used for the 2D plot.
         lon : float, optional
-            Central longitude. The default is 0.
+            Central longitude. The default is -100.0.
         lat : float, optional
             Central latitude. The default is None.
 
@@ -391,23 +388,22 @@ class GlobalPlotter:
         None.
 
         """
-        mask = self.mask.interp({k: u.coords[k] for k in ('longitude', 
+        mask = self.mask.interp({k: u.coords[k] for k in ('longitude',
                                                           'latitude')})
         u = u * mask
         projection = projection_cls(lon)
         if ax is None:
             ax = plt.axes(projection=projection)
         mesh_x, mesh_y = np.meshgrid(u['longitude'], u['latitude'])
-        ax.pcolormesh(mesh_x, mesh_y, u.values, transform = ccrs.PlateCarree(),
+        ax.pcolormesh(mesh_x, mesh_y, u.values, transform=PlateCarree(),
                       animated=animated, **plot_func_kw)
         ax.set_global()
         ax.coastlines()
         if self.margin > 0:
-            borders = self.borders.interp({k: u.coords[k] for k in ('longitude', 
-                                                          'latitude')})
+            borders = self.borders.interp({k: u.coords[k]
+                                           for k in ('longitude', 'latitude')})
             ax.pcolormesh(mesh_x, mesh_y, borders, animated=animated,
-                          transform=ccrs.PlateCarree(), alpha=0.1)
-        
+                          transform=PlateCarree(), alpha=0.1)
 
     @staticmethod
     def _get_global_u_mask(factor: int = 4, base_mask: xr.DataArray = None):
@@ -450,7 +446,7 @@ class GlobalPlotter:
         Returns a boolean xarray DataArray corresponding to a mask of the
         continents' coasts, which we do not process.
         Hence margin should be set according to the model.
-    
+
         Parameters
         ----------
         mask : xr.DataArray
@@ -459,12 +455,12 @@ class GlobalPlotter:
         margin : int
             Margin imposed by the model used, i.e. number of points lost on
             one side of a square.
-    
+
         Returns
         -------
         mask : xr.DataArray
             Boolean DataArray taking value True for continents.
-    
+
         """
         assert margin >= 0, 'The margin parameter should be a non-negative' \
                             ' integer'
@@ -473,6 +469,6 @@ class GlobalPlotter:
         # Small trick using the guassian filter function
         mask = xr.apply_ufunc(lambda x: gaussian_filter(x, 1., truncate=margin),
                               base_mask)
-        mask =  np.logical_and(np.isnan(mask),  ~np.isnan(base_mask))
+        mask = np.logical_and(np.isnan(mask),  ~np.isnan(base_mask))
         mask = mask.where(mask)
         return mask.compute()
