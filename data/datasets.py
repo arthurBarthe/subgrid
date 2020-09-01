@@ -589,7 +589,7 @@ class DatasetWithTransform:
         # TODO make this adaptable
         if self.attrs.get('cycle') is not None:
             cycle_length = self.attrs['cycle']
-            cycle_repeat = CyclicRepeat(1, 'width', cycle_length, 10)
+            cycle_repeat = CyclicRepeat(2, 'width', cycle_length, 10)
             self.add_features_transform(cycle_repeat)
         if hasattr(model, 'get_features_transform'):
             transform = model.get_features_transform()
@@ -967,25 +967,25 @@ if __name__ == '__main__':
     dataset.add_output('out0')
     dataset.add_output('out1')
 
-    loader = DataLoader(dataset, batch_size=7, drop_last=True)
+    # loader = DataLoader(dataset, batch_size=7, drop_last=True)
 
-    ds2 = ds.isel(yu_ocean=slice(0, 28), xu_ocean=slice(0, 37))
-    dataset2 = RawDataFromXrDataset(ds2)
-    dataset2.index = 'time'
-    dataset2.add_input('in0')
-    dataset2.add_input('in1')
-    dataset2.add_output('out0')
-    dataset2.add_output('out1')
-    t = DatasetTransformer(ComposeTransforms(CropToMultipleof(5),
-                                             FixedVelocityNormalizer(),
-                                             SignedSqrt()))
-    t.add_features_transform(CropToMultipleof(3))
-    t2 = deepcopy(t)
-    train_dataset = Subset_(dataset, np.arange(5))
-    train_dataset2 = Subset_(dataset2, np.arange(5))
-    t.fit(train_dataset)
-    t2.fit(train_dataset2)
-    new_dataset = DatasetWithTransform(dataset, t)
-    new_dataset2 = DatasetWithTransform(dataset2, t2)
-    datasets = (new_dataset, new_dataset2)
-    c = ConcatDataset_(datasets)
+    # ds2 = ds.isel(yu_ocean=slice(0, 28), xu_ocean=slice(0, 37))
+    # dataset2 = RawDataFromXrDataset(ds2)
+    # dataset2.index = 'time'
+    # dataset2.add_input('in0')
+    # dataset2.add_input('in1')
+    # dataset2.add_output('out0')
+    # dataset2.add_output('out1')
+    # t = DatasetTransformer(ComposeTransforms(CropToMultipleof(5),
+    #                                          FixedVelocityNormalizer(),
+    #                                          SignedSqrt()))
+    # t.add_features_transform(CropToMultipleof(3))
+    # t2 = deepcopy(t)
+    # train_dataset = Subset_(dataset, np.arange(5))
+    # train_dataset2 = Subset_(dataset2, np.arange(5))
+    # t.fit(train_dataset)
+    # t2.fit(train_dataset2)
+    # new_dataset = DatasetWithTransform(dataset, t)
+    # new_dataset2 = DatasetWithTransform(dataset2, t2)
+    # datasets = (new_dataset, new_dataset2)
+    # c = ConcatDataset_(datasets)
