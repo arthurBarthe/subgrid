@@ -589,7 +589,7 @@ class DatasetWithTransform:
         # TODO make this adaptable
         if self.attrs.get('cycle') is not None:
             cycle_length = self.attrs['cycle']
-            cycle_repeat = CyclicRepeat(0, 'width', cycle_length, 10)
+            cycle_repeat = CyclicRepeat(1, 'width', cycle_length, 10)
             self.add_features_transform(cycle_repeat)
         if hasattr(model, 'get_features_transform'):
             transform = model.get_features_transform()
