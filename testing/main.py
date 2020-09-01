@@ -5,15 +5,14 @@ Created on Tue Jan 28 20:25:09 2020
 @author: Arthur
 Here we test a trained model on an unseen region. The user is prompted to
 select a trained model within a list and a new region to test that model.
-Fine-tuning is an option through the n_epochs parameter of the script.
+Fine-tuning is an option through the n_epochs parameter of the script. 
+If n_epochs takes is default value 0, no fine-tuning is performed.
 
 We allow for different modes of training:
     - training of all parameters
     - training of last layer only
     - training of batch norm layers only
 
-TODO:
-    - Allow to test on all regions at once with one command
 """
 import mlflow
 import torch
@@ -79,12 +78,10 @@ mlflow.start_run()
 # Prompt user to retrieve a trained model based on a run id for the default
 # experiment (folder mlruns/0)
 models_experiment_name = select_experiment()
-
-cols = ['metrics.test loss', 'start_time', 'params.time_indices',
-        'params.model_cls_name', 'params.source.run_id']
-# Recover experiment id of the models
 models_experiment = mlflow.get_experiment_by_name(models_experiment_name)
 models_experiment_id = models_experiment.experiment_id
+cols = ['metrics.test loss', 'start_time', 'params.time_indices',
+        'params.model_cls_name', 'params.source.run_id']
 model_run = select_run(sort_by='start_time', cols=cols,
                        experiment_ids=[models_experiment_id, ])
 
@@ -122,6 +119,7 @@ data_experiment_name = select_experiment()
 data_experiment = mlflow.get_experiment_by_name(data_experiment_name)
 data_experiment_id = data_experiment.experiment_id
 
+# TODO remove looping
 i_test = 0
 while True:
     i_test += 1
@@ -143,6 +141,8 @@ while True:
     # Read the dataset file
     print('loading dataset...')
     xr_dataset = xr.open_zarr(data_file)
+    if input('global?').lower() == 'y':
+        xr_dataset.attrs['cycle'] = 360
 
     # To PyTorch Dataset
     dataset = RawDataFromXrDataset(xr_dataset)

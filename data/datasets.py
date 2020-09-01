@@ -147,7 +147,7 @@ class ComposeTransforms(ArrayTransform):
         return x
 
     def inverse_transform(self, x):
-        for transform in self.transforms:
+        for transform in self.transforms[::-1]:
             if hasattr(transform, 'inverse_transform'):
                 x = transform.inverse_transform(x)
         return x
@@ -155,7 +155,7 @@ class ComposeTransforms(ArrayTransform):
     def transform_coordinate(self, coord, dim):
         x = coord
         for transform in self.transforms:
-            if isinstance(transform, CropToNewShape):
+            if isinstance(transform, (CropToNewShape, CyclicRepeat)):
                 x = transform.transform_coordinate(coord, dim)
         return x
 
@@ -196,6 +196,66 @@ class CropToNewShape(ArrayTransform):
 
     def __repr__(self):
         return f'CropToNewShape({self.height}, {self.width})'
+
+
+class CyclicRepeat(ArrayTransform):
+    """Repeats the dataset in a cyclic way. The provided data should
+    cover a complete cycle, with no repetition."""
+
+    def __init__(self, axis: int, dim_name: str, cycle_length: float,
+                 nb_points: int):
+        """
+        Constructor.
+
+        Parameters
+        ----------
+        axis : int
+            Index of the dimension along which the data is repeated.
+
+        dim_name: str
+            Name of the dimension corresponding to the axis.
+            # TODO This is redundant
+
+        cycle_length: float
+            Length of one cycle. For instance for longitude in degrees this
+            would be 360.
+
+        nb_points : int
+            Number of points repeated on each end. If nb_points is 10, the
+            transformed array will have 20 more points along the specified
+            axis.
+
+        Returns
+        -------
+        None.
+
+        """
+        self.axis = axis
+        self.dim_name = dim_name
+        self.length = cycle_length
+        self.nb_points = nb_points
+
+    def fit(self, x):
+        pass
+
+    def transform(self, x):
+        nb = self.nb_points
+        left = np.take(x, np.arange(-nb, 0), self.axis)
+        right = np.take(x, np.arange(nb), self.axis)
+        return np.concatenate((left, x, right), axis=self.axis)
+
+    def transform_coordinate(self, coords, dim):
+        print(f'{dim}, {self.dim_name}')
+        if dim == self.dim_name:
+            left = coords[-self.nb_points:] - self.length
+            right = coords[:self.nb_points] + self.length
+            return np.concatenate((left, coords, right))
+        else:
+            return coords
+
+    def __repr__(self):
+        return f'CyclicRepeat({self.axis}, {self.dim_name},' \
+                f' {self.length}, {self.nb_points})'
 
 
 class CropToMultipleof(CropToNewShape):
@@ -426,6 +486,22 @@ class RawDataFromXrDataset(Dataset):
         return features, targets
 
     def __len__(self):
+        """
+        Return the number of samples of the datasets. Requires that the 
+        index property has been set.
+
+        Raises
+        ------
+        KeyError
+            Raised if the index has not been defined or is not one of the
+            dimensions of the xarray dataset.
+
+        Returns
+        -------
+        int
+            Number of samples of the dataset.
+
+        """
         try:
             return len(self.xr_dataset[self._index])
         except KeyError as e:
@@ -459,7 +535,7 @@ class DatasetWithTransform:
 
     @property
     def input_coords(self):
-        coords = {'height': self.dataset.input_coords['yu_ocean'], 
+        coords = {'height': self.dataset.input_coords['yu_ocean'],
                   'width': self.dataset.input_coords['xu_ocean']}
         new_coords = self.transform.get_features_coords(coords)
         return {'yu_ocean': new_coords['height'], 'xu_ocean': new_coords['width'],
@@ -505,7 +581,16 @@ class DatasetWithTransform:
     def add_features_transform_from_model(self, model):
         """Automatically adds features transform required by the model.
         For instance Unet will require features to be reshaped to multiples
-        of 2, 4 or higher."""
+        of 2, 4 or higher depending on the number of scales of the Unet."""
+        # If the underlying xarray dataset has attribute cycle we automatically
+        # add a cycle repeat transform. This should depend on the model as
+        # well, right now this has been done manually by fixing the number of
+        # added points on each end to 10.
+        # TODO make this adaptable
+        if self.attrs.get('cycle') is not None:
+            cycle_length = self.attrs['cycle']
+            cycle_repeat = CyclicRepeat(0, 'width', cycle_length, 10)
+            self.add_features_transform(cycle_repeat)
         if hasattr(model, 'get_features_transform'):
             transform = model.get_features_transform()
             self.add_features_transform(transform)
@@ -874,6 +959,7 @@ if __name__ == '__main__':
                            'xu_ocean': np.arange(48) * 5,
                            'yu_ocean': np.arange(32) * 2})
     ds = ds.chunk({'time': 2})
+    ds = ds.where(ds['in0'] > 3)
     dataset = RawDataFromXrDataset(ds)
     dataset.index = 'time'
     dataset.add_input('in0')
