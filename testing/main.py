@@ -269,6 +269,8 @@ while True:
     out.to_zarr(file_path)
     print('Rechunking...')
     data = xr.open_zarr(file_path)
+    for v in data.values():
+        v.encoding = {}
     data = data.chunk(dict(time=50, longitude=25, latitude=25))
     data.to_zarr(os.path.join(data_location, 'test_output'))
     mlflow.log_artifact(os.path.join(data_location, 'test_output'))
