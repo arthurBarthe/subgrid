@@ -9,6 +9,7 @@ import numpy as np
 import xarray as xr
 import mlflow
 import os.path
+from scipy.stats import norm
 
 
 class TestDataset:
@@ -45,6 +46,7 @@ class TestDataset:
         else:
             self.__dict__[name] = value
 
+
 def get_test_datasets(run_id: str):
     """Return a list of the test datasets for the provided run id"""
     client = mlflow.tracking.MlflowClient()
@@ -60,11 +62,70 @@ def get_test_datasets(run_id: str):
     return test_outputs
 
 
-class DatasetsOnGlobalGrid(xr.Dataset):
-    def __init__(self, latitudes, longitudes):
-        self.lat = latitudes
-        self.lon = longitudes
-        self._datasets = []
+class DataQuantiles:
+    def __init__(self):
+        pass
 
-    def add_dataset(self, dataset: xr.Dataset):
-        
+    def __get__(self, obj, type=None):
+        if not obj._data_quantiles_computed:
+            obj._update_data_quantiles()
+        return obj._data_quantiles
+
+    def __set__(self, obj, value):
+        raise NotImplementedError('Cannot set the data quantiles manually.')
+
+
+class QuantileCompare:
+    """A class to compare the quantiles of the data with that of a given
+    distribution"""
+
+    data_quantiles = DataQuantiles()
+    default_dim = 'time'
+
+    def __init__(self, distribution=norm, quantiles=[]):
+        self.quantiles = quantiles
+        self.distribution = distribution
+        self._data_quantiles_computed = False
+        self.dim = self.default_dim
+
+    @property
+    def distribution(self):
+        return self._distribution
+
+    @distribution.setter
+    def distribution(self, value):
+        self._distribution = value
+        self._update_quantiles()
+
+    @property
+    def quantiles(self):
+        return self._quantiles
+
+    @quantiles.setter
+    def quantiles(self, value):
+        self._quantiles = {k: None for k in value}
+        self._update_quantiles()
+        self._data_quantiles_computed = False
+
+    def _update_quantiles(self):
+        if hasattr(self, 'distribution'):
+            for k in self.quantiles.keys():
+                self.quantiles[k] = self.distribution.ppf(k)
+
+    def _update_data_quantiles(self):
+        if not hasattr(self, 'data'):
+            raise AttributeError('The data has not been set.')
+        self._data_quantiles = {k: self.data.quantile(k, dim=self.dim)
+                                for k in self.quantiles.keys()}
+
+    def qq_diff(self):
+        return {k: self.data_quantiles[k] - v
+                for k,v in self.quantiles.items()}
+
+    @property
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self, value: xr.DataArray):
+        self._data = value
