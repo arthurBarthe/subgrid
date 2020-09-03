@@ -265,6 +265,7 @@ while True:
     out = create_large_test_dataset(net, partition, loaders, device)
     file_path = os.path.join(data_location, f'test_output_{i_test - 1}')
     ProgressBar().register()
+    out = out.chunk(dict(longitude=5, latitude=5))
     out.to_zarr(file_path)
     mlflow.log_artifact(file_path)
     print(f'Size of output data is {out.nbytes/1e9} GB')
