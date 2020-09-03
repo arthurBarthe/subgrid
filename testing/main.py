@@ -269,7 +269,7 @@ while True:
     out.to_zarr(file_path)
     print('Rechunking...')
     data = xr.open_zarr(file_path)
-    data = data.chunk(time=50, longitude=25, latitude=25)
+    data = data.chunk(dict(time=50, longitude=25, latitude=25))
     data.to_zarr(os.path.join(data_location, 'test_output'))
     mlflow.log_artifact(os.path.join(data_location, 'test_output'))
     print(f'Size of output data is {out.nbytes/1e9} GB')
