@@ -335,9 +335,11 @@ class GlobalPlotter:
     """General class to make plots for global data. Handles masking of
     continental data + showing a band near coastlines."""
 
-    def __init__(self, margin: int = 10):
+    def __init__(self, margin: int = 10, cbar: bool = True):
         self.mask = self._get_global_u_mask()
         self.margin = margin
+        self.cbar = cbar
+        self.ticks = dict(x=None, y=None)
 
     @property
     def mask(self):
@@ -364,10 +366,25 @@ class GlobalPlotter:
         self._margin = margin
         self.borders = self._get_continent_borders(self.mask, self.margin)
 
-    def plot_global_velocity(self, u: xr.DataArray,
-                             projection_cls=PlateCarree,
-                             lon: float = -100.0, lat: float = None,
-                             ax=None, animated=False, **plot_func_kw):
+    @property
+    def x_ticks(self):
+        return self.ticks['x']
+
+    @x_ticks.setter
+    def x_ticks(self, value):
+        self.ticks['x'] = value
+
+    @property
+    def y_ticks(self):
+        return self.ticks['y']
+
+    @y_ticks.setter
+    def y_ticks(self, value):
+        self.ticks['y'] = value
+
+    def plot(self, u: xr.DataArray, projection_cls=PlateCarree,
+             lon: float = -100.0, lat: float = None, ax=None, animated=False,
+             **plot_func_kw):
         """
         Plots the passed velocity component on a map, using the specified
         projection. Uses the instance's mask to set as nan some values.
@@ -388,6 +405,7 @@ class GlobalPlotter:
         None.
 
         """
+        fig = plt.figure()
         mask = self.mask.interp({k: u.coords[k] for k in ('longitude',
                                                           'latitude')})
         u = u * mask
@@ -395,8 +413,13 @@ class GlobalPlotter:
         if ax is None:
             ax = plt.axes(projection=projection)
         mesh_x, mesh_y = np.meshgrid(u['longitude'], u['latitude'])
-        ax.pcolormesh(mesh_x, mesh_y, u.values, transform=PlateCarree(),
-                      animated=animated, **plot_func_kw)
+        im = ax.pcolormesh(mesh_x, mesh_y, u.values, transform=PlateCarree(),
+                           animated=animated, **plot_func_kw)
+        if self.cbar: fig.colorbar(im)
+        if self.x_ticks is not None:
+            ax.set_xticks(self.x_ticks)
+        if self.y_ticks is not None:
+            ax.set_yticks(self.y_ticks)
         ax.set_global()
         ax.coastlines()
         if self.margin > 0:
