@@ -544,6 +544,6 @@ def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
         x, y = lon_min, lat_min
         width, height = lon_max - lon_min, lat_max - lat_min
         ax.add_patch(Rectangle((x, y), width, height, facecolor=facecolor,
-                               edgecolor=edgecolor))
+                               edgecolor=edgecolor, alpha=alpha))
     plt.show()
     return ax
