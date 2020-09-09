@@ -419,7 +419,7 @@ class GlobalPlotter:
                                transform=PlateCarree(),
                                animated=animated, **plot_func_kw)
             if self.cbar:
-                fig.colorbar(im)
+                fig.colorbar(im, ax=ax)
         if self.x_ticks is not None:
             ax.set_xticks(self.x_ticks)
         if self.y_ticks is not None:
