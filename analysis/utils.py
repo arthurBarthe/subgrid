@@ -9,6 +9,7 @@ import mlflow
 from mlflow.tracking import MlflowClient
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from matplotlib.patches import Rectangle
 import pandas as pd
 from analysis.analysis import TimeSeriesForPoint
 import xarray as xr
@@ -382,7 +383,7 @@ class GlobalPlotter:
     def y_ticks(self, value):
         self.ticks['y'] = value
 
-    def plot(self, u: xr.DataArray, projection_cls=PlateCarree,
+    def plot(self, u: xr.DataArray=None, projection_cls=PlateCarree,
              lon: float = -100.0, lat: float = None, ax=None, animated=False,
              **plot_func_kw):
         """
@@ -392,7 +393,7 @@ class GlobalPlotter:
         Parameters
         ----------
         u : xr.DataArray
-            Velocity array.
+            Velocity array. The default is None.
         projection : Projection
             Projection used for the 2D plot.
         lon : float, optional
@@ -408,14 +409,17 @@ class GlobalPlotter:
         fig = plt.figure()
         mask = self.mask.interp({k: u.coords[k] for k in ('longitude',
                                                           'latitude')})
-        u = u * mask
         projection = projection_cls(lon)
         if ax is None:
             ax = plt.axes(projection=projection)
         mesh_x, mesh_y = np.meshgrid(u['longitude'], u['latitude'])
-        im = ax.pcolormesh(mesh_x, mesh_y, u.values, transform=PlateCarree(),
-                           animated=animated, **plot_func_kw)
-        if self.cbar: fig.colorbar(im)
+        if u is not None:
+            u = u * mask
+            im = ax.pcolormesh(mesh_x, mesh_y, u.values,
+                               transform=PlateCarree(),
+                               animated=animated, **plot_func_kw)
+            if self.cbar:
+                fig.colorbar(im)
         if self.x_ticks is not None:
             ax.set_xticks(self.x_ticks)
         if self.y_ticks is not None:
@@ -427,6 +431,7 @@ class GlobalPlotter:
                                            for k in ('longitude', 'latitude')})
             ax.pcolormesh(mesh_x, mesh_y, borders, animated=animated,
                           transform=PlateCarree(), alpha=0.1)
+        return ax
 
     @staticmethod
     def _get_global_u_mask(factor: int = 4, base_mask: xr.DataArray = None):
@@ -495,3 +500,48 @@ class GlobalPlotter:
         mask = np.logical_and(np.isnan(mask),  ~np.isnan(base_mask))
         mask = mask.where(mask)
         return mask.compute()
+
+
+def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
+                             bg_variable=None, facecolor='blue',
+                             edgecolor=None, *plot_args, **plot_kwd_args):
+    """
+    Plots the training subdomains used for a given training run. Retrieves
+    those subdomains from the run's parameters.
+
+    Parameters
+    ----------
+    run_id : str
+        Id of the training run.
+    global_plotter : GlobalPlotter
+        DESCRIPTION.
+    alpha : TYPE, optional
+        DESCRIPTION. The default is 0.5.
+    facecolor : TYPE, optional
+        DESCRIPTION. The default is 'blue'.
+    edgecolor : TYPE, optional
+        DESCRIPTION. The default is None.
+
+    Returns
+    -------
+    None.
+
+    """
+    # First retrieve the run's data
+    run = mlflow.get_run(run_id)
+    run_params = run.data.params
+    data_ids = run_params['source.run_id'].split('/')
+    # Plot the map
+    ax = global_plotter.plot(bg_variable, *plot_args, **plot_kwd_args)
+    for data_id in data_ids:
+        # Recover the coordinates of the rectangular subdomain
+        run = mlflow.get_run(data_id)
+        run_params = run.data.params
+        lat_min, lat_max = run_params['lat_min'], run_params['lat_max']
+        lon_min, lon_max = run_params['long_min'], run_params['long_max']
+        x, y = lon_min, lat_min
+        width, height = lon_max - lon_min, lat_max - lat_min
+        ax.add_patch(Rectangle((x, y), width, height, facecolor=facecolor,
+                               edgecolor=edgecolor))
+    plt.show()
+    return ax
