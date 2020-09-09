@@ -430,7 +430,11 @@ class GlobalPlotter:
             ax.pcolormesh(mesh_x, mesh_y, borders, animated=animated,
                           transform=PlateCarree(), alpha=0.1)
         if u is not None and self.cbar:
-            plt.colorbar(im, ax=ax)
+            cax = fig.add_axes([ax.get_position().x1+0.01,
+                                ax.get_position().y0,
+                                0.02,
+                                ax.get_position().height])
+            plt.colorbar(im, cax=cax)
         return ax
 
     @staticmethod
