@@ -407,13 +407,13 @@ class GlobalPlotter:
 
         """
         fig = plt.figure()
-        mask = self.mask.interp({k: u.coords[k] for k in ('longitude',
-                                                          'latitude')})
         projection = projection_cls(lon)
         if ax is None:
             ax = plt.axes(projection=projection)
         mesh_x, mesh_y = np.meshgrid(u['longitude'], u['latitude'])
         if u is not None:
+            mask = self.mask.interp({k: u.coords[k] for k in ('longitude',
+                                                              'latitude')})
             u = u * mask
             im = ax.pcolormesh(mesh_x, mesh_y, u.values,
                                transform=PlateCarree(),
