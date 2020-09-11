@@ -117,7 +117,7 @@ def compute_grid_steps(grid_info: xr.Dataset):
 
 
 def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
-                 nan_or_zero: str = 'nan', scale_mode: str = 'factor',
+                 nan_or_zero: str = 'zero', scale_mode: str = 'factor',
                  debug_mode=False):
     """
     Compute the sub-grid forcing terms.
