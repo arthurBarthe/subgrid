@@ -330,7 +330,7 @@ def play_movie(predictions: np.ndarray, title: str = '',
     plt.title(title)
     plt.show()
     return ani
-
+    
 
 class GlobalPlotter:
     """General class to make plots for global data. Handles masking of
@@ -508,7 +508,8 @@ class GlobalPlotter:
 
 def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
                              bg_variable=None, facecolor='blue',
-                             edgecolor=None, *plot_args, **plot_kwd_args):
+                             edgecolor=None, linewidth=None, fill=False,
+                             *plot_args, **plot_kwd_args):
     """
     Plots the training subdomains used for a given training run. Retrieves
     those subdomains from the run's parameters.
@@ -548,6 +549,7 @@ def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
         x, y = lon_min, lat_min
         width, height = lon_max - lon_min, lat_max - lat_min
         ax.add_patch(Rectangle((x, y), width, height, facecolor=facecolor,
-                               edgecolor=edgecolor, alpha=alpha))
+                               edgecolor=edgecolor, linewidth=linewidth,
+                               fill=fill, alpha=alpha))
     plt.show()
     return ax
