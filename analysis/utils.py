@@ -8,6 +8,7 @@ import numpy as np
 import mlflow
 from mlflow.tracking import MlflowClient
 import matplotlib.pyplot as plt
+from matplotlib import colors
 import matplotlib.animation as animation
 from matplotlib.patches import Rectangle
 import pandas as pd
@@ -330,7 +331,7 @@ def play_movie(predictions: np.ndarray, title: str = '',
     plt.title(title)
     plt.show()
     return ani
-    
+
 
 class GlobalPlotter:
     """General class to make plots for global data. Handles masking of
@@ -385,7 +386,7 @@ class GlobalPlotter:
 
     def plot(self, u: xr.DataArray=None, projection_cls=PlateCarree,
              lon: float = -100.0, lat: float = None, ax=None, animated=False,
-             **plot_func_kw):
+             borders_color='grey', borders_alpha=1., **plot_func_kw):
         """
         Plots the passed velocity component on a map, using the specified
         projection. Uses the instance's mask to set as nan some values.
@@ -427,8 +428,10 @@ class GlobalPlotter:
         if self.margin > 0:
             borders = self.borders.interp({k: u.coords[k]
                                            for k in ('longitude', 'latitude')})
+            borders_cmap = colors.ListedColormap([borders_color, ])
             ax.pcolormesh(mesh_x, mesh_y, borders, animated=animated,
-                          transform=PlateCarree(), alpha=0.1)
+                          transform=PlateCarree(), alpha=borders_alpha,
+                          cmap=borders_cmap)
         if u is not None and self.cbar:
             cax = fig.add_axes([ax.get_position().x1+0.01,
                                 ax.get_position().y0,
