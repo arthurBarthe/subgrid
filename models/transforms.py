@@ -71,6 +71,24 @@ class PrecisionTransform(Transform):
         pass
 
 
+class MixedPrecisionTransform(PrecisionTransform):
+    def __init__(self):
+        super().__init__()
+
+    @property
+    def mean_indices(self):
+        s = set(self.indices)
+        s2 = set(list(range(4)))
+        return list(s2.difference(s))
+
+    def transform(self, input_):
+        result = super().transform(input_)
+        result = torch.clone(result)
+        result[:, self.indices, :, :] = 1 / ((result[:, self.mean_indices, :, :] + 0.05) *
+                                         result[:, self.indices, :, :])
+        return result
+
+
 class SoftPlusTransform(PrecisionTransform):
     def __init__(self, min_value=0.1):
         super().__init__(min_value)
@@ -81,6 +99,18 @@ class SoftPlusTransform(PrecisionTransform):
 
     def __repr__(self):
         return ''.join(('SoftPlusTransform(', str(self.min_value), ')'))
+
+
+class MixedSoftPlusTransform(MixedPrecisionTransform):
+    def __init__(self):
+        super().__init__()
+
+    @staticmethod
+    def transform_precision(precision):
+        return softplus(precision)
+
+    def __repr__(self):
+        return ''.join(('MixedSoftPlusTransform(', str(self.min_value), ')'))
 
 
 class SquareTransform(PrecisionTransform):
