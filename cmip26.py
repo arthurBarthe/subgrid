@@ -52,10 +52,10 @@ extra_bounds[0] -= 2 * params.scale / 10
 extra_bounds[2] -= 2 * params.scale / 10
 extra_bounds[1] += 2 * params.scale / 10
 extra_bounds[3] += 2 * params.scale / 10
+
 # Retrieve the patch of data specified in the command-line args
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
                                   params.CO2, 'usurf', 'vsurf')
-patch_data = patch_data.chunk({'time': 1})
 
 print(patch_data)
 print(grid_data)
