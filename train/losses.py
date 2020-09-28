@@ -52,8 +52,7 @@ class HeteroskedasticGaussianLossV2(_Loss):
 
     def pointwise_likelihood(self, input: torch.Tensor, target: torch.Tensor):
         # Split the target into mean (first half of channels) and scale
-        mean, precision = torch.split(input, self.n_target_channels // 2,
-                                      dim=1)
+        mean, precision = torch.split(input, self.n_target_channels, dim=1)
         if not torch.all(precision > 0):
             raise ValueError('Got a non-positive variance value. \
                              Pre-processed variance tensor was: \
