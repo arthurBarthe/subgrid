@@ -10,6 +10,11 @@ mean and precision.
 """
 import torch
 from torch.nn.modules.loss import _Loss
+from enum import Enum
+
+class VarianceMode(Enum):
+    variance = 0
+    precision = 1
 
 # DEPRECIATED
 class HeteroskedasticGaussianLoss(_Loss):
@@ -28,10 +33,12 @@ class HeteroskedasticGaussianLoss(_Loss):
 class HeteroskedasticGaussianLossV2(_Loss):
     """Class for Gaussian likelihood"""
 
-    def __init__(self, n_target_channels: int = 1, bias: float = 0.):
+    def __init__(self, n_target_channels: int = 1, bias: float = 0.,
+                 mode=VarianceMode.variance):
         super().__init__()
         self.n_target_channels = n_target_channels
         self.bias = bias
+        self.mode = mode
 
     @property
     def n_required_channels(self):
@@ -41,21 +48,25 @@ class HeteroskedasticGaussianLossV2(_Loss):
 
     @property
     def precision_indices(self):
-        return list(range(self.n_required_channels // 2,
-                          self.n_required_channels))
+        return list(range(self.n_target_channels, self.n_required_channels))
 
     def pointwise_likelihood(self, input: torch.Tensor, target: torch.Tensor):
-        mean, precision = torch.split(input, self.n_target_channels, dim=1)
+        # Split the target into mean (first half of channels) and scale
+        mean, precision = torch.split(input, self.n_target_channels // 2,
+                                      dim=1)
         if not torch.all(precision > 0):
             raise ValueError('Got a non-positive variance value. \
                              Pre-processed variance tensor was: \
                                  {}'.format(torch.min(precision)))
-        term1 = - torch.log(precision)
-        term2 = 1 / 2 * (target - (mean + self.bias))**2 * precision**2
-        return term1 + term2  
+        if self.mode is VarianceMode.precision:
+            term1 = - torch.log(precision)
+            term2 = 1 / 2 * (target - (mean + self.bias))**2 * precision**2
+        elif self.mode is VarianceMode.variance:
+            term1 = torch.log(precision)
+            term2 = 1 / 2 * (target - (mean + self.bias))**2 / precision**2
+        return term1 + term2
 
     def forward(self, input: torch.Tensor, target: torch.Tensor):
-        # Split the target into mean (first half of channels) and scale
         lkhs = self.pointwise_likelihood(input, target)
         # Ignore nan values in targets.
         lkhs = lkhs[~torch.isnan(target)]
