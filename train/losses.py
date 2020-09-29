@@ -12,9 +12,11 @@ import torch
 from torch.nn.modules.loss import _Loss
 from enum import Enum
 
+
 class VarianceMode(Enum):
     variance = 0
     precision = 1
+
 
 # DEPRECIATED
 class HeteroskedasticGaussianLoss(_Loss):
@@ -34,7 +36,7 @@ class HeteroskedasticGaussianLossV2(_Loss):
     """Class for Gaussian likelihood"""
 
     def __init__(self, n_target_channels: int = 1, bias: float = 0.,
-                 mode=VarianceMode.variance):
+                 mode=VarianceMode.precision):
         super().__init__()
         self.n_target_channels = n_target_channels
         self.bias = bias
