@@ -84,7 +84,7 @@ class MixedPrecisionTransform(PrecisionTransform):
     def transform(self, input_):
         result = super().transform(input_)
         result = torch.clone(result)
-        result[:, self.indices, :, :] = (1 / ((result[:, self.mean_indices, :, :] + self.min_value)) *
+        result[:, self.indices, :, :] = (1 / ((torch.abs(result[:, self.mean_indices, :, :]) + 0.01)) *
                                          result[:, self.indices, :, :])
         return result
 
