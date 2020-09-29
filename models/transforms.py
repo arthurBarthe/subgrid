@@ -37,15 +37,15 @@ class Transform(Module, ABC):
 class PrecisionTransform(Transform):
     def __init__(self, min_value=0.1):
         super().__init__()
-        self._min_value = Parameter(torch.tensor(min_value))
+        self.min_value = Parameter(torch.tensor(min_value))
 
     @property
     def min_value(self):
-        return self._min_value
+        return softplus(self._min_value)
 
     @min_value.setter
     def min_value(self, value):
-        self._min_value = value
+        self._min_value = Parameter(torch.tensor(value))
 
     @property
     def indices(self):
@@ -62,7 +62,7 @@ class PrecisionTransform(Transform):
         # number of them (although does not matter for 4 channels)
         result = torch.clone(input_)
         result[:, self.indices, :, :] = self.transform_precision(
-            input_[:, self.indices, :, :]) + softplus(self.min_value)
+            input_[:, self.indices, :, :]) + self.min_value
         return result
 
     @staticmethod
@@ -84,7 +84,7 @@ class MixedPrecisionTransform(PrecisionTransform):
     def transform(self, input_):
         result = super().transform(input_)
         result = torch.clone(result)
-        result[:, self.indices, :, :] = 1 / ((result[:, self.mean_indices, :, :] + 0.05) *
+        result[:, self.indices, :, :] = (1 / ((result[:, self.mean_indices, :, :] + self.min_value)) *
                                          result[:, self.indices, :, :])
         return result
 
