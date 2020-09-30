@@ -14,7 +14,8 @@ entry_points:
       long_max : float
       factor: {type: float, default: 0}
       chunk_size: {type: string, default: 50}
-    command: "python cmip26.py {scale} {lat_min} {lat_max} {long_min} {long_max} --CO2 {CO2} --ntimes {ntimes} --factor {factor} --chunk_size {chunk_size}" 
+      global: {type: str, default: 0}
+    command: "python cmip26.py {scale} {lat_min} {lat_max} {long_min} {long_max} --CO2 {CO2} --ntimes {ntimes} --factor {factor} --chunk_size {chunk_size} --global {global}" 
 
   train:
     parameters:

@@ -15,11 +15,17 @@ from dask.diagnostics import ProgressBar
 import mlflow
 from copy import copy
 
+from data.utils import cyclize_dataset
 from data.coarse import eddy_forcing
 from data.pangeo_catalog import get_patch
 import logging
 import tempfile
 from os.path import join
+
+# logging config
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 
 # Script parameters
 CATALOG_URL = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
@@ -35,6 +41,8 @@ parser = argparse.ArgumentParser(description=DESCRIPTION)
 parser.add_argument('scale', type=float, help='scale in kilometers')
 parser.add_argument('bounds', type=float, nargs=4, help='min lat, max_lat,\
                     min_long, max_long')
+parser.add_argument('global', type=bool, help='True if global data. In this\
+                    case the data is made cyclic along longitude')
 parser.add_argument('--ntimes', type=int, default=100, help='number of days,\
                     starting from first day.')
 parser.add_argument('--CO2', type=int, default=0, choices=[0, 1], help='CO2\
@@ -57,8 +65,14 @@ extra_bounds[3] += 2 * params.scale / 10
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
                                   params.CO2, 'usurf', 'vsurf')
 
-print(patch_data)
-print(grid_data)
+logger.debug(patch_data)
+logger.debug(grid_data)
+
+# If global data, we make the dataset cyclic along longitude
+if params.gloal:
+    logger.info('Cyclic data... Making the dataset cyclic along longitude...')
+    patch_data = cyclize_dataset(patch_data, 'xu_ocean', 4)
+    grid_data = cyclize_dataset(grid_data, 'xu_ocean', 4)
 
 # Calculate eddy-forcing dataset for that particular patch
 if params.factor != 0:
@@ -86,14 +100,14 @@ forcing = forcing.sel(xu_ocean=slice(bounds[2], bounds[3]),
 chunk_sizes = list(map(int, params.chunk_size.split('/')))
 while len(chunk_sizes) < 3:
     chunk_sizes.append('auto')
-forcing = forcing.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'), 
+forcing = forcing.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'),
                                  chunk_sizes)))
-print('Preparing forcing data')
-print(forcing)
+logger.info('Preparing forcing data')
+logger.debug(forcing)
 # export data
 forcing.to_zarr(join(data_location, 'forcing'), mode='w')
 
 # Log as an artifact the forcing data
-print('Logging processed dataset as an artifact...')
+logger.info('Logging processed dataset as an artifact...')
 mlflow.log_artifact(join(data_location, 'forcing'))
-print('Completed...')
+logger.info('Completed...')
