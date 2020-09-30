@@ -41,7 +41,7 @@ parser = argparse.ArgumentParser(description=DESCRIPTION)
 parser.add_argument('scale', type=float, help='scale in kilometers')
 parser.add_argument('bounds', type=float, nargs=4, help='min lat, max_lat,\
                     min_long, max_long')
-parser.add_argument('--global', type=bool, help='True if global data. In this\
+parser.add_argument('--global_', type=bool, help='True if global data. In this\
                     case the data is made cyclic along longitude', 
                     default=False)
 parser.add_argument('--ntimes', type=int, default=100, help='number of days,\
@@ -70,7 +70,7 @@ logger.debug(patch_data)
 logger.debug(grid_data)
 
 # If global data, we make the dataset cyclic along longitude
-if params.gloal:
+if params.global_:
     logger.info('Cyclic data... Making the dataset cyclic along longitude...')
     patch_data = cyclize_dataset(patch_data, 'xu_ocean', 4)
     grid_data = cyclize_dataset(grid_data, 'xu_ocean', 4)
