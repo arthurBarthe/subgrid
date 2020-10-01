@@ -66,10 +66,6 @@ extra_bounds[3] += 2 * params.scale / 10
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
                                   params.CO2, 'usurf', 'vsurf')
 
-chunk_sizes = list(map(int, params.chunk_size.split('/')))
-patch_data = patch_data.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'),
-                                       chunk_sizes)))
-
 logger.debug(patch_data)
 logger.debug(grid_data)
 
@@ -78,6 +74,10 @@ if params.global_:
     logger.info('Cyclic data... Making the dataset cyclic along longitude...')
     patch_data = cyclize_dataset(patch_data, 'xu_ocean', 4)
     grid_data = cyclize_dataset(grid_data, 'xu_ocean', 4)
+
+chunk_sizes = list(map(int, params.chunk_size.split('/')))
+patch_data = patch_data.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'),
+                                       chunk_sizes)))
 
 # Calculate eddy-forcing dataset for that particular patch
 if params.factor != 0:
