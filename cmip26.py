@@ -21,9 +21,13 @@ from data.pangeo_catalog import get_patch
 import logging
 import tempfile
 from os.path import join
+import os
 
 # logging config
-logging.basicConfig(level=logging.INFO)
+logging_level = os.environ.get('LOGGING_LEVEL')
+if logging_level is not None:
+    logging_level = getattr(logging, logging_level)
+    logging.basicConfig(level=logging_level)
 logger = logging.getLogger(__name__)
 
 
