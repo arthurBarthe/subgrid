@@ -72,6 +72,8 @@ extra_bounds[3] += 2 * params.scale / 10
 # Retrieve the patch of data specified in the command-line args
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
                                   params.CO2, 'usurf', 'vsurf')
+patch_data.encoding = {}
+grid_data.encoding = {}
 
 logger.debug(patch_data)
 logger.debug(grid_data)
