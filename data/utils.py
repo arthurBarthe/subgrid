@@ -39,9 +39,8 @@ def cyclize_dataset(ds: xr.Dataset, coord_name: str, nb_points: int):
     New extended dataset.
 
     """
-    left = ds.isel({coord_name: slice(-nb_points, None)})
-    left[coord_name] = left[coord_name] - 360
-    right = ds.isel({coord_name: slice(0, nb_points)})
-    right[coord_name] = right[coord_name] + 360
-    new_ds = xr.concat((left, ds, right), coord_name)
+    left = ds.roll({coord_name: nb_points}, roll_coords=True)
+    right = ds.roll({coord_name: nb_points}, roll_coords=True)
+    right = right.isel({coord_name: slice(0, 2 * nb_points)})
+    new_ds = xr.concat((left, right), coord_name)
     return new_ds
