@@ -66,6 +66,10 @@ extra_bounds[3] += 2 * params.scale / 10
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
                                   params.CO2, 'usurf', 'vsurf')
 
+chunk_sizes = list(map(int, params.chunk_size.split('/')))
+patch_data = patch_data.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'),
+                                       chunk_sizes)))
+
 logger.debug(patch_data)
 logger.debug(grid_data)
 
@@ -98,7 +102,6 @@ forcing['vsurf'].attrs['type'] = 'input'
 bounds = params.bounds
 forcing = forcing.sel(xu_ocean=slice(bounds[2], bounds[3]),
                       yu_ocean=slice(bounds[0], bounds[1]))
-chunk_sizes = list(map(int, params.chunk_size.split('/')))
 while len(chunk_sizes) < 3:
     chunk_sizes.append('auto')
 forcing = forcing.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'),
