@@ -39,10 +39,12 @@ def cyclize_dataset(ds: xr.Dataset, coord_name: str, nb_points: int):
     New extended dataset.
 
     """
+    # TODO make this flexible
+    cycle_length = 360.0
     left = ds.roll({coord_name: nb_points}, roll_coords=True)
     right = ds.roll({coord_name: nb_points}, roll_coords=True)
     right = right.isel({coord_name: slice(0, 2 * nb_points)})
-    left[coord_name] = xr.concat((left[coord_name][:nb_points] - len(left[coord_name]),left[coord_name][nb_points:]), coord_name)
-    right[coord_name] = xr.concat((right[coord_name][:nb_points], right[coord_name][nb_points:] + len(left[coord_name])), coord_name)
+    left[coord_name] = xr.concat((left[coord_name][:nb_points] - cycle_length, left[coord_name][nb_points:]), coord_name)
+    right[coord_name] = xr.concat((right[coord_name][:nb_points], right[coord_name][nb_points:] + cycle_length), coord_name)
     new_ds = xr.concat((left, right), coord_name)
     return new_ds
