@@ -78,10 +78,9 @@ logger.debug(grid_data)
 
 # If global data, we make the dataset cyclic along longitude
 if params.global_:
-    pass
-    # logger.info('Cyclic data... Making the dataset cyclic along longitude...')
-    # patch_data = cyclize_dataset(patch_data, 'xu_ocean', 4)
-    # grid_data = cyclize_dataset(grid_data, 'xu_ocean', 4)
+    logger.info('Cyclic data... Making the dataset cyclic along longitude...')
+    patch_data = cyclize_dataset(patch_data, 'xu_ocean', 4)
+    grid_data = cyclize_dataset(grid_data, 'xu_ocean', 4)
 
 chunk_sizes = list(map(int, params.chunk_size.split('/')))
 
