@@ -105,10 +105,11 @@ ProgressBar().register()
 
 # Specify input vs output type for each variable of the dataset. Might
 # be used later on for training or testing.
-forcing['S_x'].attrs['type'] = 'output'
-forcing['S_y'].attrs['type'] = 'output'
-forcing['usurf'].attrs['type'] = 'input'
-forcing['vsurf'].attrs['type'] = 'input'
+if not debug_mode:
+    forcing['S_x'].attrs['type'] = 'output'
+    forcing['S_y'].attrs['type'] = 'output'
+    forcing['usurf'].attrs['type'] = 'input'
+    forcing['vsurf'].attrs['type'] = 'input'
 
 # Crop according to bounds
 bounds = params.bounds
