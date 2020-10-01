@@ -84,8 +84,7 @@ if params.global_:
     # grid_data = cyclize_dataset(grid_data, 'xu_ocean', 4)
 
 chunk_sizes = list(map(int, params.chunk_size.split('/')))
-patch_data = patch_data.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'),
-                                       chunk_sizes)))
+
 
 # Calculate eddy-forcing dataset for that particular patch
 if params.factor != 0:
