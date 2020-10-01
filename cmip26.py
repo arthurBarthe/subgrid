@@ -88,13 +88,17 @@ chunk_sizes = list(map(int, params.chunk_size.split('/')))
 
 
 # Calculate eddy-forcing dataset for that particular patch
-if params.factor != 0:
+debug_mode = os.environ.get('DEBUG_MODE')
+if params.factor != 0 and not debug_mode:
     scale_m = params.factor
     forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean',
                            scale_mode='factor')
-else:
+elif not debug_mode:
     scale_m = params.scale * 1e3
     forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean')
+else:
+    logger.info('!!!Debug mode!!!')
+    forcing = patch_data
 
 # Progress bar
 ProgressBar().register()
