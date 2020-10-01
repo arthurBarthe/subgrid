@@ -23,6 +23,9 @@ import tempfile
 from os.path import join
 import os
 
+import dask
+dask.config.set(dict(temporary_directory='/scratch/ag7531/dasktemp/'))
+
 # logging config
 logging_level = os.environ.get('LOGGING_LEVEL')
 if logging_level is not None:
