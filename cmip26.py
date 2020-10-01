@@ -81,6 +81,8 @@ if params.global_ == 1:
     logger.info('Cyclic data... Making the dataset cyclic along longitude...')
     patch_data = cyclize_dataset(patch_data, 'xu_ocean', 4)
     grid_data = cyclize_dataset(grid_data, 'xu_ocean', 4)
+    patch_data = patch_data.chunk(dict(xu_ocean=-1))
+    grid_data = grid_data.chunk(dict(xu_ocean=-1))
 
 chunk_sizes = list(map(int, params.chunk_size.split('/')))
 
