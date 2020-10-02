@@ -384,7 +384,7 @@ class GlobalPlotter:
     def y_ticks(self, value):
         self.ticks['y'] = value
 
-    def plot(self, u: xr.DataArray=None, projection_cls=PlateCarree,
+    def plot(self, u: xr.DataArray = None, projection_cls=PlateCarree,
              lon: float = -100.0, lat: float = None, ax=None, animated=False,
              borders_color='grey', borders_alpha=1., **plot_func_kw):
         """
@@ -413,8 +413,11 @@ class GlobalPlotter:
             ax = plt.axes(projection=projection)
         mesh_x, mesh_y = np.meshgrid(u['longitude'], u['latitude'])
         if u is not None:
-            mask = self.mask.interp({k: u.coords[k] for k in ('longitude',
-                                                              'latitude')})
+            extra = self.mask.isel(longitude=slice(0, 10))
+            extra['longitude'] = extra['longitude'] + 360
+            mask = xr.concat((self.mask, extra), dim='longitude')
+            mask = mask.interp({k: u.coords[k] for k in ('longitude',
+                                                         'latitude')})
             u = u * mask
             im = ax.pcolormesh(mesh_x, mesh_y, u.values,
                                transform=PlateCarree(),
@@ -426,8 +429,11 @@ class GlobalPlotter:
         ax.set_global()
         ax.coastlines()
         if self.margin > 0:
-            borders = self.borders.interp({k: u.coords[k]
-                                           for k in ('longitude', 'latitude')})
+            extra = self.borders.isel(longitude=slice(0, 10))
+            extra['longitude'] = extra['longitude'] + 360
+            borders = xr.concat((self.borders, extra), dim='longitude')
+            borders = borders.interp({k: u.coords[k]
+                                     for k in ('longitude', 'latitude')})
             borders_cmap = colors.ListedColormap([borders_color, ])
             ax.pcolormesh(mesh_x, mesh_y, borders, animated=animated,
                           transform=PlateCarree(), alpha=borders_alpha,
