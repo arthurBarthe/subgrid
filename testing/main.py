@@ -43,7 +43,11 @@ import argparse
 from copy import deepcopy
 from sys import modules
 
+import dask
 from dask.diagnostics import ProgressBar
+
+# Set dast temporary directory
+dask.config.set(temporary_directory='/scratch/ag7531/dasktemp')
 
 
 # Parse arguments
@@ -125,7 +129,7 @@ while True:
     i_test += 1
     # Prompt user to select the test dataset
     cols = ['params.lat_min', 'params.lat_max', 'params.long_min',
-            'params.long_max', 'params.scale']
+            'params.long_max', 'params.scale', 'params.CO2']
     data_run = select_run(cols=cols, experiment_ids=[data_experiment_id, ])
     if isinstance(data_run, int):
         break
