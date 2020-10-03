@@ -43,8 +43,13 @@ import argparse
 from copy import deepcopy
 from sys import modules
 
+
 import dask
 from dask.diagnostics import ProgressBar
+from other.telegram import send_message
+
+send_message("Starting to run testing!")
+
 
 # Set dast temporary directory
 dask.config.set(temporary_directory='/scratch/ag7531/dasktemp')
