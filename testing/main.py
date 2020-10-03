@@ -272,6 +272,7 @@ out.to_zarr(file_path)
 mlflow.log_artifact(file_path)
 print(f'Size of output data is {out.nbytes/1e9} GB')
 send_message('Done with one dataset!')
+send_message('\xF0\x9F\x98\x8D')
 send_message('Now go to your laptop and tell what you want to do...')
 
 mlflow.end_run()
