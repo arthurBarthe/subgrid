@@ -8,8 +8,8 @@ Created on Sat Oct  3 03:01:49 2020
 
 import requests
 
-bot_token =  1391843927:AAEGeze6Pd2LbhtnZ3-__kTGN3lnurvaE0E
-chat_id = 1330475894
+bot_token = '1391843927:AAEGeze6Pd2LbhtnZ3-__kTGN3lnurvaE0E'
+chat_id = '1330475894''
 
 
 def send_message(text: str):
