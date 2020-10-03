@@ -128,158 +128,151 @@ data_experiment_name = select_experiment()
 data_experiment = mlflow.get_experiment_by_name(data_experiment_name)
 data_experiment_id = data_experiment.experiment_id
 
-# TODO remove looping
-i_test = 0
-while True:
-    i_test += 1
-    # Prompt user to select the test dataset
-    cols = ['params.lat_min', 'params.lat_max', 'params.long_min',
-            'params.long_max', 'params.scale', 'params.CO2']
-    data_run = select_run(cols=cols, experiment_ids=[data_experiment_id, ])
-    if isinstance(data_run, int):
-        break
-    # Recover the data (velocities and forcing)
-    client = mlflow.tracking.MlflowClient()
-    data_file = client.download_artifacts(data_run.run_id, 'forcing')
 
-    # Set the experiment to 'multiregion'
-    mlflow.log_param('model_run_id', model_run.run_id)
-    mlflow.log_param('data_run_id', data_run.run_id)
-    mlflow.log_param('n_epochs', n_epochs)
+# Prompt user to select the test dataset
+cols = ['params.lat_min', 'params.lat_max', 'params.long_min',
+        'params.long_max', 'params.CO2']
+data_run = select_run(cols=cols, experiment_ids=[data_experiment_id, ])
 
-    # Read the dataset file
-    print('loading dataset...')
-    xr_dataset = xr.open_zarr(data_file)
-    if input('global?').lower() == 'y':
-        xr_dataset.attrs['cycle'] = 360
+# Recover the data (velocities and forcing)
+client = mlflow.tracking.MlflowClient()
+data_file = client.download_artifacts(data_run.run_id, 'forcing')
 
-    # To PyTorch Dataset
-    dataset = RawDataFromXrDataset(xr_dataset)
-    dataset.index = 'time'
-    dataset.add_input('usurf')
-    dataset.add_input('vsurf')
-    dataset.add_output('S_x')
-    dataset.add_output('S_y')
+mlflow.log_param('model_run_id', model_run.run_id)
+mlflow.log_param('data_run_id', data_run.run_id)
+mlflow.log_param('n_epochs', n_epochs)
 
-    if n_epochs > 0:
-        train_index = int(train_split * len(dataset))
-        test_index = int(test_split * len(dataset))
-    else:
-        train_index = 1
-        test_index = 1
-    n_test_times = n_test_times if n_test_times else (len(dataset)
-                                                      - test_index)
-    train_dataset = Subset_(dataset, np.arange(train_index))
+# Read the dataset file
+print('loading dataset...')
+xr_dataset = xr.open_zarr(data_file)
+if input('global?').lower() == 'y':
+    xr_dataset.attrs['cycle'] = 360
 
-    print('Adding transforms...')
-    features_transform_ = deepcopy(features_transform)
-    targets_transform_ = deepcopy(targets_transform)
-    transform = DatasetTransformer(features_transform_, targets_transform_)
-    transform.fit(train_dataset)
-    dataset = DatasetWithTransform(dataset, transform)
-    dataset = MultipleTimeIndices(dataset)
-    dataset.time_indices = [0, ]
-    train_dataset = Subset_(dataset, np.arange(train_index))
-    test_dataset = Subset_(dataset, np.arange(test_index,
-                                              test_index + n_test_times))
+# To PyTorch Dataset
+dataset = RawDataFromXrDataset(xr_dataset)
+dataset.index = 'time'
+dataset.add_input('usurf')
+dataset.add_input('vsurf')
+dataset.add_output('S_x')
+dataset.add_output('S_y')
 
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
-                                  shuffle=True, drop_last=True)
-    partitioner = DatasetPartitioner(n_splits)
-    partition = partitioner.get_partition(test_dataset)
-    loaders = (DataLoader(d, batch_size=batch_size, shuffle=False,
-                          drop_last=False) for d in partition)
-    test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
-                                 shuffle=False, drop_last=True)
+if n_epochs > 0:
+    train_index = int(train_split * len(dataset))
+    test_index = int(test_split * len(dataset))
+else:
+    train_index = 1
+    test_index = 1
+n_test_times = n_test_times if n_test_times else (len(dataset)
+                                                  - test_index)
+train_dataset = Subset_(dataset, np.arange(train_index))
 
-    # Set inverse transform for metrics
-    for metric in metrics.values():
-        metric.inv_transform = (lambda x:
-                                test_dataset.inverse_transform_target(x))
+print('Adding transforms...')
+features_transform_ = deepcopy(features_transform)
+targets_transform_ = deepcopy(targets_transform)
+transform = DatasetTransformer(features_transform_, targets_transform_)
+transform.fit(train_dataset)
+dataset = DatasetWithTransform(dataset, transform)
+dataset = MultipleTimeIndices(dataset)
+dataset.time_indices = [0, ]
+train_dataset = Subset_(dataset, np.arange(train_index))
+test_dataset = Subset_(dataset, np.arange(test_index,
+                                          test_index + n_test_times))
 
-    # On first testdataset load the model. Or if we train to reset the model
-    if i_test == 1:
-        logging.info('Creating the neural network model')
-        model_cls = load_model_cls(model_module_name, model_cls_name)
-        net = model_cls(dataset.n_features, 2 * dataset.n_targets)
-        net.final_transformation = transformation
+train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
+                              shuffle=True, drop_last=True)
+partitioner = DatasetPartitioner(n_splits)
+partition = partitioner.get_partition(test_dataset)
+loaders = (DataLoader(d, batch_size=batch_size, shuffle=False,
+                      drop_last=False) for d in partition)
+test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
+                             shuffle=False, drop_last=True)
 
-    if i_test == 1 or n_epochs > 0:
-        # Load parameters of pre-trained model
-        logging.info('Loading the neural net parameters')
-        net.cpu()
-        net.load_state_dict(torch.load(model_file))
-        print(net)
+# Set inverse transform for metrics
+for metric in metrics.values():
+    metric.inv_transform = (lambda x:
+                            test_dataset.inverse_transform_target(x))
 
-    # Adding transforms required by the model
-    dataset.add_transforms_from_model(net)
+# On first testdataset load the model. Or if we train to reset the model
+logging.info('Creating the neural network model')
+model_cls = load_model_cls(model_module_name, model_cls_name)
+net = model_cls(dataset.n_features, 2 * dataset.n_targets)
+net.final_transformation = transformation
 
-    print('Size of training data: {}'.format(len(train_dataset)))
-    print('Size of validation data : {}'.format(len(test_dataset)))
-    print('Input height: {}'.format(train_dataset.height))
-    print('Input width: {}'.format(train_dataset.width))
-    print(train_dataset[0][0].shape)
-    print(train_dataset[0][1].shape)
-    print('Features transform: ', transform.transforms['features'].transforms)
-    print('Targets transform: ', transform.transforms['targets'].transforms)
+# Load parameters of pre-trained model
+logging.info('Loading the neural net parameters')
+net.cpu()
+net.load_state_dict(torch.load(model_file))
+print(net)
 
-    # Net to GPU
-    net.to(device)
+# Adding transforms required by the model
+dataset.add_transforms_from_model(net)
 
-    # Set up training criterion and select parameters to train
-    try:
-        n_targets = dataset.n_targets
-        criterion = getattr(modules['__main__'], loss_cls_name)(n_targets)
-    except AttributeError as e:
-        raise type(e)('Could not find the loss class used for training.')
+print('Size of training data: {}'.format(len(train_dataset)))
+print('Size of validation data : {}'.format(len(test_dataset)))
+print('Input height: {}'.format(train_dataset.height))
+print('Input width: {}'.format(train_dataset.width))
+print(train_dataset[0][0].shape)
+print(train_dataset[0][1].shape)
+print('Features transform: ', transform.transforms['features'].transforms)
+print('Targets transform: ', transform.transforms['targets'].transforms)
 
-    print('width: {}, height: {}'.format(dataset.width, dataset.height))
+# Net to GPU
+net.to(device)
 
-    trainer = Trainer(net, device)
-    trainer.criterion = criterion
+# Set up training criterion and select parameters to train
+try:
+    n_targets = dataset.n_targets
+    criterion = getattr(modules['__main__'], loss_cls_name)(n_targets)
+except AttributeError as e:
+    raise type(e)('Could not find the loss class used for training.')
 
-    # Register metrics
-    for metric_name, metric in metrics.items():
-        trainer.register_metric(metric_name, metric)
+print('width: {}, height: {}'.format(dataset.width, dataset.height))
 
-    if n_epochs > 0:
-        print('Fine-tuning whole network')
-        parameters = net.parameters()
-        optimizer = torch.optim.Adam(parameters, lr=learning_rate)
+trainer = Trainer(net, device)
+trainer.criterion = criterion
 
-    # Training itself
-    for i_epoch in range(n_epochs):
-        train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
-        test_loss, metrics_results = trainer.test(test_dataloader)
-        print('Epoch {}'.format(i_epoch))
-        print('Train loss for this epoch is {}'.format(train_loss))
-        print('Test loss for this epoch is {}'.format(test_loss))
+# Register metrics
+for metric_name, metric in metrics.items():
+    trainer.register_metric(metric_name, metric)
 
-    # Final test
-    print('Testing on train and validation data...')
-    if n_epochs > 0:
-        train_loss, train_metrics_results = trainer.test(train_dataloader)
-        print(f'Final train loss is {train_loss}')
-    # TODO put this back
-    # test_loss, test_metrics_results = trainer.test(test_dataloader)
-    mlflow.log_metric('validation loss', n_epochs)
-    # mlflow.log_metrics(test_metrics_results, i_test - 1)
-    # print(f'Final test loss is {test_loss}')
-    # for metric_name, metric_value in test_metrics_results.items():
-    #     print(f'{metric_name} : {metric_value}')
+if n_epochs > 0:
+    print('Fine-tuning whole network')
+    parameters = net.parameters()
+    optimizer = torch.optim.Adam(parameters, lr=learning_rate)
 
-    # Do the predictions for that dataset using the loaded model
-    # out = create_test_dataset(net, xr_dataset, test_dataset,
-    #                           test_dataloader, test_index, device)
-    out = create_large_test_dataset(net, partition, loaders, device)
-    file_path = os.path.join(data_location, f'test_output_{i_test - 1}')
-    ProgressBar().register()
-    print('Start of actual computations...')
-    out.to_zarr(file_path)
-    mlflow.log_artifact(file_path)
-    print(f'Size of output data is {out.nbytes/1e9} GB')
-    send_message('Done with one dataset!')
-    send_message('Now go to your laptop and tell what you want to do...')
+# Training itself
+for i_epoch in range(n_epochs):
+    train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
+    test_loss, metrics_results = trainer.test(test_dataloader)
+    print('Epoch {}'.format(i_epoch))
+    print('Train loss for this epoch is {}'.format(train_loss))
+    print('Test loss for this epoch is {}'.format(test_loss))
+
+# Final test
+print('Testing on train and validation data...')
+if n_epochs > 0:
+    train_loss, train_metrics_results = trainer.test(train_dataloader)
+    print(f'Final train loss is {train_loss}')
+# TODO put this back
+# test_loss, test_metrics_results = trainer.test(test_dataloader)
+mlflow.log_metric('validation loss', n_epochs)
+# mlflow.log_metrics(test_metrics_results, i_test - 1)
+# print(f'Final test loss is {test_loss}')
+# for metric_name, metric_value in test_metrics_results.items():
+#     print(f'{metric_name} : {metric_value}')
+
+# Do the predictions for that dataset using the loaded model
+# out = create_test_dataset(net, xr_dataset, test_dataset,
+#                           test_dataloader, test_index, device)
+out = create_large_test_dataset(net, partition, loaders, device)
+file_path = os.path.join(data_location, f'test_output_0')
+ProgressBar().register()
+print('Start of actual computations...')
+out.to_zarr(file_path)
+mlflow.log_artifact(file_path)
+print(f'Size of output data is {out.nbytes/1e9} GB')
+send_message('Done with one dataset!')
+send_message('Now go to your laptop and tell what you want to do...')
 
 mlflow.end_run()
 print('Done')
