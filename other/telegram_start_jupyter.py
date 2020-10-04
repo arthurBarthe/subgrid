@@ -48,7 +48,7 @@ for update in updates:
         with open('.last_update_id', 'w') as f:
             f.write(str(update_id))
         # Check user
-        if update['message']['from'] == 1330475894:
+        if update['message']['from']['id'] == 1330475894:
             if update['message']['text'] == 'start jupyter':
                 send_message('Starting jupyter for you!')
             else:
