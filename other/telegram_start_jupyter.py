@@ -12,13 +12,20 @@ import requests
 import json
 import sys
 from telegram import send_message
+import subprocess
 
 token = '1391843927:AAEGeze6Pd2LbhtnZ3-__kTGN3lnurvaE0E'
 chat_id = '1330475894'
 
 
-def get_updates(id_: int = None):
+def get_updates():
     r = requests.get('https://api.telegram.org/bot' + token + '/getupdates')
+    return r
+
+def start_jupyter():
+    cmd_text = 'source ~/.bashrc & source ~/setupMLFLOW.sh'
+    cmd_text += ' & conda activate analysis & sbatch ~myjupyter/run-jupyter.sbatch'
+    r = subprocess.run(cmd_text, shell=True, capture_output=True)
     return r
 
 
@@ -50,7 +57,7 @@ for update in updates:
         # Check user
         if update['message']['from']['id'] == 1330475894:
             if update['message']['text'] == 'start jupyter':
-                send_message('Starting jupyter for you!')
+                send_message(start_jupyter().stdout.decode())
             else:
                 send_message('Did not understand')
         else:
