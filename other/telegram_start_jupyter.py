@@ -58,7 +58,10 @@ for update in updates:
         # Check user
         if update['message']['from']['id'] == 1330475894:
             if update['message']['text'] == 'start jupyter':
-                send_message(start_jupyter().stdout.decode())
+                send_message('Trying to start jupyter...')
+                r = start_jupyter()
+                send_message(r.stderr.decode())
+                send_message(r.stdout.decode())
             else:
                 send_message('Did not understand')
         else:
