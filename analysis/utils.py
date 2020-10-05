@@ -138,7 +138,7 @@ def select_run(sort_by=None, cols=None, merge=None, *args, **kargs) -> object:
             experiment = mlflow.get_experiment_by_name(name)
             df2 = mlflow.search_runs(experiment_ids=experiment.experiment_id)
             mlflow_runs = pd.merge(mlflow_runs, df2, left_on=key_left,
-                                   right_on=key_right)
+                                   right_on=key_right, suffixes=('', 'y'))
     if len(mlflow_runs) == 0:
         raise Exception('No data found. Check that you correctly set \
                         the store')
