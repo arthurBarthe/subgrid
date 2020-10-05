@@ -132,8 +132,6 @@ def select_run(sort_by=None, cols=None, merge=None, *args, **kargs) -> object:
             new_cols.append(e)
     cols = new_cols
     if merge is not None:
-        cols[cols.index('run_id')] = 'run_id_x'
-        cols[cols.index('experiment_id')] = 'experiment_id_x'
         for name, key_left, key_right in merge:
             experiment = mlflow.get_experiment_by_name(name)
             df2 = mlflow.search_runs(experiment_ids=experiment.experiment_id)
