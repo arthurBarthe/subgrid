@@ -38,7 +38,7 @@ def get_output_file(job_id: int):
     n = 0
     while True:
         n += 1
-        time.sleep(5)
+        time.sleep(20)
         try:
             send_message('Looking for output file ' + file_path)
             with open(file_path) as f:
