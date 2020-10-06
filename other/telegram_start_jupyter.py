@@ -13,6 +13,7 @@ import json
 import sys
 from telegram import send_message
 import subprocess
+import time
 
 token = '1391843927:AAEGeze6Pd2LbhtnZ3-__kTGN3lnurvaE0E'
 chat_id = '1330475894'
@@ -22,10 +23,24 @@ def get_updates():
     r = requests.get('https://api.telegram.org/bot' + token + '/getupdates')
     return r
 
+
 def start_jupyter():
-    cmd_text += '/opt/slurm/bin/sbatch ~/myjupyter/run-jupyter.sbatch'
+    cmd_text = 'cd ~/myjupyter/'
+    cmd_text += ' & /opt/slurm/bin/sbatch ~/myjupyter/run-jupyter.sbatch'
     r = subprocess.run(cmd_text, shell=True, capture_output=True)
     return r
+
+
+def get_output_file(job_id: int):
+    file_path = ''.join(('slurm-', str(job_id), '.out'))
+    while True:
+        time.sleep(5)
+        try:
+            send_message('Looking for output file...')
+            with open(file_path) as f:
+                return f.readlines()
+        except FileNotFoundError:
+            pass
 
 
 # We read updates, if we find the expected message we start the jupyter script
@@ -58,8 +73,10 @@ for update in updates:
             if update['message']['text'] == 'start jupyter':
                 send_message('Trying to start jupyter...')
                 r = start_jupyter()
-                send_message(r.stderr.decode())
-                send_message(r.stdout.decode())
+                s = r.stdout.decode()
+                send_message(s)
+                output_file = get_output_file(int(s.split()[-1]))
+                send_message(output_file)
             else:
                 send_message('Did not understand')
         else:
