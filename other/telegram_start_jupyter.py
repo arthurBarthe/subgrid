@@ -82,7 +82,7 @@ for update in updates:
                 s = r.stdout.decode()
                 send_message(s)
                 output_file = get_output_file(int(s.split()[-1]))
-                print(f'{output_file=}')
+                print(f'output file content: {output_file}')
                 send_message(output_file)
                 send_message('Done!')
             else:
