@@ -23,9 +23,7 @@ def get_updates():
     return r
 
 def start_jupyter():
-    cmd_text = 'source /home/ag7531/miniconda3/etc/profile.d/conda.sh'
-    cmd_text += ' & /home/ag7531/miniconda3/bin/conda activate analysis'
-    cmd_text += ' & /opt/slurm/bin/sbatch ~/myjupyter/run-jupyter.sbatch'
+    cmd_text += '/opt/slurm/bin/sbatch ~/myjupyter/run-jupyter.sbatch'
     r = subprocess.run(cmd_text, shell=True, capture_output=True)
     return r
 
