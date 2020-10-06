@@ -14,6 +14,7 @@ import sys
 from telegram import send_message
 import subprocess
 import time
+from os.path import join
 
 token = '1391843927:AAEGeze6Pd2LbhtnZ3-__kTGN3lnurvaE0E'
 chat_id = '1330475894'
@@ -32,13 +33,14 @@ def start_jupyter():
 
 
 def get_output_file(job_id: int):
-    file_path = ''.join(('slurm-', str(job_id), '.out'))
+    file_name = ''.join(('slurm-', str(job_id), '.out'))
+    file_path = join('/home/ag7531', file_name)
     n = 0
     while True:
         n += 1
         time.sleep(5)
         try:
-            send_message('Looking for output file...')
+            send_message('Looking for output file ' + file_path)
             with open(file_path) as f:
                 return f.readlines()
         except FileNotFoundError:
