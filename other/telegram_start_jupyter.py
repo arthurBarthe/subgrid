@@ -42,6 +42,7 @@ def get_output_file(job_id: int):
         try:
             send_message('Looking for output file ' + file_path)
             with open(file_path) as f:
+                send_message('Found the file!')
                 return f.readlines()
         except FileNotFoundError:
             if n >= 6:
@@ -81,7 +82,9 @@ for update in updates:
                 s = r.stdout.decode()
                 send_message(s)
                 output_file = get_output_file(int(s.split()[-1]))
+                print(f'{output_file=}')
                 send_message(output_file)
+                send_message('Done!')
             else:
                 send_message('Did not understand')
         else:
