@@ -83,7 +83,8 @@ for update in updates:
                 send_message(s)
                 output_file = get_output_file(int(s.split()[-1]))
                 print(f'output file content: {output_file}')
-                send_message(output_file)
+                for line in output_file:
+                    send_message(line)
                 send_message('Done!')
             else:
                 send_message('Did not understand')
