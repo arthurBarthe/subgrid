@@ -33,14 +33,17 @@ def start_jupyter():
 
 def get_output_file(job_id: int):
     file_path = ''.join(('slurm-', str(job_id), '.out'))
+    n = 0
     while True:
+        n += 1
         time.sleep(5)
         try:
             send_message('Looking for output file...')
             with open(file_path) as f:
                 return f.readlines()
         except FileNotFoundError:
-            pass
+            if n >= 6:
+                return 'Output file not found...'
 
 
 # We read updates, if we find the expected message we start the jupyter script
