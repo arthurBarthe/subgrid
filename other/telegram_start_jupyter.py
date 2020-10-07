@@ -15,6 +15,7 @@ from telegram import send_message
 import subprocess
 import time
 from os.path import join
+import hashlib
 
 token = '1391843927:AAEGeze6Pd2LbhtnZ3-__kTGN3lnurvaE0E'
 chat_id = '1330475894'
@@ -53,6 +54,19 @@ def get_output_file(job_id: int):
         time.sleep(20)
 
 
+def check_user(user_id: int):
+    try:
+        with open('.telegram_users') as f:
+            return user_id in [int(s.strip()) for s in f.readlines()]
+    except FileNotFoundError:
+        return False
+
+
+def register_new_user(user_id):
+    with open('.telegram_users', 'a') as f:
+        f.write(str(user_id) + '\n')
+
+
 # We read updates, if we find the expected message we start the jupyter script
 r = get_updates()
 updates = json.loads(r.text)
@@ -79,7 +93,8 @@ for update in updates:
         with open('.last_update_id', 'w') as f:
             f.write(str(update_id))
         # Check user
-        if update['message']['from']['id'] == 1330475894:
+        user_id = int(update['message']['from']['id'])
+        if check_user(user_id):
             if update['message']['text'] == 'start jupyter':
                 send_message('Trying to start jupyter...')
                 r = start_jupyter()
@@ -93,4 +108,11 @@ for update in updates:
             else:
                 send_message('Did not understand')
         else:
-            send_message('Unauthorized user')
+            message = update['message']['text']
+            hash_m = hashlib.sha256(message.encode()).hexdigest()
+            if  hash_m == '141398e3d78065d224cc535a984d7aa000a0429b1ead2687f16a81e05c8f5f41':
+                register_new_user(user_id)
+                send_message('Thanks, you are now registered.')
+            else:
+                send_message('You are not registered as a user yet.')
+                send_message('Please reply with the password')
