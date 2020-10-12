@@ -74,7 +74,7 @@ def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
     if ntimes is not None:
         uv_data = uv_data.isel(time=slice(0, ntimes))
 
-    if selected_vars is None:
+    if len(selected_vars) == 0:
         return uv_data, grid_data
     else:
         return uv_data[list(selected_vars)], grid_data
