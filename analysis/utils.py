@@ -335,11 +335,12 @@ class GlobalPlotter:
     """General class to make plots for global data. Handles masking of
     continental data + showing a band near coastlines."""
 
-    def __init__(self, margin: int = 10, cbar: bool = True):
+    def __init__(self, margin: int = 10, cbar: bool = True, ice: bool = True):
         self.mask = self._get_global_u_mask()
         self.margin = margin
         self.cbar = cbar
         self.ticks = dict(x=None, y=None)
+        self.ice = ice
 
     @property
     def mask(self):
@@ -426,6 +427,7 @@ class GlobalPlotter:
             ax.set_yticks(self.y_ticks)
         ax.set_global()
         ax.coastlines()
+        # "Gray-out" near continental locations
         if self.margin > 0:
             extra = self.borders.isel(longitude=slice(0, 10))
             extra['longitude'] = extra['longitude'] + 360
@@ -436,6 +438,19 @@ class GlobalPlotter:
             ax.pcolormesh(mesh_x, mesh_y, borders, animated=animated,
                           transform=PlateCarree(), alpha=borders_alpha,
                           cmap=borders_cmap)
+        # Add locations of ice
+        if self.ice:
+            ice = self._get_ice_border()
+            ice = xr.where(ice, 1., 0.)
+            ice = ice.interp({k: u.coords[k] for k in ('longitude',
+                                                       'latitude')})
+            ice = xr.where(ice != 0, 1., 0.)
+            ice = abs(ice.diff(dim='longitude')) + abs(ice.diff(dim='latitude'))
+            ice = xr.where(ice != 0., 1, np.nan)
+            ice_cmap = colors.ListedColormap(['black', ])
+            ax.pcolormesh(mesh_x, mesh_y, ice, animated=animated,
+                          transform=PlateCarree(), alpha=0.5,
+                          cmap=ice_cmap)
         if u is not None and self.cbar:
             cax = fig.add_axes([ax.get_position().x1+0.01,
                                 ax.get_position().y0,
@@ -480,6 +495,18 @@ class GlobalPlotter:
         return mask_.compute()
 
     @staticmethod
+    def _get_ice_border():
+        """Return an xarray.DataArray that indicates the locations of ice
+        in the oceans. """
+        temperature, _ = get_patch(CATALOG_URL, 1, None, 0,
+                                        'surface_temp')
+        temperature = temperature.rename(dict(xt_ocean='longitude',
+                                              yt_ocean='latitude'))
+        temperature = temperature['surface_temp'].isel(time=0)
+        ice = xr.where(temperature <= 0., True, False)
+        return ice
+
+    @staticmethod
     def _get_continent_borders(base_mask: xr.DataArray, margin: int):
         """
         Returns a boolean xarray DataArray corresponding to a mask of the
@@ -511,6 +538,7 @@ class GlobalPlotter:
         mask = np.logical_and(np.isnan(mask),  ~np.isnan(base_mask))
         mask = mask.where(mask)
         return mask.compute()
+
 
 
 def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
