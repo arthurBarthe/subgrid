@@ -15,8 +15,8 @@ import pandas as pd
 from analysis.analysis import TimeSeriesForPoint
 import xarray as xr
 from scipy.ndimage import gaussian_filter
-from data.pangeo_catalog import get_whole_data
-from cartopy.crs import Projection, PlateCarree
+from data.pangeo_catalog import get_patch
+from cartopy.crs import PlateCarree
 
 
 from enum import Enum
