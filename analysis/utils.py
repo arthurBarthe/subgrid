@@ -547,7 +547,9 @@ def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
                              *plot_args, **plot_kwd_args):
     """
     Plots the training subdomains used for a given training run. Retrieves
-    those subdomains from the run's parameters.
+    those subdomains from the run's parameters. Additionally, provide the
+    latex code of a table with the latitudes and longitudes of each
+    subdomain.
 
     Parameters
     ----------
@@ -571,9 +573,17 @@ def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
     run = mlflow.get_run(run_id)
     run_params = run.data.params
     data_ids = run_params['source.run_id'].split('/')
+    # retrieve the latex code for the table from file
+    with open('latex_table.txt') as f:
+        lines = f.readlines()
+        latex_start = ''.join(lines[:3])
+        latex_line = lines[4]
+        latex_end = ''.join(lines[6:])
+    latex_lines = []
+    subdomain_names = 'ABCDE'
     # Plot the map
     ax = global_plotter.plot(bg_variable, *plot_args, **plot_kwd_args)
-    for data_id in data_ids:
+    for i, data_id in enumerate(data_ids):
         # Recover the coordinates of the rectangular subdomain
         run = mlflow.get_run(data_id)
         run_params = run.data.params
@@ -586,5 +596,13 @@ def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
         ax.add_patch(Rectangle((x, y), width, height, facecolor=facecolor,
                                edgecolor=edgecolor, linewidth=linewidth,
                                fill=fill, alpha=alpha))
+        # Add the table line
+        lat_range = str(lat_min) + '°, ' + str(lat_max) + '°'
+        lon_range = str(lon_min) + '°, ' + str(lon_max) + '°'
+        latex_lines.append(latex_line.format(subdomain_names[i], lat_range,
+                                             lon_range))
+    latex_lines = ''.join(latex_lines)
+    latex = ''.join(latex_start, latex_lines, latex_end)
+    print(latex)
     plt.show()
     return ax
