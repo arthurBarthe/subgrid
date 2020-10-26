@@ -574,7 +574,7 @@ def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
     run_params = run.data.params
     data_ids = run_params['source.run_id'].split('/')
     # retrieve the latex code for the table from file
-    with open('latex_table.txt') as f:
+    with open('analysis/latex_table.txt') as f:
         lines = f.readlines()
         latex_start = ''.join(lines[:3])
         latex_line = lines[4]
