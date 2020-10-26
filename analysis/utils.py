@@ -597,8 +597,8 @@ def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
                                edgecolor=edgecolor, linewidth=linewidth,
                                fill=fill, alpha=alpha))
         # Add the table line
-        lat_range = str(lat_min) + '°, ' + str(lat_max) + '°'
-        lon_range = str(lon_min) + '°, ' + str(lon_max) + '°'
+        lat_range = str(lat_min) + '\\degree, ' + str(lat_max) + '\\degree'
+        lon_range = str(lon_min) + '\\degree, ' + str(lon_max) + '\\degree'
         latex_lines.append(latex_line.format(subdomain_names[i], lat_range,
                                              lon_range))
     latex_lines = ''.join(latex_lines)
