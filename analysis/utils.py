@@ -602,7 +602,7 @@ def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
         latex_lines.append(latex_line.format(subdomain_names[i], lat_range,
                                              lon_range))
     latex_lines = ''.join(latex_lines)
-    latex = ''.join(latex_start, latex_lines, latex_end)
+    latex = ''.join((latex_start, latex_lines, latex_end))
     print(latex)
     plt.show()
     return ax
