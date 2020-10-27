@@ -385,7 +385,8 @@ class GlobalPlotter:
 
     def plot(self, u: xr.DataArray = None, projection_cls=PlateCarree,
              lon: float = -100.0, lat: float = None, ax=None, animated=False,
-             borders_color='grey', borders_alpha=1., **plot_func_kw):
+             borders_color='grey', borders_alpha=1.,
+             colorbar_label='', **plot_func_kw):
         """
         Plots the passed velocity component on a map, using the specified
         projection. Uses the instance's mask to set as nan some values.
@@ -452,11 +453,9 @@ class GlobalPlotter:
                           transform=PlateCarree(), alpha=0.5,
                           cmap=ice_cmap)
         if u is not None and self.cbar:
-            cax = fig.add_axes([ax.get_position().x1+0.01,
-                                ax.get_position().y0,
-                                0.02,
-                                ax.get_position().height])
-            plt.colorbar(im, cax=cax)
+            cbar = plt.colorbar(im, shrink=0.6)
+            if colorbar_label:
+                cbar.set_label(colorbar_label)
         return ax
 
     @staticmethod
