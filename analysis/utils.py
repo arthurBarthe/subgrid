@@ -605,3 +605,9 @@ def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
     print(latex)
     plt.show()
     return ax
+
+
+def anomalies(dataset: xr.Dataset, dim: str = 'time.month'):
+    """Returns a dataset of the anomalies."""
+    grouped_data = dataset.groupby(dim)
+    return grouped_data - grouped_data.mean()
