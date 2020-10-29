@@ -85,7 +85,6 @@ class SeasonalStdizer(Transform):
         self._means = None
         self._stds = None
         self._grouped = None
-        self.x = None
 
     @property
     def grouped(self):
@@ -112,21 +111,15 @@ class SeasonalStdizer(Transform):
         self._stds = value
 
     def fit(self, x):
-        self.x = x
-        self.grouped = x.groupby(self.by).compute()
+        self.grouped = x.groupby(self.by)
         self.means = self.grouped.mean(dim=self.dim).compute()
         self.stds = self.grouped.std(dim=self.dim).compute()
 
     def transform(self, x):
-        if x is not self.x:
-            self.grouped = x.groupby(self.by).compute()
-            self.x = x
-        y = self.grouped - self.means
-        y = y / self.stds
-        return y
+        months = x['time'].dt.month
+        means = self.means.sel(month=months)
+        stds = self.stds.sel(month=months)
+        return (x - means) / stds
 
     def inv_transform(self, x):
-        y = x.groupby(self.by) * self.stds
-        y = y.groupby(self.by) + self.means
-        del y['month']
-        return y
+        raise NotImplementedError
