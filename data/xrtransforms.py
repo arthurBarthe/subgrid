@@ -112,8 +112,8 @@ class SeasonalStdizer(Transform):
 
     def fit(self, x):
         self.grouped = x.groupby(self.by)
-        self.means = self.grouped.mean(dim=self.dim)
-        self.stds = self.grouped.std(dim=self.dim)
+        self.means = self.grouped.mean(dim=self.dim).compute()
+        self.stds = self.grouped.std(dim=self.dim).compute()
 
     def transform(self, x):
         # TODO unefficient
