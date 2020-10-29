@@ -87,6 +87,10 @@ class SeasonalStdizer(Transform):
     def grouped(self):
         return self._grouped
 
+    @grouped.setter
+    def grouped(self, value):
+        self._grouped = value
+
     @property
     def means(self):
         return self._means
