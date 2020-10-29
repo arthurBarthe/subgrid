@@ -113,7 +113,9 @@ class SeasonalStdizer(Transform):
         self.stds = self.grouped.std(dim=self.dim)
 
     def transform(self, x):
-        return (x - self.means) / self.stds
+        new = (x - self.means) / self.stds
+        del new['month']
+        return new
 
     def inv_transform(self, x):
         return x * self.stds + self.means
