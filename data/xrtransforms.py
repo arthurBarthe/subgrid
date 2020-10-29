@@ -104,7 +104,7 @@ class SeasonalStdizer(Transform):
         self._stds = value
 
     def fit(self, x):
-        self.grouped = self.groupby(self.by)
+        self.grouped = x.groupby(self.by)
         self.means = self.grouped.mean(dim=self.dim)
         self.stds = self.grouped.std(dim=self.dim)
 
