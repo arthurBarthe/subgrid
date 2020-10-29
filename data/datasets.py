@@ -327,12 +327,12 @@ class FixedNormalizer(ArrayTransform):
 
 
 class FixedVelocityNormalizer(FixedNormalizer):
-    std = 0.1
-
+    # std = 0.1
+    std = 1
 
 class FixedForcingNormalizer(FixedNormalizer):
-    std = 1e-7
-
+    # std = 1e-7
+    std = 1
 
 class ArctanPerChannelNormalizer(PerChannelNormalizer):
     def __init__(self, *args, **kargs):
