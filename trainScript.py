@@ -185,7 +185,7 @@ except AttributeError as e:
 for xr_dataset in xr_datasets:
     # TODO this is a temporary fix to implement seasonal patterns
     seasonal_transform = SeasonalStdizer()
-    xr_dataset = seasonal_transform.apply((xr_dataset))
+    xr_dataset = seasonal_transform.fit_transform((xr_dataset))
     dataset = RawDataFromXrDataset(xr_dataset)
     dataset.index = 'time'
     dataset.add_input('usurf')
