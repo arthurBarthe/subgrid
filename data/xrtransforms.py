@@ -85,6 +85,7 @@ class SeasonalStdizer(Transform):
         self._means = None
         self._stds = None
         self._grouped = None
+        self.x = None
 
     @property
     def grouped(self):
@@ -111,16 +112,17 @@ class SeasonalStdizer(Transform):
         self._stds = value
 
     def fit(self, x):
-        self.grouped = x.groupby(self.by)
+        self.x = x
+        self.grouped = x.groupby(self.by).compute()
         self.means = self.grouped.mean(dim=self.dim).compute()
         self.stds = self.grouped.std(dim=self.dim).compute()
 
     def transform(self, x):
-        # TODO unefficient
-        x['month'] = x['time'].dt.month
-        y = x - self.means
+        if x is not self.x:
+            self.grouped = x.groupby(self.by).compute()
+            self.x = x
+        y = self.grouped - self.means
         y = y / self.stds
-        del y['month']
         return y
 
     def inv_transform(self, x):
