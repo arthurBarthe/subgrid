@@ -117,8 +117,9 @@ class SeasonalStdizer(Transform):
 
     def transform(self, x):
         # TODO unefficient
-        y = x.groupby(self.by) - self.means
-        y = y.groupby(self.by) / self.stds
+        x['month'] = x['time'].dt.month
+        y = x - self.means
+        y = y / self.stds
         del y['month']
         return y
 
