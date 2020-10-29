@@ -25,6 +25,9 @@ class Transform(ABC):
     def apply(self, x: xr.Dataset):
         return self.transform(x)
 
+    def __call__(self, x: xr.Dataset):
+        return self.apply(x)
+
     def fit_transform(self, x: xr.Dataset):
         self.fit(x)
         return self.transform(x)
@@ -113,9 +116,11 @@ class SeasonalStdizer(Transform):
         self.stds = self.grouped.std(dim=self.dim)
 
     def transform(self, x):
-        new = (x - self.means) / self.stds
-        del new['month']
-        return new
+        y = (x - self.means) / self.stds
+        y = y.drop_vars('month')
+        return y
 
     def inv_transform(self, x):
-        return x * self.stds + self.means
+        y =  x * self.stds + self.means
+        y = y.drop_vars('month')
+        return y
