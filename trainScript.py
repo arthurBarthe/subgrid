@@ -69,6 +69,9 @@ import tempfile
 import importlib
 import pickle
 
+from data.xrtransforms import SeasonalStdizer
+
+
 
 def negative_int(value: str):
     return -int(value)
@@ -177,9 +180,12 @@ try:
     targets_transform_clss = [getattr(data.datasets, cls_name) for 
                               cls_name in targets_transform_cls_names]
 except AttributeError as e:
-    raise type(e)('Could not find the dataset transform class: ' +
-                  str(e))
+    raise type(e)('Could not find the dataset transform class: ' + str(e))
+
 for xr_dataset in xr_datasets:
+    # TODO this is a temporary fix to implement seasonal patterns
+    seasonal_transform = SeasonalStdizer()
+    xr_dataset = seasonal_transform.apply((xr_dataset))
     dataset = RawDataFromXrDataset(xr_dataset)
     dataset.index = 'time'
     dataset.add_input('usurf')
@@ -291,6 +297,8 @@ params = list(net.parameters())
 #     params.append({'params': linear_layer.parameters(),
 #                    'weight_decay': weight_decay,
 #                    'lr': learning_rates[0] / 100})
+
+# TODO check if we can do lr decay differently
 optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0)
               for (i, v) in learning_rates.items()}
 
