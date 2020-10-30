@@ -152,7 +152,7 @@ if input('global?').lower() == 'y':
 
 # Temporary fix: removing seasonalities "manually"
 t = SeasonalStdizer()
-xr_dataset = t(xr_dataset)
+xr_dataset = t.fit_transform(xr_dataset)
 
 # To PyTorch Dataset
 dataset = RawDataFromXrDataset(xr_dataset)
