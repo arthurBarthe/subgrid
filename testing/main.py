@@ -48,6 +48,8 @@ import dask
 from dask.diagnostics import ProgressBar
 from other.telegram import send_message
 
+from data.xrtransforms import SeasonalStdizer
+
 send_message("Starting to run testing!")
 
 
@@ -147,6 +149,10 @@ print('loading dataset...')
 xr_dataset = xr.open_zarr(data_file)
 if input('global?').lower() == 'y':
     xr_dataset.attrs['cycle'] = 360
+
+# Temporary fix: removing seasonalities "manually"
+t = SeasonalStdizer()
+xr_dataset = t(xr_dataset)
 
 # To PyTorch Dataset
 dataset = RawDataFromXrDataset(xr_dataset)
