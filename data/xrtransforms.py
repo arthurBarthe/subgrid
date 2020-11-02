@@ -138,6 +138,8 @@ class SeasonalStdizer(Transform):
         times = data.time
         months = times.dt.month
         r = data - self.means[var_name].sel(month=months)
+        if self.std:
+            r = r / self.stds[var_name].sel(month=months)
         del r['month']
         return r.values
 
@@ -145,7 +147,7 @@ class SeasonalStdizer(Transform):
         sub_datasets = []
         nb_samples = len(data.time)
         for start in range(0, nb_samples, 200):
-            sub_data = data.isel(time=slice(start, min(start+200), nb_samples))
+            sub_data = data.isel(time=slice(start, min(start+200, nb_samples)))
             sub_coords = sub_data.coords
             new_xr_arrays = {}
             for k, val in sub_data.items():
