@@ -9,6 +9,9 @@ Created on Wed Oct 28 17:21:16 2020
 import xarray as xr
 from abc import ABC, abstractmethod
 import pickle
+from dask import delayed
+import dask.array as da
+import numpy as np
 
 
 class Transform(ABC):
@@ -43,7 +46,11 @@ class Transform(ABC):
     def load(path: str):
         with open(path, 'rb') as f:
             return pickle.load(f)
-        
+
+
+# class MultipleSubdomainsTransform(Transform):
+#     """A class able to use 
+
 
 class ChainedTransform(Transform):
     def __init__(self, transforms):
@@ -126,15 +133,33 @@ class SeasonalStdizer(Transform):
         self.means = self.grouped.mean(dim=self.dim).compute()
         self.stds = self.grouped.std(dim=self.dim).compute()
 
-    def transform(self, x):
-        # TODO this only works for the specific case 'time' and 'month' rn
-        months = x['time'].dt.month
-        means = self.means.sel(month=months)
-        y = (x - means)
-        if self.apply_std:
-            stds = self.stds.sel(month=months)
-            return y / stds
-        return y
+    @delayed
+    def get_transformed(self, data, var_name):
+        times = data.time
+        months = times.dt.month
+        r = data - self.means[var_name].sel(month=months)
+        del r['month']
+        return r.values
+
+    def transform(self, data):
+        sub_datasets = []
+        nb_samples = len(data.time)
+        for start in range(0, nb_samples, 200):
+            sub_data = data.isel(time=slice(start, min(start+200), nb_samples))
+            sub_coords = sub_data.coords
+            new_xr_arrays = {}
+            for k, val in sub_data.items():
+                new_shape = val.shape
+                dims = val.dims
+                transformed = self.get_transformed(val, k)
+                dask_array = da.from_delayed(transformed, shape=new_shape,
+                                             dtype=np.float64)
+                new_xr_array = xr.DataArray(data=dask_array, coords=sub_coords,
+                                            dims=dims)
+                new_xr_arrays[k] = new_xr_array
+            new_ds = xr.Dataset(new_xr_arrays)
+            sub_datasets.append(new_ds)
+        return xr.concat(sub_datasets, dim='time')
 
     def inv_transform(self, x):
         months = x['time'].dt.month
