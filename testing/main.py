@@ -150,6 +150,7 @@ mlflow.log_param('n_epochs', n_epochs)
 print('loading dataset...')
 xr_dataset = xr.open_zarr(data_file)
 if input('global?').lower() == 'y':
+    # This will add a cyclic transform when used on our model
     xr_dataset.attrs['cycle'] = 360
 
 # Temporary fix: removing seasonalities "manually"
@@ -192,7 +193,7 @@ train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
 partitioner = DatasetPartitioner(n_splits)
 partition = partitioner.get_partition(test_dataset)
 loaders = (DataLoader(d, batch_size=batch_size, shuffle=False,
-                      drop_last=False) for d in partition)
+                      drop_last=True) for d in partition)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                              shuffle=False, drop_last=True)
 
@@ -226,7 +227,8 @@ print('Features transform: ', transform.transforms['features'].transforms)
 print('Targets transform: ', transform.transforms['targets'].transforms)
 
 # Net to GPU
-net.to(device)
+with TaskInfo('Put neural network on GPU'):
+    net.to(device)
 
 # Set up training criterion and select parameters to train
 try:
@@ -257,32 +259,24 @@ for i_epoch in range(n_epochs):
     print('Train loss for this epoch is {}'.format(train_loss))
     print('Test loss for this epoch is {}'.format(test_loss))
 
-# Final test
+# Final validation loss
 print('Testing on train and validation data...')
 if n_epochs > 0:
     train_loss, train_metrics_results = trainer.test(train_dataloader)
     print(f'Final train loss is {train_loss}')
-# TODO put this back
-# test_loss, test_metrics_results = trainer.test(test_dataloader)
-mlflow.log_metric('validation loss', n_epochs)
-# mlflow.log_metrics(test_metrics_results, i_test - 1)
-# print(f'Final test loss is {test_loss}')
-# for metric_name, metric_value in test_metrics_results.items():
-#     print(f'{metric_name} : {metric_value}')
 
-# Do the predictions for that dataset using the loaded model
-# out = create_test_dataset(net, xr_dataset, test_dataset,
-#                           test_dataloader, test_index, device)
-out = create_large_test_dataset(net, partition, loaders, device)
-file_path = os.path.join(data_location, f'test_output_0')
-ProgressBar().register()
-print('Start of actual computations...')
-out.to_zarr(file_path)
-mlflow.log_artifact(file_path)
-print(f'Size of output data is {out.nbytes/1e9} GB')
-send_message('Done with one dataset!')
-send_message('\xF0\x9F\x98\x8D')
-send_message('Now go to your laptop and tell what you want to do...')
+# Test
+with TaskInfo('Create output dataset'):
+    out = create_large_test_dataset(net, partition, loaders, device)
+    file_path = os.path.join(data_location, f'test_output_0')
+    ProgressBar().register()
+    print('Start of actual computations...')
+    out.to_zarr(file_path)
+    mlflow.log_artifact(file_path)
+    print(f'Size of output data is {out.nbytes/1e9} GB')
+    send_message('Done with one dataset!')
+    send_message('\xF0\x9F\x98\x8D')
+    send_message('Now go to your laptop and tell what you want to do...')
 
 mlflow.end_run()
 print('Done')
