@@ -138,7 +138,7 @@ class SeasonalStdizer(Transform):
         times = data.time
         months = times.dt.month
         r = data - self.means[var_name].sel(month=months)
-        if self.std:
+        if self.apply_std:
             r = r / self.stds[var_name].sel(month=months)
         del r['month']
         return r.values
