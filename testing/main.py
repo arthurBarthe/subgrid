@@ -50,6 +50,8 @@ from other.telegram import send_message
 
 from data.xrtransforms import SeasonalStdizer
 
+from utils import TaskInfo
+
 send_message("Starting to run testing!")
 
 
@@ -151,8 +153,9 @@ if input('global?').lower() == 'y':
     xr_dataset.attrs['cycle'] = 360
 
 # Temporary fix: removing seasonalities "manually"
-t = SeasonalStdizer()
-xr_dataset = t.fit_transform(xr_dataset)
+with ProgressBar(), TaskInfo('Seasonal standardization'):
+    t = SeasonalStdizer()
+    xr_dataset = t.fit_transform(xr_dataset)
 
 # To PyTorch Dataset
 dataset = RawDataFromXrDataset(xr_dataset)
