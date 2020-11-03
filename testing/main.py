@@ -239,34 +239,31 @@ except AttributeError as e:
 
 print('width: {}, height: {}'.format(dataset.width, dataset.height))
 
-trainer = Trainer(net, device)
-trainer.criterion = criterion
-
-# Register metrics
-for metric_name, metric in metrics.items():
-    trainer.register_metric(metric_name, metric)
-
-if n_epochs > 0:
-    print('Fine-tuning whole network')
-    parameters = net.parameters()
-    optimizer = torch.optim.Adam(parameters, lr=learning_rate)
 
 # Training itself
-for i_epoch in range(n_epochs):
-    train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer)
-    test_loss, metrics_results = trainer.test(test_dataloader)
-    print('Epoch {}'.format(i_epoch))
-    print('Train loss for this epoch is {}'.format(train_loss))
-    print('Test loss for this epoch is {}'.format(test_loss))
-
-# Final validation loss
-print('Testing on train and validation data...')
 if n_epochs > 0:
-    train_loss, train_metrics_results = trainer.test(train_dataloader)
-    print(f'Final train loss is {train_loss}')
+    with TaskInfo('Training'):
+        trainer = Trainer(net, device)
+        trainer.criterion = criterion
+        # Register metrics
+        for metric_name, metric in metrics.items():
+            trainer.register_metric(metric_name, metric)
+        parameters = net.parameters()
+        optimizer = torch.optim.Adam(parameters, lr=learning_rate)
+        for i_epoch in range(n_epochs):
+            train_loss = trainer.train_for_one_epoch(train_dataloader,
+                                                     optimizer)
+            test_loss, metrics_results = trainer.test(test_dataloader)
+            print('Epoch {}'.format(i_epoch))
+            print('Train loss for this epoch is {}'.format(train_loss))
+            print('Test loss for this epoch is {}'.format(test_loss))
+
+    with TaskInfo('Validation'):
+        train_loss, train_metrics_results = trainer.test(train_dataloader)
+        print(f'Final train loss is {train_loss}')
 
 # Test
-with TaskInfo('Create output dataset'):
+with ProgressBar(), TaskInfo('Create output dataset'):
     out = create_large_test_dataset(net, partition, loaders, device)
     file_path = os.path.join(data_location, f'test_output_0')
     ProgressBar().register()
