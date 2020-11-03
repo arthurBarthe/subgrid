@@ -54,9 +54,9 @@ def apply_net(net, test_dataloader, device, save_input=False):
             prediction = (net(features)).cpu().numpy()
             output.append(prediction)
     if save_input:
-        return output, input_
+        return np.array(output), np.array(input_)
     else:
-        return output,
+        return np.array(output),
 
 
 def _dataset_from_channels(array, channels_names: list, dims, coords):
