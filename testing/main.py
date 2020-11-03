@@ -26,8 +26,10 @@ from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
                            Subset_, DatasetWithTransform,
                            MultipleTimeIndices, DatasetPartitioner)
 from train.base import Trainer
+from train.losses import *
 
-from testing.utils import (create_large_test_dataset, pickle_artifact)
+from testing.utils import (create_test_dataset, create_large_test_dataset,
+                           pickle_artifact)
 from testing.metrics import MSEMetric, MaxMetric
 
 from models.utils import load_model_cls
@@ -264,6 +266,7 @@ if n_epochs > 0:
 with ProgressBar(), TaskInfo('Create output dataset'):
     out = create_large_test_dataset(net, partition, loaders, device)
     file_path = os.path.join(data_location, f'test_output_0')
+    ProgressBar().register()
     print('Start of actual computations...')
     out.to_zarr(file_path)
     mlflow.log_artifact(file_path)
