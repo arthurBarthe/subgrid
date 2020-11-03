@@ -54,9 +54,9 @@ def apply_net(net, test_dataloader, device, save_input=False):
             prediction = (net(features)).cpu().numpy()
             output.append(prediction)
     if save_input:
-        return np.array(output), np.array(input_)
+        return np.concatenate(output), np.concatenate(input_)
     else:
-        return np.array(output),
+        return np.concatenate(output),
 
 
 def _dataset_from_channels(array, channels_names: list, dims, coords):
@@ -125,7 +125,6 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device,
         shape = (len(loader), 4, test_dataset.output_height,
                  test_dataset.output_width)
         output = da.from_delayed(temp[0], shape=shape, dtype=np.float64)
-        output = da.concatenate(output)
         # Same for input
         if save_input:
             shape = (loader.batch_size, 2, test_dataset.height,
