@@ -150,6 +150,17 @@ class SeasonalStdizer(Transform):
         del r['month']
         return r.values
 
+    @delayed
+    def get_inv_transformed(self, data, var_name):
+        times = data.time
+        months = times.dt.month
+        result = data
+        if self.apply_std:
+            result = result * self.stds[var_name].sel(month=months)
+        result = result + self.means[var_name].sel(month=months)
+        del result['month']
+        return result.values
+
     def transform(self, data):
         sub_datasets = []
         nb_samples = len(data.time)
@@ -170,11 +181,25 @@ class SeasonalStdizer(Transform):
             sub_datasets.append(new_ds)
         return xr.concat(sub_datasets, dim='time')
 
-    def inv_transform(self, x):
-        months = x['time'].dt.month
-        means = self.means.sel(month=months)
-        stds = self.stds.sel(month=months)
-        return x * stds + means
+    def inv_transform(self, data):
+        sub_datasets = []
+        nb_samples = len(data.time)
+        for start in range(0, nb_samples, 8):
+            sub_data = data.isel(time=slice(start, min(start+8, nb_samples)))
+            sub_coords = sub_data.coords
+            new_xr_arrays = {}
+            for k, val in sub_data.items():
+                new_shape = val.shape
+                dims = val.dims
+                transformed = self.get_inv_transformed(val, k)
+                dask_array = da.from_delayed(transformed, shape=new_shape,
+                                             dtype=np.float64)
+                new_xr_array = xr.DataArray(data=dask_array, coords=sub_coords,
+                                            dims=dims)
+                new_xr_arrays[k] = new_xr_array
+            new_ds = xr.Dataset(new_xr_arrays)
+            sub_datasets.append(new_ds)
+        return xr.concat(sub_datasets, dim='time')
 
 
 class CropToNewShape(Transform):
