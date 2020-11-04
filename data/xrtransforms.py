@@ -12,12 +12,14 @@ import pickle
 from dask import delayed
 import dask.array as da
 import numpy as np
+from typing import List
 
 
 class Transform(ABC):
     """Abstract transform class for xarray datasets"""
 
     requires_fit = False
+    repr_params = []
 
     def __init__(self):
         self.fitted = False
@@ -64,7 +66,7 @@ class Transform(ABC):
         def new_inv_transform(self, x):
             if not self.fitted and self.requires_fit:
                 raise RuntimeError('The transform needs to be fitted first.')
-            return raw_inv_transform(x)
+            return raw_inv_transform(self, x)
 
         cls.transform = new_transform
         cls.inv_transform = new_inv_transform
@@ -78,6 +80,11 @@ class Transform(ABC):
                 raw_fit(self, x)
                 self.fitted = True
             cls.fit = new_fit
+
+    def __repr__(self):
+        params = ', '.join([param + '=' + str(getattr(self, param))
+                            for param in self.repr_params])
+        return ''.join((str(type(self)), '(', params, ')'))
 
 
 class ChainedTransform(Transform):
@@ -111,7 +118,30 @@ class ChainedTransform(Transform):
         return ''.join((s, s2, s3))
 
 
+class TargetedTransform(Transform):
+    def __init__(self, transform: Transform, targets: List[str]):
+        self.transform = transform
+        self.targets = targets
+
+    def fit(self, x: xr.Dataset):
+        temp_ds = x[self.targets]
+        self.transform.fit(temp_ds)
+
+    def transform(self, x: xr.Dataset):
+        temp_ds = x[self.targets]
+        temp_ds = self.transform(temp_ds)
+        new_ds = x.copy()
+        new_ds.update(temp_ds)
+        return new_ds
+
+    def __repr__(self):
+        targets = ', '.join(self.targets)
+        return ''.join((self.transform.__repr__(), ' on ', targets))
+
+
 class ScalingTransform(Transform):
+    repr_params = ['factor', ]
+
     def __init__(self, factor: dict = None):
         super().__init__()
         self.factor = factor
@@ -124,6 +154,8 @@ class ScalingTransform(Transform):
 
 
 class SeasonalStdizer(Transform):
+    repr_params = ['apply_std', 'by']
+    
     def __init__(self, by: str = 'time.month', dim: str = 'time',
                  std: bool = True):
         super().__init__()
