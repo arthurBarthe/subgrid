@@ -17,9 +17,10 @@ import numpy as np
 class Transform(ABC):
     """Abstract transform class for xarray datasets"""
 
-    @abstractmethod
-    def fit(self, x: xr.Dataset):
-        pass
+    requires_fit = False
+
+    def __init__(self):
+        self.fitted = False
 
     @abstractmethod
     def transform(self, x: xr.Dataset):
@@ -51,17 +52,40 @@ class Transform(ABC):
         """We use this method to make sure that for all subclasses, the
         transform method conserves the attributes of the datasets"""
         raw_transform = cls.transform
+        raw_inv_transform = cls.inv_transform
 
         def new_transform(self, x):
+            if not self.fitted and self.requires_fit:
+                raise RuntimeError('The transform needs to be fitted first.')
             new_ds = raw_transform(self, x)
             new_ds.attrs = x.attrs
             return new_ds
+
+        def new_inv_transform(self, x):
+            if not self.fitted and self.requires_fit:
+                raise RuntimeError('The transform needs to be fitted first.')
+            return raw_inv_transform(x)
+
         cls.transform = new_transform
+        cls.inv_transform = new_inv_transform
+
+        # The following ensures that fitted is set to True if fit is called
+        if hasattr(cls, 'fit'):
+            cls.requires_fit = True
+            raw_fit = cls.fit
+
+            def new_fit(self, x):
+                raw_fit(self, x)
+                self.fitted = True
+            cls.fit = new_fit
 
 
 class ChainedTransform(Transform):
     def __init__(self, transforms):
+        super().__init__()
         self.transforms = transforms
+        if not any([t.requires_fit for t in self.transforms]):
+            self.requires_fit = False
 
     def fit(self, x: xr.Dataset):
         for transform in self.transforms:
@@ -89,10 +113,8 @@ class ChainedTransform(Transform):
 
 class ScalingTransform(Transform):
     def __init__(self, factor: dict = None):
+        super().__init__()
         self.factor = factor
-
-    def fit(self, x):
-        pass
 
     def transform(self, x: xr.Dataset):
         return self.factor * x
@@ -104,6 +126,7 @@ class ScalingTransform(Transform):
 class SeasonalStdizer(Transform):
     def __init__(self, by: str = 'time.month', dim: str = 'time',
                  std: bool = True):
+        super().__init__()
         self.by = by
         self.dim = dim
         self._means = None
@@ -204,10 +227,8 @@ class SeasonalStdizer(Transform):
 
 class CropToNewShape(Transform):
     def __init__(self, new_shape: dict = None):
+        super().__init__()
         self.new_shape = new_shape
-
-    def fit(self, x):
-        pass
 
     @staticmethod
     def get_slice(length: int, length_to: int):
@@ -227,6 +248,7 @@ class CropToNewShape(Transform):
 
 class CropToMinSize(CropToNewShape):
     def __init__(self, datasets, dim_names: list):
+        super().__init__()
         new_shape = {dim_name: min([dataset.dims[dim_name]
                                     for dataset in datasets])
                      for dim_name in dim_names}
@@ -238,6 +260,7 @@ class CropToMinSize(CropToNewShape):
 
 class CropToMultipleOf(CropToNewShape):
     def __init__(self, multiples: dict):
+        super().__init__()
         self.multiples = multiples
 
     @staticmethod
