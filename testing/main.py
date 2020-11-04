@@ -75,6 +75,8 @@ lr_ratio = script_params.lr_ratio
 to_experiment = script_params.to_experiment
 n_test_times = script_params.n_test_times
 batch_size = script_params.batch_size
+# TODO temporary fix, remove
+batch_size = 25
 n_splits = script_params.n_splits
 
 # Location used to write generated data before it is logged through MLFlow
@@ -170,8 +172,9 @@ if n_epochs > 0:
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
 else:
-    train_index = 1
-    test_index = 1
+    # TODO check this. Right now we have done this to align with chunks.
+    train_index = batch_size
+    test_index = batch_size
 n_test_times = n_test_times if n_test_times else (len(dataset)
                                                   - test_index)
 train_dataset = Subset_(dataset, np.arange(train_index))
