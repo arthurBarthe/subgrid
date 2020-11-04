@@ -47,9 +47,16 @@ class Transform(ABC):
         with open(path, 'rb') as f:
             return pickle.load(f)
 
+    def __init_subclass__(cls, *args):
+        """We use this method to make sure that for all subclasses, the
+        transform method conserves the attributes of the datasets"""
+        raw_transform = cls.transform
 
-# class MultipleSubdomainsTransform(Transform):
-#     """A class able to use 
+        def new_transform(self, x):
+            new_ds = raw_transform(self, x)
+            new_ds.attrs = x.attrs
+            return new_ds
+        cls.transform = new_transform
 
 
 class ChainedTransform(Transform):
