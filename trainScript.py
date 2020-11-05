@@ -74,6 +74,8 @@ from data.xrtransforms import SeasonalStdizer
 import models.submodels
 import sys
 
+import copy
+
 def negative_int(value: str):
     return -int(value)
 
@@ -191,7 +193,7 @@ except AttributeError as e:
 
 for xr_dataset in xr_datasets:
     # TODO this is a temporary fix to implement seasonal patterns
-    submodel_transform = getattr(models.submodels, submodel)
+    submodel_transform = copy.deepcopy(getattr(models.submodels, submodel))
     print(submodel_transform)
     xr_dataset = submodel_transform.fit_transform(xr_dataset)
     print('Debugging:')
