@@ -21,8 +21,10 @@ class Transform(ABC):
     requires_fit = False
     repr_params = []
 
-    def __init__(self):
+    def __init__(self, inverse: bool = True):
         self.fitted = False
+        if not inverse:
+            self.transform = lambda x: x
 
     @abstractmethod
     def transform(self, x: xr.Dataset):
@@ -88,8 +90,8 @@ class Transform(ABC):
 
 
 class ChainedTransform(Transform):
-    def __init__(self, transforms):
-        super().__init__()
+    def __init__(self, transforms, *args, **kargs):
+        super().__init__(*args, **kargs)
         self.transforms = transforms
         if not any([t.requires_fit for t in self.transforms]):
             self.requires_fit = False
@@ -119,17 +121,21 @@ class ChainedTransform(Transform):
 
 
 class TargetedTransform(Transform):
-    def __init__(self, transform: Transform, targets: List[str]):
-        self.transform = transform
+    def __init__(self, transform: Transform, targets: List[str], *args,
+                 **kargs):
+        super().__init__(*args, **kargs)
+        self.base_transform = transform
         self.targets = targets
+        self.requires_fit = self.base_transform.requires_fit
 
     def fit(self, x: xr.Dataset):
-        temp_ds = x[self.targets]
-        self.transform.fit(temp_ds)
+        if hasattr(self.transform, 'fit'):
+            temp_ds = x[self.targets]
+            self.transform.fit(temp_ds)
 
     def transform(self, x: xr.Dataset):
         temp_ds = x[self.targets]
-        temp_ds = self.transform(temp_ds)
+        temp_ds = self.base_transform(temp_ds)
         new_ds = x.copy()
         new_ds.update(temp_ds)
         return new_ds
@@ -142,8 +148,8 @@ class TargetedTransform(Transform):
 class ScalingTransform(Transform):
     repr_params = ['factor', ]
 
-    def __init__(self, factor: dict = None):
-        super().__init__()
+    def __init__(self, factor: dict = None, *args, **kargs):
+        super().__init__(*args, **kargs)
         self.factor = factor
 
     def transform(self, x: xr.Dataset):
@@ -155,10 +161,10 @@ class ScalingTransform(Transform):
 
 class SeasonalStdizer(Transform):
     repr_params = ['apply_std', 'by']
-    
+
     def __init__(self, by: str = 'time.month', dim: str = 'time',
-                 std: bool = True):
-        super().__init__()
+                 std: bool = True, *args, **kargs):
+        super().__init__(*args, **kargs)
         self.by = by
         self.dim = dim
         self._means = None
@@ -258,8 +264,8 @@ class SeasonalStdizer(Transform):
 
 
 class CropToNewShape(Transform):
-    def __init__(self, new_shape: dict = None):
-        super().__init__()
+    def __init__(self, new_shape: dict = None, *args, **kargs):
+        super().__init__(*args, **kargs)
         self.new_shape = new_shape
 
     @staticmethod
@@ -279,8 +285,8 @@ class CropToNewShape(Transform):
 
 
 class CropToMinSize(CropToNewShape):
-    def __init__(self, datasets, dim_names: list):
-        super().__init__()
+    def __init__(self, datasets, dim_names: list, *args, **kargs):
+        super().__init__(*args, **kargs)
         new_shape = {dim_name: min([dataset.dims[dim_name]
                                     for dataset in datasets])
                      for dim_name in dim_names}
@@ -291,8 +297,8 @@ class CropToMinSize(CropToNewShape):
 
 
 class CropToMultipleOf(CropToNewShape):
-    def __init__(self, multiples: dict):
-        super().__init__()
+    def __init__(self, multiples: dict, *args, **kargs):
+        super().__init__(*args, **kargs)
         self.multiples = multiples
 
     @staticmethod
