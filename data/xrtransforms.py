@@ -24,7 +24,7 @@ class Transform(ABC):
     def __init__(self, inverse: bool = True):
         self.fitted = False
         if not inverse:
-            self.transform = lambda x: x
+            self.inv_transform = lambda x: x
 
     @abstractmethod
     def transform(self, x: xr.Dataset):
@@ -136,6 +136,13 @@ class TargetedTransform(Transform):
     def transform(self, x: xr.Dataset):
         temp_ds = x[self.targets]
         temp_ds = self.base_transform(temp_ds)
+        new_ds = x.copy()
+        new_ds.update(temp_ds)
+        return new_ds
+
+    def inv_transform(self, x: xr.Dataset):
+        temp_ds = x[self.targets]
+        temp_ds = self.base_transform.inv_transform(temp_ds)
         new_ds = x.copy()
         new_ds.update(temp_ds)
         return new_ds
