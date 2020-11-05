@@ -142,7 +142,7 @@ class TargetedTransform(Transform):
 
     def __repr__(self):
         targets = ', '.join(self.targets)
-        return ''.join((self.transform.__repr__(), ' on ', targets))
+        return ''.join((self.base_transform.__repr__(), ' on ', targets))
 
 
 class ScalingTransform(Transform):
