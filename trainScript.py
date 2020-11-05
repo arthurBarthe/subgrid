@@ -71,7 +71,8 @@ import pickle
 
 from data.xrtransforms import SeasonalStdizer
 
-
+import models.submodels
+import sys
 
 def negative_int(value: str):
     return -int(value)
@@ -100,6 +101,7 @@ parser.add_argument('--loss_cls_name', type=str,
                     default='HeteroskedasticGaussianLossV2')
 parser.add_argument('--transformation_cls_name', type=str,
                     default='SquareTransform')
+parser.add_argument('--submodel', type=str, default='transform1')
 parser.add_argument('--features_transform_cls_name', type=str,
                     default='PerChannelNormalizer')
 parser.add_argument('--targets_transform_cls_name', type=str,
@@ -125,6 +127,7 @@ loss_cls_name = params.loss_cls_name
 transformation_cls_name = params.transformation_cls_name
 features_transform_cls_name = params.features_transform_cls_name
 targets_transform_cls_name = params.targets_transform_cls_name
+submodel = params.submodel
 
 
 # Parameters specific to the input data
@@ -172,6 +175,9 @@ run_ids = run_ids_from_string(run_ids_str)
 xr_datasets = load_data_from_runs(run_ids)
 # Split into train and test datasets
 datasets, train_datasets, test_datasets = list(), list(), list()
+
+# DEPRECIATED
+"""
 try:
     features_transform_cls_names = list_from_string(features_transform_cls_name)
     features_transform_clss = [getattr(data.datasets, cls_name) for 
@@ -181,11 +187,13 @@ try:
                               cls_name in targets_transform_cls_names]
 except AttributeError as e:
     raise type(e)('Could not find the dataset transform class: ' + str(e))
+"""
 
 for xr_dataset in xr_datasets:
     # TODO this is a temporary fix to implement seasonal patterns
-    seasonal_transform = SeasonalStdizer()
-    xr_dataset = seasonal_transform.fit_transform((xr_dataset))
+    submodel_transform = getattr(models.submodels, submodel)
+    print(submodel_transform)
+    xr_dataset = submodel_transform.fit_transform((xr_dataset))
     print('Debugging:')
     print(xr_dataset)
     dataset = RawDataFromXrDataset(xr_dataset)
@@ -196,13 +204,9 @@ for xr_dataset in xr_datasets:
     dataset.add_output('S_y')
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
-    train_dataset = Subset_(dataset, np.arange(train_index))
-    features_transform = ComposeTransforms(*[t() for t in
-                                             features_transform_clss])
-    targets_transform = ComposeTransforms(*[t() for t in
-                                            targets_transform_clss])
+    features_transform = ComposeTransforms()
+    targets_transform = ComposeTransforms()
     transform = DatasetTransformer(features_transform, targets_transform)
-    transform.fit(train_dataset)
     dataset = DatasetWithTransform(dataset, transform)
     dataset = MultipleTimeIndices(dataset)
     dataset.time_indices = [0, ]
