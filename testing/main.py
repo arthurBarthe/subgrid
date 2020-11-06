@@ -123,7 +123,7 @@ model_file = client.download_artifacts(model_run.run_id,
                                        'models/trained_model.pth')
 transformation = pickle_artifact(model_run.run_id, 'models/transformation')
 
-submodel = getattr(models.submodel, submodel_name)
+submodel = getattr(models.submodels, submodel_name)
 
 # metrics saved independently of the training criterion
 metrics = {'mse': MSEMetric(), 'Inf Norm': MaxMetric()}
