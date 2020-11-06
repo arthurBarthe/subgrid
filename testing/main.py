@@ -49,6 +49,7 @@ from dask.diagnostics import ProgressBar
 from other.telegram import send_message
 
 from data.xrtransforms import SeasonalStdizer
+import models.submodels
 
 from utils import TaskInfo
 
@@ -112,6 +113,7 @@ model_cls_name = model_run['params.model_cls_name']
 loss_cls_name = model_run['params.loss_cls_name']
 learning_rates = learning_rates_from_string(model_run['params.learning_rate'])
 weight_decay = float(model_run['params.weight_decay'])
+submodel_name = model_run['submodel']
 
 learning_rate = learning_rates[0] * lr_ratio
 
@@ -124,6 +126,8 @@ features_transform = pickle_artifact(model_run.run_id,
                                      'models/features_transform')
 targets_transform = pickle_artifact(model_run.run_id,
                                     'models/targets_transform')
+
+submodel = getattr(models.submodel, submodel_name)
 
 # metrics saved independently of the training criterion
 metrics = {'mse': MSEMetric(), 'Inf Norm': MaxMetric()}
@@ -155,10 +159,8 @@ if input('global?').lower() == 'y':
     # This will add a cyclic transform when used on our model
     xr_dataset.attrs['cycle'] = 360
 
-# Temporary fix: removing seasonalities "manually"
-with ProgressBar(), TaskInfo('Seasonal standardization'):
-    t = SeasonalStdizer()
-    xr_dataset = t.fit_transform(xr_dataset)
+with ProgressBar(), TaskInfo('Applying transforms to dataset'):
+    xr_dataset = submodel.fit_transform(xr_dataset)
 
 # To PyTorch Dataset
 dataset = RawDataFromXrDataset(xr_dataset)
@@ -175,8 +177,8 @@ else:
     # TODO check this. Right now we have done this to align with chunks.
     train_index = batch_size
     test_index = batch_size
-n_test_times = n_test_times if n_test_times else (len(dataset)
-                                                  - test_index)
+
+n_test_times = n_test_times if n_test_times else (len(dataset) - test_index)
 train_dataset = Subset_(dataset, np.arange(train_index))
 
 print('Adding transforms...')
