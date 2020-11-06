@@ -23,7 +23,7 @@ import xarray as xr
 from analysis.utils import select_run, select_experiment
 from train.utils import learning_rates_from_string
 from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
-                           Subset_, DatasetWithTransform,
+                           Subset_, DatasetWithTransform, ComposeTransforms,
                            MultipleTimeIndices, DatasetPartitioner)
 from train.base import Trainer
 from train.losses import *
@@ -182,8 +182,8 @@ n_test_times = n_test_times if n_test_times else (len(dataset) - test_index)
 train_dataset = Subset_(dataset, np.arange(train_index))
 
 print('Adding transforms...')
-features_transform_ = deepcopy(features_transform)
-targets_transform_ = deepcopy(targets_transform)
+features_transform_ = ComposeTransforms()
+targets_transform_ = ComposeTransforms()
 transform = DatasetTransformer(features_transform_, targets_transform_)
 transform.fit(train_dataset)
 dataset = DatasetWithTransform(dataset, transform)
