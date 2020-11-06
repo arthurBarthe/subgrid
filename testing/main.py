@@ -113,7 +113,7 @@ model_cls_name = model_run['params.model_cls_name']
 loss_cls_name = model_run['params.loss_cls_name']
 learning_rates = learning_rates_from_string(model_run['params.learning_rate'])
 weight_decay = float(model_run['params.weight_decay'])
-submodel_name = model_run['submodel']
+submodel_name = model_run['params.submodel']
 
 learning_rate = learning_rates[0] * lr_ratio
 
