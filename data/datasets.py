@@ -139,7 +139,7 @@ class ComposeTransforms(ArrayTransform):
             y = []
             for i in range(x.shape[0]):
                 y.append(transform(x[i, ...]))
-            x = np.stack(y)
+            x = np.array(y)
 
     def transform(self, x):
         for transform in self.transforms:
@@ -480,9 +480,9 @@ class RawDataFromXrDataset(Dataset):
         except ValueError as e:
             raise type(e)('Make sure you have defined the index, inputs,\
                           and outputs: ' + str(e))
-        if hasattr(features, 'compute'):
-            features = features.compute()
-            targets = targets.compute()
+        # if hasattr(features, 'compute'):
+        #     features = features.compute()
+        #     targets = targets.compute()
         return features, targets
 
     def __len__(self):
