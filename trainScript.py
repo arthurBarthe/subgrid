@@ -79,6 +79,9 @@ import copy
 def negative_int(value: str):
     return -int(value)
 
+def check_str_is_None(s: str):
+    return None if s.lower() == 'none' else s
+
 # PARAMETERS ---------
 description = 'Trains a model on a chosen dataset from the store. Allows \
     to set training parameters via the CLI.'
@@ -104,10 +107,8 @@ parser.add_argument('--loss_cls_name', type=str,
 parser.add_argument('--transformation_cls_name', type=str,
                     default='SquareTransform')
 parser.add_argument('--submodel', type=str, default='transform1')
-parser.add_argument('--features_transform_cls_name', type=str,
-                    default='PerChannelNormalizer')
-parser.add_argument('--targets_transform_cls_name', type=str,
-                    default='PerChannelNormalizer')
+parser.add_argument('--features_transform_cls_name', type=str, default='None')
+parser.add_argument('--targets_transform_cls_name', type=str, default='None')
 params = parser.parse_args()
 
 # Log the experiment_id and run_id of the source dataset
@@ -127,8 +128,12 @@ model_module_name = params.model_module_name
 model_cls_name = params.model_cls_name
 loss_cls_name = params.loss_cls_name
 transformation_cls_name = params.transformation_cls_name
-features_transform_cls_name = params.features_transform_cls_name
-targets_transform_cls_name = params.targets_transform_cls_name
+# Transforms applied to the features and targets
+temp = params.features_transform_cls_name
+features_transform_cls_name = check_str_is_None(temp)
+temp = params.targets_transform_cls_name
+targets_transform_cls_name = check_str_is_None(temp)
+# Submodel (for instance monthly means)
 submodel = params.submodel
 
 
@@ -178,21 +183,10 @@ xr_datasets = load_data_from_runs(run_ids)
 # Split into train and test datasets
 datasets, train_datasets, test_datasets = list(), list(), list()
 
-# DEPRECIATED
-"""
-try:
-    features_transform_cls_names = list_from_string(features_transform_cls_name)
-    features_transform_clss = [getattr(data.datasets, cls_name) for 
-                               cls_name in features_transform_cls_names]
-    targets_transform_cls_names = list_from_string(targets_transform_cls_name)
-    targets_transform_clss = [getattr(data.datasets, cls_name) for 
-                              cls_name in targets_transform_cls_names]
-except AttributeError as e:
-    raise type(e)('Could not find the dataset transform class: ' + str(e))
-"""
 
 for xr_dataset in xr_datasets:
     # TODO this is a temporary fix to implement seasonal patterns
+    xr_dataset = xr_dataset.compute()
     submodel_transform = copy.deepcopy(getattr(models.submodels, submodel))
     print(submodel_transform)
     xr_dataset = submodel_transform.fit_transform(xr_dataset)
@@ -217,14 +211,6 @@ for xr_dataset in xr_datasets:
     train_datasets.append(train_dataset)
     test_datasets.append(test_dataset)
     datasets.append(dataset)
-
-# Saving the array transform object
-full_path = os.path.join(data_location, models_directory, 'features_transform')
-with open(full_path, 'wb') as f:
-    pickle.dump(features_transform, f)
-full_path = os.path.join(data_location, models_directory, 'targets_transform')
-with open(full_path, 'wb') as f:
-    pickle.dump(targets_transform, f)
 
 # Concatenate datasets. This adds shape transforms to ensure that all regions
 # produce fields of the same shape, hence should be called after saving
@@ -270,6 +256,7 @@ try:
 except AttributeError as e:
     raise type(e)('Could not find the specified transformation class: ' +
                   str(e))
+
 print('--------------------')
 print(net)
 print('--------------------')
@@ -300,19 +287,15 @@ for metric in metrics.values():
     metric.inv_transform = lambda x: test_dataset.inverse_transform_target(x)
 
 params = list(net.parameters())
-# linear_layer = net.linear_layer
-# if linear_layer is not None:
-#     params.append({'params': linear_layer.parameters(),
-#                    'weight_decay': weight_decay,
-#                    'lr': learning_rates[0] / 100})
 
 # TODO check if we can do lr decay differently
-optimizers = {i: optim.Adam(params, lr=v, weight_decay=0.0)
+optimizers = {i: optim.Adam(params, lr=v, weight_decay=weight_decay)
               for (i, v) in learning_rates.items()}
 
 trainer = Trainer(net, device)
 trainer.criterion = criterion
 trainer.print_loss_every = print_loss_every
+
 for metric_name, metric in metrics.items():
     trainer.register_metric(metric_name, metric)
 
@@ -333,7 +316,7 @@ for i_epoch in range(n_epochs):
     # Log the training loss
     print('Train loss for this epoch is ', train_loss)
     print('Test loss for this epoch is ', test_loss)
-    
+
     for metric_name, metric_value in metrics_results.items():
         print('Test {} for this epoch is {}'.format(metric_name, metric_value))
     mlflow.log_metric('train loss', train_loss, i_epoch)
@@ -345,16 +328,13 @@ mlflow.log_param('n_epochs', i_epoch + 1)
 # FIN TRAINING ----------------------------------------------------------------
 
 # Save the trained model to disk
-print('Moving the network to the CPU before saving...')
 net.cpu()
-print('Saving the neural network learnt parameters to disk...')
 full_path = os.path.join(data_location, models_directory, model_name)
 torch.save(net.state_dict(), full_path)
-print('Logging the neural network model...')
-print('Neural network saved and logged in the artifacts.')
 net.cuda(device)
 
 # Save other parts of the model
+# TODO this should not be necessary
 print('Saving other parts of the model')
 full_path = os.path.join(data_location, models_directory, 'transformation')
 with open(full_path, 'wb') as f:
