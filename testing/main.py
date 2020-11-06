@@ -122,10 +122,6 @@ client = mlflow.tracking.MlflowClient()
 model_file = client.download_artifacts(model_run.run_id,
                                        'models/trained_model.pth')
 transformation = pickle_artifact(model_run.run_id, 'models/transformation')
-features_transform = pickle_artifact(model_run.run_id,
-                                     'models/features_transform')
-targets_transform = pickle_artifact(model_run.run_id,
-                                    'models/targets_transform')
 
 submodel = getattr(models.submodel, submodel_name)
 
