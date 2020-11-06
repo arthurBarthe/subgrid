@@ -76,6 +76,9 @@ import sys
 
 import copy
 
+from utils import TaskInfo
+from dask.diagnostics import ProgressBar
+
 def negative_int(value: str):
     return -int(value)
 
@@ -186,11 +189,11 @@ datasets, train_datasets, test_datasets = list(), list(), list()
 
 for xr_dataset in xr_datasets:
     # TODO this is a temporary fix to implement seasonal patterns
-    xr_dataset = xr_dataset.compute()
     submodel_transform = copy.deepcopy(getattr(models.submodels, submodel))
     print(submodel_transform)
     xr_dataset = submodel_transform.fit_transform(xr_dataset)
-    print('Debugging:')
+    with ProgressBar(), TaskInfo('Computing dataset'):
+        xr_dataset = xr_dataset.compute()
     print(xr_dataset)
     dataset = RawDataFromXrDataset(xr_dataset)
     dataset.index = 'time'
