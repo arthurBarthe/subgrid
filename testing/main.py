@@ -76,8 +76,6 @@ lr_ratio = script_params.lr_ratio
 to_experiment = script_params.to_experiment
 n_test_times = script_params.n_test_times
 batch_size = script_params.batch_size
-# TODO temporary fix, remove
-batch_size = 25
 n_splits = script_params.n_splits
 
 # Location used to write generated data before it is logged through MLFlow
