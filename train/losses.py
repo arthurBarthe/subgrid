@@ -98,7 +98,7 @@ class HeteroskedasticGaussianLossV3(_Loss):
             return getattr(self.base_loss, name)
 
     def forward(self, input: torch.Tensor, target: torch.Tensor):
-        return super().forward(input, target)
+        return self.base_loss.forward(input, target)
 
     def pointwise_likelihood(self, input: torch.Tensor, target: torch.Tensor):
         raw_loss = self._base_loss(input, target[:, :self.n_target_channels, ...])
