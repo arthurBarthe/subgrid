@@ -20,6 +20,7 @@ class Transform(ABC):
 
     requires_fit = False
     repr_params = []
+    fit_only_once = True
 
     def __init__(self, inverse: bool = True):
         self.fitted = False
@@ -79,6 +80,9 @@ class Transform(ABC):
             raw_fit = cls.fit
 
             def new_fit(self, x):
+                if self.fitted and self.fit_only_once:
+                    raise RuntimeError('The transform has already been\
+                                       fitted.')
                 raw_fit(self, x)
                 self.fitted = True
             cls.fit = new_fit
@@ -209,14 +213,14 @@ class SeasonalStdizer(Transform):
         self.stds = self.grouped.std(dim=self.dim).compute()
 
     @delayed
-    def get_transformed(self, data, var_name):
+    def get_transformed(self, data):
         times = data.time
         months = times.dt.month
-        r = data - self.means[var_name].sel(month=months)
+        r = data - self.means.sel(month=months)
         if self.apply_std:
-            r = r / self.stds[var_name].sel(month=months)
+            r = r / self.stds.sel(month=months)
         del r['month']
-        return r.values
+        return r
 
     @delayed
     def get_inv_transformed(self, data, var_name):
@@ -229,25 +233,29 @@ class SeasonalStdizer(Transform):
         del result['month']
         return result.values
 
+    # TODO see if we can use map_blocks to speed things up
+    # def transform(self, data):
+    #     sub_datasets = []
+    #     nb_samples = len(data.time)
+    #     for start in range(0, nb_samples, 8):
+    #         sub_data = data.isel(time=slice(start, min(start+8, nb_samples)))
+    #         sub_coords = sub_data.coords
+    #         new_xr_arrays = {}
+    #         for k, val in sub_data.items():
+    #             new_shape = val.shape
+    #             dims = val.dims
+    #             transformed = self.get_transformed(val, k)
+    #             dask_array = da.from_delayed(transformed, shape=new_shape,
+    #                                          dtype=np.float64)
+    #             new_xr_array = xr.DataArray(data=dask_array, coords=sub_coords,
+    #                                         dims=dims)
+    #             new_xr_arrays[k] = new_xr_array
+    #         new_ds = xr.Dataset(new_xr_arrays)
+    #         sub_datasets.append(new_ds)
+    #     return xr.concat(sub_datasets, dim='time')
+
     def transform(self, data):
-        sub_datasets = []
-        nb_samples = len(data.time)
-        for start in range(0, nb_samples, 8):
-            sub_data = data.isel(time=slice(start, min(start+8, nb_samples)))
-            sub_coords = sub_data.coords
-            new_xr_arrays = {}
-            for k, val in sub_data.items():
-                new_shape = val.shape
-                dims = val.dims
-                transformed = self.get_transformed(val, k)
-                dask_array = da.from_delayed(transformed, shape=new_shape,
-                                             dtype=np.float64)
-                new_xr_array = xr.DataArray(data=dask_array, coords=sub_coords,
-                                            dims=dims)
-                new_xr_arrays[k] = new_xr_array
-            new_ds = xr.Dataset(new_xr_arrays)
-            sub_datasets.append(new_ds)
-        return xr.concat(sub_datasets, dim='time')
+        return data.map_blocks(self.get_transformed)
 
     def inv_transform(self, data):
         sub_datasets = []
