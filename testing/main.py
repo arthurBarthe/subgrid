@@ -95,7 +95,7 @@ models_experiment_name = select_experiment()
 models_experiment = mlflow.get_experiment_by_name(models_experiment_name)
 models_experiment_id = models_experiment.experiment_id
 cols = ['metrics.test loss', 'start_time', 'params.time_indices',
-        'params.model_cls_name', 'params.source.run_id']
+        'params.model_cls_name', 'params.source.run_id, params.submodel']
 model_run = select_run(sort_by='start_time', cols=cols,
                        experiment_ids=[models_experiment_id, ])
 
@@ -191,10 +191,8 @@ train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
                               shuffle=True, drop_last=True)
 partitioner = DatasetPartitioner(n_splits)
 partition = partitioner.get_partition(test_dataset)
-loaders = (DataLoader(d, batch_size=batch_size, shuffle=False,
-                      drop_last=True) for d in partition)
-test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
-                             shuffle=False, drop_last=True)
+loaders = (DataLoader(d, batch_size=None, sampler=BatchSampler(d, batch_size))
+           for d in partition)
 sampler = BatchSampler(test_dataset, batch_size=batch_size)
 test_dataloader = DataLoader(test_dataset, batch_size=None, sampler=sampler)
 
