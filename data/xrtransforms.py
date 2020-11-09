@@ -212,7 +212,6 @@ class SeasonalStdizer(Transform):
         self.means = self.grouped.mean(dim=self.dim).compute()
         self.stds = self.grouped.std(dim=self.dim).compute()
 
-    @delayed
     def get_transformed(self, data):
         times = data.time
         months = times.dt.month
