@@ -63,7 +63,7 @@ class Transform(ABC):
             if not self.fitted and self.requires_fit:
                 raise RuntimeError('The transform needs to be fitted first.')
             new_ds = raw_transform(self, x)
-            new_ds.attrs = x.attrs
+            new_ds.attrs.update(x.attrs)
             return new_ds
 
         def new_inv_transform(self, x):
@@ -217,7 +217,11 @@ class SeasonalStdizer(Transform):
         months = times.dt.month
         r = data - self.means.sel(month=months)
         if self.apply_std:
-            r = r / self.stds.sel(month=months)
+            stds = self.stds.sel(month=months)
+            r = r / stds
+            stds = stds.rename({raw_name: raw_name + '_d' for raw_name in
+                                stds.keys()})
+            r.update(stds)
         del r['month']
         return r
 
@@ -254,7 +258,10 @@ class SeasonalStdizer(Transform):
     #     return xr.concat(sub_datasets, dim='time')
 
     def transform(self, data):
-        return data.map_blocks(self.get_transformed, template=data)
+        template = data.copy()
+        template.update({raw_name + '_d' : value for raw_name, value in
+                         template.items()})
+        return data.map_blocks(self.get_transformed, template=template)
 
     def inv_transform(self, data):
         sub_datasets = []

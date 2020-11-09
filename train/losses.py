@@ -83,6 +83,20 @@ class HeteroskedasticGaussianLossV2(_Loss):
         return mean + self.bias
 
 
+class HeteroskedasticGaussianLossV3(_Loss):
+    """Loss to be used with transform2 from models/submodels.py"""
+
+    def __init__(self, *args, **kargs):
+        self._base_loss = HeteroskedasticGaussianLossV2(*args, **kargs)
+
+    def __getattr__(self, name: str):
+        return getattr(self._base_loss, name)
+
+    def pointwise_likelihood(self, input: torch.Tensor, target: torch.Tensor):
+        raw_loss = self._base_loss(input, target[:, :self.n_target_channels, ...])
+        return raw_loss + torch.log(target[:, self.n_target_channels: self.n_target_channels + 1, ...])
+
+
 class MultimodalLoss(_Loss):
     """General class for a multimodal loss. By default, each location on
     each channel can choose its mode independently. If share_mode is set to

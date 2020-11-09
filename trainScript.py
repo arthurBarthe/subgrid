@@ -201,6 +201,10 @@ for xr_dataset in xr_datasets:
     dataset.add_input('vsurf')
     dataset.add_output('S_x')
     dataset.add_output('S_y')
+    # TODO temporary addition, should be made more general
+    if submodel == 'transform2':
+        dataset.add_output('S_x_d')
+        dataset.add_output('S_y_d')
     train_index = int(train_split * len(dataset))
     test_index = int(test_split * len(dataset))
     features_transform = ComposeTransforms()
@@ -224,7 +228,7 @@ test_dataset = ConcatDataset_(test_datasets)
 
 # Dataloaders
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
-                              shuffle=True, drop_last=True)
+                              shuffle=True, drop_last=True, num_workers=4)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                              shuffle=False, drop_last=True)
 
