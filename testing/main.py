@@ -180,8 +180,8 @@ features_transform_ = ComposeTransforms()
 targets_transform_ = ComposeTransforms()
 transform = DatasetTransformer(features_transform_, targets_transform_)
 transform.fit(train_dataset)
+dataset = DatasetWithTransform(dataset, transform)
 # TODO implement back. Right now causing issues 
-# dataset = DatasetWithTransform(dataset, transform)
 # dataset = MultipleTimeIndices(dataset)
 dataset.time_indices = [0, ]
 train_dataset = Subset_(dataset, np.arange(train_index))
