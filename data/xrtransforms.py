@@ -254,7 +254,7 @@ class SeasonalStdizer(Transform):
     #     return xr.concat(sub_datasets, dim='time')
 
     def transform(self, data):
-        return data.map_blocks(self.get_transformed)
+        return data.map_blocks(self.get_transformed, template=data)
 
     def inv_transform(self, data):
         sub_datasets = []
