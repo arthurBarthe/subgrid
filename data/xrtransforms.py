@@ -259,8 +259,9 @@ class SeasonalStdizer(Transform):
 
     def transform(self, data):
         template = data.copy()
-        template.update({raw_name + '_d' : value for raw_name, value in
-                         template.items()})
+        if self.apply_std:
+            template.update({raw_name + '_d' : value for raw_name, value in
+                             template.items()})
         return data.map_blocks(self.get_transformed, template=template)
 
     def inv_transform(self, data):
