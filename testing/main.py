@@ -95,7 +95,7 @@ models_experiment_name = select_experiment()
 models_experiment = mlflow.get_experiment_by_name(models_experiment_name)
 models_experiment_id = models_experiment.experiment_id
 cols = ['metrics.test loss', 'start_time', 'params.time_indices',
-        'params.model_cls_name', 'params.source.run_id, params.submodel']
+        'params.model_cls_name', 'params.source.run_id', 'params.submodel']
 model_run = select_run(sort_by='start_time', cols=cols,
                        experiment_ids=[models_experiment_id, ])
 
