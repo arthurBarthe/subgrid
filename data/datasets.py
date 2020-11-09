@@ -571,7 +571,7 @@ class DatasetWithTransform:
                                       raw_targets[i, ...]))
                 new_features.append(temp[0])
                 new_targets.append(temp[1])
-            return torch.stack(new_features), torch.stack(new_targets)
+            return np.stack(new_features), np.stack(new_targets)
         else:
             return self.transform(self.dataset[index])
 
