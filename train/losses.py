@@ -87,6 +87,7 @@ class HeteroskedasticGaussianLossV3(_Loss):
     """Loss to be used with transform2 from models/submodels.py"""
 
     def __init__(self, *args, **kargs):
+        super().__init__()
         self._base_loss = HeteroskedasticGaussianLossV2(*args, **kargs)
 
     def __getattr__(self, name: str):
