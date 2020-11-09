@@ -88,10 +88,14 @@ class HeteroskedasticGaussianLossV3(_Loss):
 
     def __init__(self, *args, **kargs):
         super().__init__()
-        self._base_loss = HeteroskedasticGaussianLossV2(*args, **kargs)
+        self.base_loss = HeteroskedasticGaussianLossV2(*args, **kargs)
 
     def __getattr__(self, name: str):
-        return getattr(self._base_loss, name)
+        try:
+            # This is necessary as the class Module defines its own __getattr__
+            return super().__getattr__(name)
+        except AttributeError:
+            return getattr(self.base_loss, name)
 
     def pointwise_likelihood(self, input: torch.Tensor, target: torch.Tensor):
         raw_loss = self._base_loss(input, target[:, :self.n_target_channels, ...])
