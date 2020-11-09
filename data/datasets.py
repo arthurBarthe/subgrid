@@ -567,8 +567,8 @@ class DatasetWithTransform:
             n_samples = raw_features.shape[0]
             # The following is because the transform applies to a single sample
             for i in range(n_samples):
-                temp = self.transform(raw_features[i, ...],
-                                      raw_targets[i, ...])
+                temp = self.transform((raw_features[i, ...],
+                                      raw_targets[i, ...]))
                 new_features.append(temp[0])
                 new_targets.append(temp[1])
             return torch.stack(new_features), torch.stack(new_targets)
