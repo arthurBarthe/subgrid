@@ -8,6 +8,7 @@ Created on Tue Jun  9 17:58:33 2020
 import numpy as np
 import xarray as xr
 import torch
+from torch.utils.data import Sampler
 import progressbar
 import mlflow
 import pickle
@@ -16,6 +17,21 @@ import pickle
 
 import dask.array as da
 import dask
+
+
+class BatchSampler(Sampler):
+    """A custom sampler that directly samples batches"""
+
+    def __init__(self, data_source, batch_size: int = 8):
+        self.data_source = data_source
+        self.batch_size = batch_size
+
+    def __iter__(self):
+        for i in range(len(self.data_source) // self.batch_size):
+            yield np.arange(self.batch_size) + self.batch_size * i
+
+    def __len__(self):
+        return len(self.data_source)
 
 
 def apply_net(net, test_dataloader, device, save_input=False):

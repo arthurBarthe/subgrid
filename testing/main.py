@@ -29,7 +29,7 @@ from train.base import Trainer
 from train.losses import *
 
 from testing.utils import (create_test_dataset, create_large_test_dataset,
-                           pickle_artifact)
+                           pickle_artifact, BatchSampler)
 from testing.metrics import MSEMetric, MaxMetric
 
 from models.utils import load_model_cls
@@ -195,6 +195,8 @@ loaders = (DataLoader(d, batch_size=batch_size, shuffle=False,
                       drop_last=True) for d in partition)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                              shuffle=False, drop_last=True)
+sampler = BatchSampler(test_dataset, batch_size=batch_size)
+test_dataloader = DataLoader(test_dataset, batch_size=None, sampler=sampler)
 
 # Set inverse transform for metrics
 for metric in metrics.values():
