@@ -561,7 +561,15 @@ class DatasetWithTransform:
         return self[0][1].shape[2]
 
     def __getitem__(self, index: int):
-        return self.transform(self.dataset[index])
+        raw = self.dataset[index]
+        new = []
+        if hasattr(index, '__iter__'):
+            # The following is because the transform applies to a single sample
+            for i in range(raw.shape[0]):
+                new.append(self.transform(raw[i, ...]))
+            return torch.stack(new)
+        else:
+            return self.transform(self.dataset[index])
 
     def __getattr__(self, attr):
         if hasattr(self.dataset, attr):
