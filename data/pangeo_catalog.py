@@ -30,14 +30,11 @@ def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
         Bounds of the path, (lat_min, lat_max, long_min, long_max). Note that
         the order matters!
     cO2_level : int, optional
-        CO2 level, 0 (control) or 1. The default is 0.
+        CO2 level, 0 (control) or 1 (1 percent increase C02 per year).
+        The default is 0.
     *selected_vars : str
         Variables selected from the surface velocities dataset.
 
-    Raises
-    ------
-    NotImplementedError
-        Only access to control data has been implemented for now.
 
     Returns
     -------
