@@ -5,7 +5,7 @@ name: cmip2_6
 entry_points:
   main:
     parameters:
-      ntimes : {type: float, default: 100}
+      ntimes : {type: float, default: 10000}
       CO2: {type: float, default: 0}
       scale : float
       lat_min : float
@@ -34,8 +34,8 @@ entry_points:
       loss_cls_name : {type : string, default : HeteroskedasticGaussianLossV2}
       transformation_cls_name : {type : string, default : SquareTransform}
       submodel : {type: string, default : transform3}
-      features_transform_cls_name : {type : string, default : PerChannelNormalizer}
-      targets_transform_cls_name : {type : string, default : PerChannelNormalizer}
+      features_transform_cls_name : {type : string, default : None}
+      targets_transform_cls_name : {type : string, default : None}
     command: "python trainScript.py {exp_id} {run_id} --batchsize {batchsize} --learning_rate {learning_rate} --n_epochs {n_epochs} --train_split {train_split} --test_split {test_split} --time_indices {time_indices} --printevery {print_every} --weight_decay {weight_decay} --model_module_name {model_module_name} --model_cls_name {model_cls_name} --loss_cls_name {loss_cls_name}
     --transformation_cls_name {transformation_cls_name} --submodel {submodel} --features_transform_cls_name {features_transform_cls_name} --targets_transform_cls_name {targets_transform_cls_name}"
     

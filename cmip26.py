@@ -51,7 +51,7 @@ parser.add_argument('bounds', type=float, nargs=4, help='min lat, max_lat,\
 parser.add_argument('--global_', type=int, help='True if global data. In this\
                     case the data is made cyclic along longitude', 
                     default=False)
-parser.add_argument('--ntimes', type=int, default=100, help='number of days,\
+parser.add_argument('--ntimes', type=int, default=10000, help='number of days,\
                     starting from first day.')
 parser.add_argument('--CO2', type=int, default=0, choices=[0, 1], help='CO2\
                     level, O (control) or 1 (1 percent CO2 increase)')
