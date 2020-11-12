@@ -23,7 +23,6 @@ import tempfile
 from os.path import join
 import os
 
-import dask
 
 # logging config
 logging_level = os.environ.get('LOGGING_LEVEL')
@@ -36,6 +35,7 @@ logger = logging.getLogger(__name__)
 # Script parameters
 CATALOG_URL = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
 /master/intake-catalogs/master.yaml'
+
 DESCRIPTION = 'Read data from the CM2.6 from a particular region and \
         apply coarse graining. Stores the resulting dataset into an MLFLOW \
         experiment within a specific run.'
@@ -71,6 +71,8 @@ extra_bounds[3] += 2 * params.scale / 10
 # Retrieve the patch of data specified in the command-line args
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
                                   params.CO2, 'usurf', 'vsurf')
+
+# Delete chunk information from encoding
 for v in patch_data:
     del patch_data[v].encoding['chunks']
 
@@ -85,11 +87,9 @@ if params.global_ == 1:
     logger.info('Cyclic data... Making the dataset cyclic along longitude...')
     patch_data = cyclize_dataset(patch_data, 'xu_ocean', params.factor)
     grid_data = cyclize_dataset(grid_data, 'xu_ocean', params.factor)
+    # Rechunk along the cyclized dimension
     patch_data = patch_data.chunk(dict(xu_ocean=-1))
     grid_data = grid_data.chunk(dict(xu_ocean=-1))
-
-chunk_sizes = list(map(int, params.chunk_size.split('/')))
-
 
 # Calculate eddy-forcing dataset for that particular patch
 debug_mode = os.environ.get('DEBUG_MODE')
@@ -119,10 +119,13 @@ if not debug_mode:
 bounds = params.bounds
 forcing = forcing.sel(xu_ocean=slice(bounds[2], bounds[3]),
                       yu_ocean=slice(bounds[0], bounds[1]))
+
+chunk_sizes = list(map(int, params.chunk_size.split('/')))
 while len(chunk_sizes) < 3:
     chunk_sizes.append('auto')
 forcing = forcing.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'),
                                  chunk_sizes)))
+
 logger.info('Preparing forcing data')
 logger.debug(forcing)
 # export data
