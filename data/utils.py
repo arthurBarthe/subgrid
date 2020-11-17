@@ -7,6 +7,7 @@ Created on Tue May 12 17:40:39 2020
 """
 import mlflow
 import xarray as xr
+import yaml
 
 def load_data_from_run(run_id):
     mlflow_client = mlflow.tracking.MlflowClient()
@@ -14,11 +15,28 @@ def load_data_from_run(run_id):
     xr_dataset = xr.open_zarr(data_file)
     return xr_dataset
 
+
 def load_data_from_runs(run_ids):
     xr_datasets = list()
     for run_id in run_ids:
         xr_datasets.append(load_data_from_run(run_id))
     return xr_datasets
+
+
+def load_training_datasets(ds: xr.Dataset, config_fname: str):
+    results = []
+    with open(config_fname) as f:
+        try:
+            subdomains = yaml.load(f)
+        except FileNotFoundError as e:
+            raise type(e)('Configuration file of subdomains not found')
+        for subdomain in subdomains:
+            coords = subdomain[1]
+            lats = slice(coords['lat_min'], coords['lat_max'])
+            lons = slice(coords['lon_min'], coords['lon_max'])
+            results.append(ds.sel(xu_ocean=lons, yu_ocean=lats))
+    return results
+
 
 def cyclize_dataset(ds: xr.Dataset, coord_name: str, nb_points: int):
     """

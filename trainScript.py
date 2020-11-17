@@ -57,7 +57,7 @@ import data.datasets
 # Import some utils functions
 from train.utils import (DEVICE_TYPE, learning_rates_from_string,
                          run_ids_from_string, list_from_string)
-from data.utils import load_data_from_runs
+from data.utils import load_training_datasets, load_data_from_run
 from testing.utils import create_test_dataset
 from testing.metrics import MSEMetric, MaxMetric
 from train.base import Trainer
@@ -179,10 +179,9 @@ print('Selected device type: ', device_type.value)
 
 # DATA-------------------------------------------------------------------------
 # Extract the run ids for the datasets to use in training
-run_ids_str = params.run_id
-run_ids = run_ids_from_string(run_ids_str)
+global_ds = load_data_from_run(params.run_id)
 # Load data from the store, according to experiment id and run id
-xr_datasets = load_data_from_runs(run_ids)
+xr_datasets = load_training_datasets(global_ds, 'training_subdomains.yaml')
 # Split into train and test datasets
 datasets, train_datasets, test_datasets = list(), list(), list()
 
