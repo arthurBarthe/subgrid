@@ -121,6 +121,9 @@ model_file = client.download_artifacts(model_run.run_id,
                                        'models/trained_model.pth')
 transformation = pickle_artifact(model_run.run_id, 'models/transformation')
 
+# TODO temporary fix for backward compatibility
+if not isinstance(submodel_name, str):
+    submodel_name = 'transform3'
 submodel = getattr(models.submodels, submodel_name)
 
 # metrics saved independently of the training criterion
