@@ -10,7 +10,7 @@
   - training
   - lat_min: -45.
     lat_max: -20.
-    lon_min: -175.
+    lon_min: -185.
     lon_max: -157.
 - !!python/tuple
   - training
