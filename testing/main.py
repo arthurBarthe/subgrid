@@ -137,8 +137,7 @@ data_experiment_id = data_experiment.experiment_id
 
 
 # Prompt user to select the test dataset
-cols = ['params.lat_min', 'params.lat_max', 'params.long_min',
-        'params.long_max', 'params.CO2']
+cols = ['params.lat_min', 'params.lat_max', 'params.factor', 'params.CO2']
 data_run = select_run(cols=cols, experiment_ids=[data_experiment_id, ])
 
 # Recover the data (velocities and forcing)
