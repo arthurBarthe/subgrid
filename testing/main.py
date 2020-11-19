@@ -270,6 +270,7 @@ with ProgressBar(), TaskInfo('Create output dataset'):
     file_path = os.path.join(data_location, f'test_output_0')
     ProgressBar().register()
     print('Start of actual computations...')
+    out = out.chunk(dict(time=32))
     out.to_zarr(file_path)
     mlflow.log_artifact(file_path)
     print(f'Size of output data is {out.nbytes/1e9} GB')
