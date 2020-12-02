@@ -40,6 +40,7 @@ class HeteroskedasticGaussianLoss(_Loss):
 
 class CauchyLoss(_Loss):
     def __init__(self, n_target_channels: int = 1):
+        super().__init__()
         self.n_target_channels = n_target_channels
 
     @property
