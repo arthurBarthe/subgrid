@@ -45,7 +45,7 @@ class StudentLoss(_Loss):
         return 2 * self.n_target_channels
 
     def pointwise_likelihood(self, input: torch.Tensor, target: torch.Tensor):
-        mean, precision = torch.split(input, self.n_target_channels, dim=1)
+        mean, scale = torch.split(input, self.n_target_channels, dim=1)
         term1 = - torch.log(scale)
         temp = (target - mean)
         term2 = (self.nu + 1) / 2 * torch.log(scale**2 + 1 / self.nu * temp**2) 
