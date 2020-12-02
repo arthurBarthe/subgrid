@@ -32,10 +32,43 @@ class HeteroskedasticGaussianLoss(_Loss):
         return (term1 + term2).mean()
 
 
-# class ExponentialLoss(_Loss):
-#     """Class for Exponential loss plus a constant"""
+class StudentLoss(_Loss):
+    def __init__(self, nu: float = 3, n_target_channels: int = 1):
+        super().__init__()
+        self.nu = nu
+        self.n_target_channels = n_target_channels
 
-#     def __init__(self, n_target_channels: int = 1, )
+    @property
+    def n_required_channels(self):
+        """Return the number of input channel required per target channel.
+        In this case, two, one for the mean, another one for the precision"""
+        return 2 * self.n_target_channels
+
+    def pointwise_likelihood(self, input: torch.Tensor, target: torch.Tensor):
+        mean, precision = torch.split(input, self.n_target_channels, dim=1)
+        term1 = - torch.log(precision)
+        temp = (target - mean) * precision
+        term2 = (self.nu + 1) / 2 * torch.log(1 + 1 / self.nu * temp**2) 
+        return term1 + term2
+
+    def forward(self, input: torch.Tensor, target: torch.Tensor):
+        lkhs = self.pointwise_likelihood(input, target)
+        # Ignore nan values in targets.
+        lkhs = lkhs[~torch.isnan(target)]
+        return lkhs.mean()
+
+    def predict(self, input: torch.Tensor):
+        mean, precision = torch.split(input, self.n_target_channels, dim=1)
+        return mean
+
+    def predict_mean(self, input: torch.Tensor):
+        """Return the mean of the conditional distribution"""
+        mean, precision = torch.split(input, self.n_target_channels, dim=1)
+        return mean
+
+    @property
+    def precision_indices(self):
+        return list(range(self.n_target_channels, self.n_required_channels))
 
 
 class CauchyLoss(_Loss):
