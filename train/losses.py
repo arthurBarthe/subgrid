@@ -62,12 +62,16 @@ class CauchyLoss(_Loss):
 
     def predict(self, input: torch.Tensor):
         mean, precision = torch.split(input, self.n_target_channels, dim=1)
-        return mean + self.bias
+        return mean
 
     def predict_mean(self, input: torch.Tensor):
         """Return the mean of the conditional distribution"""
         mean, precision = torch.split(input, self.n_target_channels, dim=1)
-        return mean + self.bias
+        return mean
+
+    @property
+    def precision_indices(self):
+        return list(range(self.n_target_channels, self.n_required_channels))
 
 
 class HeteroskedasticGaussianLossV2(_Loss):
