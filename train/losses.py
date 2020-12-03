@@ -33,7 +33,7 @@ class HeteroskedasticGaussianLoss(_Loss):
 
 
 class StudentLoss(_Loss):
-    def __init__(self, nu: float = 3, n_target_channels: int = 1):
+    def __init__(self, nu: float = 2, n_target_channels: int = 1):
         super().__init__()
         self.nu = nu
         self.n_target_channels = n_target_channels
@@ -45,10 +45,10 @@ class StudentLoss(_Loss):
         return 2 * self.n_target_channels
 
     def pointwise_likelihood(self, input: torch.Tensor, target: torch.Tensor):
-        mean, scale = torch.split(input, self.n_target_channels, dim=1)
-        term1 = - torch.log(scale)
-        temp = (target - mean)
-        term2 = (self.nu + 1) / 2 * torch.log(scale**2 + 1 / self.nu * temp**2) 
+        mean, precision = torch.split(input, self.n_target_channels, dim=1)
+        term1 = - torch.log(precision)
+        temp = (target - mean) * precision
+        term2 = (self.nu + 1) / 2 * torch.log(1 + 1 / self.nu * temp**2) 
         return term1 + term2
 
     def forward(self, input: torch.Tensor, target: torch.Tensor):
