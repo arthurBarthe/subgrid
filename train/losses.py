@@ -33,7 +33,7 @@ class HeteroskedasticGaussianLoss(_Loss):
 
 
 class StudentLoss(_Loss):
-    def __init__(self, nu: float = 2, n_target_channels: int = 1):
+    def __init__(self, nu: float = 30, n_target_channels: int = 1):
         super().__init__()
         self.nu = nu
         self.n_target_channels = n_target_channels
