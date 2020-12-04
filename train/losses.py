@@ -60,12 +60,12 @@ class StudentLoss(_Loss):
         return lkhs.mean()
 
     def predict(self, input: torch.Tensor):
-        mean, precision = torch.split(input, self.n_target_channels, dim=1)
+        mean, precision, nu = torch.split(input, self.n_target_channels, dim=1)
         return mean
 
     def predict_mean(self, input: torch.Tensor):
         """Return the mean of the conditional distribution"""
-        mean, precision = torch.split(input, self.n_target_channels, dim=1)
+        mean, precision, nu = torch.split(input, self.n_target_channels, dim=1)
         return mean
 
     @property
