@@ -11,6 +11,7 @@ mean and precision.
 import torch
 from torch.nn.modules.loss import _Loss
 from enum import Enum
+import numpy as np
 
 
 class VarianceMode(Enum):
