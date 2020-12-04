@@ -42,14 +42,16 @@ class StudentLoss(_Loss):
     def n_required_channels(self):
         """Return the number of input channel required per target channel.
         In this case, two, one for the mean, another one for the precision"""
-        return 2 * self.n_target_channels
+        return 3 * self.n_target_channels
 
     def pointwise_likelihood(self, input: torch.Tensor, target: torch.Tensor):
-        mean, precision = torch.split(input, self.n_target_channels, dim=1)
-        term1 = - torch.log(precision)
+        mean, precision, nu = torch.split(input, self.n_target_channels, dim=1)
+        term1 = torch.lgamma((nu + 1) / 2)
+        term2 = - 1 / 2 * torch.log(nu * np.pi) - torch.lgamma(nu / 2)
+        term3 = - torch.log(precision)
         temp = (target - mean) * precision
-        term2 = (self.nu + 1) / 2 * torch.log(1 + 1 / self.nu * temp**2) 
-        return term1 + term2
+        term4 = (self.nu + 1) / 2 * torch.log(1 + 1 / self.nu * temp**2) 
+        return term1 + term2 + term3 + term4
 
     def forward(self, input: torch.Tensor, target: torch.Tensor):
         lkhs = self.pointwise_likelihood(input, target)
