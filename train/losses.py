@@ -212,8 +212,8 @@ class MultimodalLoss(_Loss):
         indices = []
         for i, loss in enumerate(self.losses):
             sub_indices = loss.precision_indices
-            for j, index in enumerate(sub_indices):
-                sub_indices[j] = index + self.n_modes + i * loss.n_required_channels
+            for j in range(len(sub_indices)):
+                sub_indices[j] += self.n_modes * self.n_target_channels + i * loss.n_required_channels
             indices.extend(sub_indices)
         return indices
 
@@ -223,38 +223,43 @@ class MultimodalLoss(_Loss):
             - probabilities of the modes
             - quantities definining each mode
         """
-        return [self.n_modes, ] + [loss.n_required_channels for
-                                   loss in self.losses]
+        return ([self.n_modes, ] * self.n_target_channels 
+                + [loss.n_required_channels for loss in self.losses])
 
     def forward(self, input: torch.Tensor, target: torch.Tensor):
-        input = torch.split(input, self.splits, dim=1)
-        probas, inputs = input[0], input[1:]
-        # Favour first one
-        probas[:, 0, ...] += 2
-        probas = torch.softmax(probas, dim=1)
-        probas = torch.split(probas, 1, dim=1)
-        losses = [torch.log(proba) - loss.pointwise_likelihood(input, target)
-                  for (proba, loss, input) in zip(probas, self.losses, inputs)]
-        loss = torch.stack(losses, dim=2)
+        splits = torch.split(input, self.splits, dim=1)
+        probas, inputs = (splits[:self.n_target_channels],
+                          splits[self.n_target_channels:])
+        probas = [torch.softmax(proba, dim=1) for proba in probas]
+        losses_values = []
+        for i, (loss, input) in enumerate(zip(self.losses, inputs)):
+            proba_i = torch.stack([proba[:, i, ...] for proba in probas], dim=1)
+            loss_i = torch.log(proba_i) - loss.pointwise_likelihood(input, target)
+            losses_values.append(loss_i)
+        loss = torch.stack(losses_values, dim=2)
         final_loss = -torch.logsumexp(loss, dim=2)
         final_loss = final_loss.mean()
         return final_loss
 
     def predict(self, input: torch.Tensor):
-        input = torch.split(input, self.splits, dim=1)
-        probas, inputs = input[0], input[1:]
-        # Favour first one
-        probas[:, 0, ...] += 2
-        probas = torch.softmax(probas, dim=1)
+        splits = torch.split(input, self.splits, dim=1)
+        probas, inputs = (splits[:self.n_target_channels],
+                          splits[self.n_target_channels:])
+        probas = [torch.softmax(proba, dim=1) for proba in probas]
         predictions = [loss.predict(input) for loss, input in
                        zip(self.losses, inputs)]
-        n_channels = predictions[0].size(1)
-        predictions = torch.stack(predictions, dim=2)
-        sel = torch.argmax(probas, dim=1, keepdim=True)
-        sel = sel.unsqueeze(dim=2)
-        sel = sel.repeat((1, n_channels, 1, 1, 1))
-        final_predictions = torch.gather(predictions, 2, sel)
-        final_predictions = final_predictions.squeeze(2)
+        weighted_predictions = []
+        for i, pred in enumerate(predictions):
+            proba_i = torch.stack([proba[:, i, ...] for proba in probas], dim=1)
+            weighted_predictions.append(proba_i * pred)
+        final_predictions = sum(weighted_predictions)
+        # n_channels = predictions[0].size(1)
+        # predictions = torch.stack(predictions, dim=2)
+        # sel = torch.argmax(probas, dim=1, keepdim=True)
+        # sel = sel.unsqueeze(dim=2)
+        # sel = sel.repeat((1, n_channels, 1, 1, 1))
+        # final_predictions = torch.gather(predictions, 2, sel)
+        # final_predictions = final_predictions.squeeze(2)
         return final_predictions
 
 
