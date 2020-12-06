@@ -24,7 +24,7 @@ from torch.nn.functional import pad
 import torch.nn as nn
 # import mlflow
 import numpy as np
-from .base import DetectOutputSizeMixin, FinalTransformationMixin
+from base import DetectOutputSizeMixin, FinalTransformationMixin
 
 class Identity(Module):
     def __init__(self):
@@ -334,24 +334,32 @@ class Divergence2d(Module):
 
 class FullyCNN(DetectOutputSizeMixin, Sequential):
     def __init__(self, n_in_channels: int = 2, n_out_channels: int = 4,
-                 batch_norm=False):
+                 padding=None, batch_norm=False):
+        if padding is None:
+            padding_5 = 0
+            padding_3 = 0
+        elif padding == 'same':
+            padding_5 = 2
+            padding_3 = 1
+        else:
+            raise ValueError('Unknow value for padding parameter.')
         self.n_in_channels = n_in_channels
         self.batch_norm = batch_norm
-        conv1 = torch.nn.Conv2d(n_in_channels, 128, 5)
+        conv1 = torch.nn.Conv2d(n_in_channels, 128, 5, padding=padding_5)
         block1 = self._make_subblock(conv1)
-        conv2 = torch.nn.Conv2d(128, 64, 5)
+        conv2 = torch.nn.Conv2d(128, 64, 5, padding=padding_5)
         block2 = self._make_subblock(conv2)
-        conv3 = torch.nn.Conv2d(64, 32, 3)
+        conv3 = torch.nn.Conv2d(64, 32, 3, padding=padding_3)
         block3 = self._make_subblock(conv3)
-        conv4 = torch.nn.Conv2d(32, 32, 3)
+        conv4 = torch.nn.Conv2d(32, 32, 3, padding=padding_3)
         block4 = self._make_subblock(conv4)
-        conv5 = torch.nn.Conv2d(32, 32, 3)
+        conv5 = torch.nn.Conv2d(32, 32, 3, padding=padding_3)
         block5 = self._make_subblock(conv5)
-        conv6 = torch.nn.Conv2d(32, 32, 3)
+        conv6 = torch.nn.Conv2d(32, 32, 3, padding=padding_3)
         block6 = self._make_subblock(conv6)
-        conv7 = torch.nn.Conv2d(32, 32, 3)
+        conv7 = torch.nn.Conv2d(32, 32, 3, padding=padding_3)
         block7 = self._make_subblock(conv7)
-        conv8 = torch.nn.Conv2d(32, n_out_channels, 3)
+        conv8 = torch.nn.Conv2d(32, n_out_channels, 3, padding=padding_3)
         Sequential.__init__(self, *block1, *block2, *block3, *block4, *block5,
                             *block6, *block7, conv8)
 
@@ -427,9 +435,10 @@ if __name__ == '__main__':
     # s = torch.sum(output)
     # print(s.item())
     # s.backward()
-    from transforms import SquareTransform
-    
-    net = Model4(2, 2*15*10, 15, 10)
-    net._final_transformation = SquareTransform()
-    input_ = torch.randint(0, 10, (17, 2, 15, 10)).to(dtype=torch.float)
+    from transforms import SoftPlusTransform
+
+    net = FullyCNN()
+    net._final_transformation = lambda x: x
+    input_ = torch.randint(0, 10, (17, 2, 35, 30)).to(dtype=torch.float)
+    input_[0, 0, 0, 0] = np.nan
     output = net(input_)
