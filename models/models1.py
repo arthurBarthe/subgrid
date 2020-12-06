@@ -22,9 +22,9 @@ from torch.nn import functional as F
 from torch.nn.modules.utils import _pair
 from torch.nn.functional import pad
 import torch.nn as nn
-# import mlflow
+
 import numpy as np
-from base import DetectOutputSizeMixin, FinalTransformationMixin
+from .base import DetectOutputSizeMixin, FinalTransformationMixin
 
 class Identity(Module):
     def __init__(self):
