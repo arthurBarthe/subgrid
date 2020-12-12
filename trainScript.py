@@ -345,6 +345,8 @@ print('Saving other parts of the model')
 full_path = os.path.join(data_location, models_directory, 'transformation')
 with open(full_path, 'wb') as f:
     pickle.dump(transformation, f)
+mlflow.log_artifact(os.path.join(data_location, models_directory))
+
 
 
 # DEBUT TEST ------------------------------------------------------------------
@@ -355,7 +357,8 @@ for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
                                                         xr_datasets):
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
                                  shuffle=False, drop_last=True)
-    output_dataset = create_test_dataset(net, xr_dataset, test_dataset,
+    output_dataset = create_test_dataset(net, criterion.n_required_channels,
+                                         xr_dataset, test_dataset,
                                          test_dataloader, test_index, device)
 
     # Save model output on the test dataset
@@ -366,5 +369,4 @@ for i_dataset, dataset, test_dataset, xr_dataset in zip(range(len(datasets)),
 print('Logging artifacts...')
 mlflow.log_artifact(os.path.join(data_location, figures_directory))
 mlflow.log_artifact(os.path.join(data_location, model_output_dir))
-mlflow.log_artifact(os.path.join(data_location, models_directory))
 print('Done...')

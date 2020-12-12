@@ -20,7 +20,7 @@ import dask
 
 
 class BatchSampler(Sampler):
-    """A custom sampler that directly samples batches"""
+    """A custom sampler that directly provides batch indices"""
 
     def __init__(self, data_source, batch_size: int = 8):
         self.data_source = data_source
@@ -171,11 +171,12 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device,
         return xr.concat(outputs, dim='time')
 
 
-def create_test_dataset(net, xr_dataset, test_dataset, test_dataloader,
-                        test_index, device):
+def create_test_dataset(net, n_out_channels,xr_dataset, test_dataset,
+                        test_dataloader, test_index, device):
     velocities = np.zeros((len(test_dataset), 2, test_dataset.height,
                            test_dataset.width))
-    predictions = np.zeros((len(test_dataset), 4, test_dataset.output_height,
+    predictions = np.zeros((len(test_dataset), n_out_channels,
+                            test_dataset.output_height,
                             test_dataset.output_width))
     truth = np.zeros((len(test_dataset), 2, test_dataset.output_height,
                       test_dataset.output_width))
