@@ -279,6 +279,11 @@ class BimodalGaussianLoss(MultimodalLoss):
                          base_loss_cls=HeteroskedasticGaussianLossV2)
 
 
+class BimodalStudentLoss(MultimodalLoss):
+    def __init__(self, n_target_channels: int):
+        super().__init__(2, n_target_channels, base_loss_cls=StudentLoss)
+
+
 class TrimodalGaussianLoss(MultimodalLoss):
     def __init__(self, n_target_channels: int):
         super().__init__(3, n_target_channels,
