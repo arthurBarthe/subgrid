@@ -343,7 +343,6 @@ class FullyCNN(DetectOutputSizeMixin, Sequential):
             padding_3 = 1
         else:
             raise ValueError('Unknow value for padding parameter.')
-        self.extra_parameter = torch.nn.Parameter(torch.tensor([1.,]))
         self.n_in_channels = n_in_channels
         self.batch_norm = batch_norm
         conv1 = torch.nn.Conv2d(n_in_channels, 128, 5, padding=padding_5)
@@ -363,6 +362,7 @@ class FullyCNN(DetectOutputSizeMixin, Sequential):
         conv8 = torch.nn.Conv2d(32, n_out_channels, 3, padding=padding_3)
         Sequential.__init__(self, *block1, *block2, *block3, *block4, *block5,
                             *block6, *block7, conv8)
+        self.extra_parameter = torch.nn.Parameter(torch.tensor([1., ]))
 
     @property
     def final_transformation(self):
