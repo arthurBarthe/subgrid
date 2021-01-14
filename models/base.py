@@ -13,6 +13,9 @@ class DetectOutputSizeMixin:
         x = torch.zeros((1, self.n_in_channels, input_height, input_width))
         x = x.to(device=self.device)
         y = self(x)
+        # temporary fix for student loss
+        if isinstance(y, tuple):
+            y = y[0]
         return y.size(3)
 
     def output_height(self, input_height, input_width):
