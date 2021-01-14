@@ -37,16 +37,17 @@ class StudentLoss(_Loss):
     def __init__(self, nu: float = 30, n_target_channels: int = 1):
         super().__init__()
         self.n_target_channels = n_target_channels
+        self.nu = torch.nn.Parameter(torch.tensor([30.,]))
 
     @property
     def n_required_channels(self):
         """Return the number of input channel required per target channel.
         In this case, two, one for the mean, another one for the precision"""
-        return 3 * self.n_target_channels
+        return 2 * self.n_target_channels
 
     def pointwise_likelihood(self, input: torch.Tensor, target: torch.Tensor):
-        mean, precision, nu = torch.split(input, self.n_target_channels, dim=1)
-        nu = nu + 2
+        mean, precision = torch.split(input, self.n_target_channels, dim=1)
+        nu = torch.log(1 + torch.exp(self.nu)) * 10.
         term1 = - torch.lgamma((nu + 1) / 2)
         term2 = 1 / 2 * torch.log(nu) + torch.lgamma(nu / 2)
         term3 = - torch.log(precision)
