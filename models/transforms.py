@@ -62,7 +62,7 @@ class PrecisionTransform(Transform):
         # number of them (although does not matter for 4 channels)
         result = torch.clone(input_)
         result[:, self.indices, :, :] = self.transform_precision(
-            input_[:, self.indices, :, :]) + self.min_value
+            input_[:, self.indices, :, :]) + 0.01
         return result
 
     @staticmethod
