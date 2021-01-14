@@ -37,7 +37,7 @@ class StudentLoss(_Loss):
     def __init__(self, nu: float = 30, n_target_channels: int = 1):
         super().__init__()
         self.n_target_channels = n_target_channels
-        self.nu = torch.nn.Parameter(torch.tensor([30.,]))
+        self.nu = torch.nn.Parameter(torch.tensor([1.,]))
 
     @property
     def n_required_channels(self):
