@@ -4,8 +4,6 @@ Created on Wed Dec 11 16:13:28 2019
 
 @author: Arthur
 TODO:
-    - data augmentation by *lambda -> *lambda**2 forcing
-    - Learnable min value of precision started at low value
     - tune Adam + keep momemtum
     - when concatenating datasets, weights depending on sizes
     - make one file per working training procedure
@@ -15,37 +13,20 @@ TODO:
     - make Unet tunable
     - multiple time-indexing
     - loss usbsampling
-To-Done:
-    - Early stopping
-    - try not to remove the mean flow in normalizing: done
-    - try again different normalizaiton (including same one everywhere with
-                                         a lot of training data)
 """
 # This is required to avoid some issue with matplotlib when running on NYU's
 # prince server
 import os
-if os.environ.get('DISPLAY', '') == '':
-    import matplotlib
-    matplotlib.use('agg')
-
 import numpy as np
-import xarray as xr
 import mlflow
 import os.path
 
-# For pre-processing
-# from sklearn.preprocessing import StandardScaler, RobustScaler
-
-# For neural networks
-import torch
 from torch.utils.data import DataLoader, Subset
 
 import torch.optim as optim
+from torch.optim.lr_scheduler import MultiStepLR
 import torch.nn
 import torch.nn.functional as F
-
-# For plots
-import matplotlib.pyplot as plt
 
 
 # Import our Dataset class and neural network
@@ -241,19 +222,17 @@ print('Size of validation data : {}'.format(len(test_dataset)))
 n_target_channels = datasets[0].n_targets
 criterion = getattr(train.losses, loss_cls_name)(n_target_channels)
 
-# Recover the model's class
+# Recover the model's class, based on the corresponding CLI parameters
 try:
     models_module = importlib.import_module(model_module_name)
     model_cls = getattr(models_module, model_cls_name)
 except ModuleNotFoundError as e:
-    raise type(e)('Could not find the specified model class: ' +
+    raise type(e)('Could not find the specified module for : ' +
                   str(e))
 except AttributeError as e:
     raise type(e)('Could not find the specified model class: ' +
                   str(e))
-
 net = model_cls(datasets[0].n_features, criterion.n_required_channels)
-
 try:
     transformation_cls = getattr(models.transforms, transformation_cls_name)
     transformation = transformation_cls()
@@ -286,7 +265,6 @@ for dataset in datasets:
 # To GPU
 net.to(device)
 
-
 # metrics saved independently of the training criterion
 metrics = {'mse': MSEMetric(), 'Inf Norm': MaxMetric()}
 for metric in metrics.values():
@@ -294,9 +272,10 @@ for metric in metrics.values():
 
 params = list(net.parameters())
 
-# TODO check if we can do lr decay differently
-optimizers = {i: optim.Adam(params, lr=v, weight_decay=weight_decay)
-              for (i, v) in learning_rates.items()}
+# Optimizer and learning rate scheduler
+optimizer = optim.Adam(params, lr=learning_rates[0], weight_decay=weight_decay)
+lr_scheduler = MultiStepLR(optimizer, list(learning_rates.keys())[1:],
+                           gamma=0.1)
 
 trainer = Trainer(net, device)
 trainer.criterion = criterion
@@ -306,14 +285,10 @@ for metric_name, metric in metrics.items():
     trainer.register_metric(metric_name, metric)
 
 for i_epoch in range(n_epochs):
-    # Set to training mode
-    if i_epoch in optimizers:
-        optimizer = optimizers[i_epoch]
-        print('Switching to new optimizer:\n', optimizer)
     print('Epoch number {}.'.format(i_epoch))
     # TODO remove clipping?
     train_loss = trainer.train_for_one_epoch(train_dataloader, optimizer,
-                                             clip=1.)
+                                             lr_scheduler, clip=1.)
     test = trainer.test(test_dataloader)
     if test == 'EARLY_STOPPING':
         print(test)

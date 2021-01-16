@@ -57,7 +57,8 @@ send_message("Starting to run testing!")
 
 
 # Set dast temporary directory
-dask.config.set(temporary_directory='/scratch/ag7531/dasktemp')
+# If something fails try this first
+#dask.config.set(temporary_directory='/scratch/ag7531/dasktemp')
 
 
 # Parse arguments
@@ -266,7 +267,7 @@ if n_epochs > 0:
 
 # Test
 with ProgressBar(), TaskInfo('Create output dataset'):
-    out = create_large_test_dataset(net, partition, loaders, device)
+    out = create_large_test_dataset(net, criterion, partition, loaders, device)
     file_path = os.path.join(data_location, f'test_output_0')
     ProgressBar().register()
     print('Start of actual computations...')

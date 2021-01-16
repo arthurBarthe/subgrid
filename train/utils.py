@@ -101,5 +101,6 @@ def learning_rates_from_string(rates_string: str) -> dict:
 def run_ids_from_string(run_ids_str: str) -> list:
     return run_ids_str.split('/')
 
+
 def list_from_string(string: str) -> list:
     return string.split('/')

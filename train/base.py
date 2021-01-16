@@ -84,7 +84,7 @@ class Trainer:
         self._metrics[metric_name] = metric
 
     def train_for_one_epoch(self, dataloader: DataLoader, optimizer,
-                            clip: float = None) -> float:
+                            scheduler=None, clip: float = None) -> float:
         """Trains the neural network for one epoch.
 
         Training uses the data provided through the dataloader passed as an
@@ -136,6 +136,9 @@ class Trainer:
                 clip_grad_norm_(self.net.parameters(), clip)
             # Update parameters
             optimizer.step()
+        # Update the learning rate via the scheduler
+        if scheduler is not None:
+            scheduler.step()
         return running_loss.value
 
     def test(self, dataloader) -> float:

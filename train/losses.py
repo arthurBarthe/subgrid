@@ -45,6 +45,7 @@ class StudentLoss(_Loss):
         return 2 * self.n_target_channels
 
     def pointwise_likelihood(self, input: torch.Tensor, target: torch.Tensor):
+        # Temporary fix
         input, nu = input
         mean, precision = torch.split(input, self.n_target_channels, dim=1)
         term1 = - torch.lgamma((nu + 1) / 2)
@@ -187,15 +188,16 @@ class HeteroskedasticGaussianLossV3(_Loss):
 
 
 class MultimodalLoss(_Loss):
-    """General class for a multimodal loss. By default, each location on
-    each channel can choose its mode independently. If share_mode is set to
-    'C' for channels, the mode is shared accross channels"""
+    """General class for a multimodal loss. Each location on
+    each channel can choose its mode independently."""
 
     def __init__(self, n_modes, n_target_channels, base_loss_cls,
                  base_loss_params=[], share_mode='C'):
         super().__init__()
         self.n_modes = n_modes
         self.n_target_channels = n_target_channels
+        self.target_names = ['target' + str(i) for i in range(
+            n_target_channels)]
         self.losses = []
         for i in range(n_modes):
             if i < len(base_loss_params):
@@ -206,9 +208,24 @@ class MultimodalLoss(_Loss):
         self.share_mode = share_mode
 
     @property
+    def target_names(self):
+        return self._target_names
+
+    @target_names.setter
+    def target_names(self, value):
+        assert len(value) == self.n_target_channels
+        self._target_names = value
+
+    @property
     def n_required_channels(self):
         if self.share_mode == 'C':
             return sum(self.splits)
+
+    @property
+    def channel_names(self):
+        """Automatically assigns names to output channels depending on the
+        target names. For now not really implemented"""
+        return [str(i) for i in range(self.n_required_channels)]
 
     @property
     def precision_indices(self):
@@ -256,26 +273,10 @@ class MultimodalLoss(_Loss):
             proba_i = torch.stack([proba[:, i, ...] for proba in probas], dim=1)
             weighted_predictions.append(proba_i * pred)
         final_predictions = sum(weighted_predictions)
-        # n_channels = predictions[0].size(1)
-        # predictions = torch.stack(predictions, dim=2)
-        # sel = torch.argmax(probas, dim=1, keepdim=True)
-        # sel = sel.unsqueeze(dim=2)
-        # sel = sel.repeat((1, n_channels, 1, 1, 1))
-        # final_predictions = torch.gather(predictions, 2, sel)
-        # final_predictions = final_predictions.squeeze(2)
         return final_predictions
 
-
 class BimodalGaussianLoss(MultimodalLoss):
-    """Class for a bimodal Gaussian loss. For one target channel, the input
-    should have 6 channels: 
-        - 2 channels for the probabilities of each mode
-        - 2 channels for the mean and precision of the first mode
-        - 2 channels for the mean and precision of the second mode
-    For two target channels, the input should have 10 channels:
-        - 2 channels for the probability of each mode
-        - 4 channels for the mean (2 C) and precision (2 C) of the first mode 
-        - 4 channels for the mean and precision of the second mode"""
+    """Class for a bimodal Gaussian loss."""
 
     def __init__(self, n_target_channels: int):
         super().__init__(2, n_target_channels,

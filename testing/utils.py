@@ -103,8 +103,8 @@ def _dataset_from_channels(array, channels_names: list, dims, coords):
     return xr.Dataset(data)
 
 
-def create_large_test_dataset(net, test_datasets, test_loaders, device,
-                              save_input: bool = False):
+def create_large_test_dataset(net, criterion, test_datasets, test_loaders,
+                              device, save_input: bool = False):
     """
     Return an xarray dataset with the predictions carried out on the
     provided test datasets. The data of this dataset are dask arrays,
@@ -138,8 +138,8 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device,
         test_dataset = test_datasets[i]
         delayed_apply = dask.delayed(apply_net)
         temp = delayed_apply(net, loader, device)
-        shape = (len(test_dataset), 4, test_dataset.output_height,
-                 test_dataset.output_width)
+        shape = (len(test_dataset), criterion.n_required_channels,
+                 test_dataset.output_height, test_dataset.output_width)
         output = da.from_delayed(temp[0], shape=shape, dtype=np.float64)
         # Same for input
         if save_input:
@@ -151,7 +151,7 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device,
         coords_s = test_dataset.output_coords
         coords_s['latitude'] = coords_s.pop('yu_ocean')
         coords_s['longitude'] = coords_s.pop('xu_ocean')
-        var_names = ['S_xpred', 'S_ypred', 'S_xscale', 'S_yscale']
+        var_names = criterion.channel_names
         output_dataset = _dataset_from_channels(output, var_names, new_dims,
                                                 coords_s)
         outputs.append(output_dataset)
@@ -169,7 +169,6 @@ def create_large_test_dataset(net, test_datasets, test_loaders, device,
                          xr.concat(inputs, 'time')))
     else:
         return xr.concat(outputs, dim='time')
-
 
 def create_test_dataset(net, n_out_channels,xr_dataset, test_dataset,
                         test_dataloader, test_index, device):
