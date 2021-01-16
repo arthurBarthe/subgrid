@@ -205,10 +205,17 @@ for metric in metrics.values():
     metric.inv_transform = (lambda x:
                             test_dataset.inverse_transform_target(x))
 
+# Set up training criterion and select parameters to train
+try:
+    n_targets = dataset.n_targets
+    criterion = getattr(modules['__main__'], loss_cls_name)(n_targets)
+except AttributeError as e:
+    raise type(e)('Could not find the loss class used for training.')
+
 # On first testdataset load the model. Or if we train to reset the model
 logging.info('Creating the neural network model')
 model_cls = load_model_cls(model_module_name, model_cls_name)
-net = model_cls(dataset.n_features, 2 * dataset.n_targets)
+net = model_cls(dataset.n_features, criterion.n_required_channels)
 net.final_transformation = transformation
 
 # Load parameters of pre-trained model
@@ -232,13 +239,6 @@ print('Targets transform: ', transform.transforms['targets'].transforms)
 # Net to GPU
 with TaskInfo('Put neural network on GPU'):
     net.to(device)
-
-# Set up training criterion and select parameters to train
-try:
-    n_targets = dataset.n_targets
-    criterion = getattr(modules['__main__'], loss_cls_name)(n_targets)
-except AttributeError as e:
-    raise type(e)('Could not find the loss class used for training.')
 
 print('width: {}, height: {}'.format(dataset.width, dataset.height))
 
