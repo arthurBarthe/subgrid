@@ -362,7 +362,7 @@ class FullyCNN(DetectOutputSizeMixin, Sequential):
         conv8 = torch.nn.Conv2d(32, n_out_channels, 3, padding=padding_3)
         Sequential.__init__(self, *block1, *block2, *block3, *block4, *block5,
                             *block6, *block7, conv8)
-        self.extra_parameter = torch.nn.Parameter(torch.tensor([20., ]))
+        
 
     @property
     def final_transformation(self):
@@ -375,7 +375,7 @@ class FullyCNN(DetectOutputSizeMixin, Sequential):
     def forward(self, x):
         x = super().forward(x)
         # Temporary fix for the student loss
-        return self.final_transformation(x), torch.log(1 + torch.exp(self.extra_parameter)) * 10.
+        return self.final_transformation(x)
 
     def _make_subblock(self, conv):
         subbloc = [conv, nn.ReLU()]
