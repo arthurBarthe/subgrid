@@ -11,9 +11,10 @@ from scipy.ndimage import gaussian_filter
 import numpy as np
 
 
-def advections(u_v_field, grid_data):
+def advections(u_v_field: xr.Dataset, grid_data: xr.Dataset):
     """
     Return the advection terms corresponding to the passed velocity field.
+    Note that the velocities sit on U-grids
 
     Parameters
     ----------
@@ -28,11 +29,13 @@ def advections(u_v_field, grid_data):
         Advection components, under variable names adv_x and adv_y.
 
     """
-    # Replace zeros with nan
     dxu = grid_data['dxu']
     dyu = grid_data['dyu']
     gradient_x = u_v_field.diff(dim='xu_ocean') / dxu
     gradient_y = u_v_field.diff(dim='yu_ocean') / dyu
+    # Interpolate back the gradients
+    gradient_x = gradient_x.interp(u_v_field.coords)
+    gradient_y = gradient_y.interp(u_v_field.coords)
     u, v = u_v_field['usurf'], u_v_field['vsurf']
     adv_x = u * gradient_x['usurf'] + v * gradient_y['usurf']
     adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
@@ -43,9 +46,10 @@ def advections(u_v_field, grid_data):
     return result
 
 
-def spatial_filter(data, sigma):
+def spatial_filter(data: np.ndarray, sigma: float):
     """
-    Apply a gaussian filter along all dimensions except first one.
+    Apply a gaussian filter along all dimensions except first one, which
+    corresponds to time.
 
     Parameters
     ----------
@@ -68,7 +72,8 @@ def spatial_filter(data, sigma):
     return result
 
 
-def spatial_filter_dataset(dataset, grid_info, sigma: float):
+def spatial_filter_dataset(dataset: xr.Dataset, grid_info: xr.Dataset,
+                           sigma: float):
     """
     Apply spatial filtering to the dataset across the spatial dimensions.
 
@@ -91,6 +96,8 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
     """
     area_u = grid_info['dxu'] * grid_info['dyu'] / 1e8
     dataset = dataset * area_u
+    # Normalisation term, so that if the quantity we filter is constant
+    # over the domain, the filtered quantity is constant with the same value
     norm = xr.apply_ufunc(lambda x: gaussian_filter(x, sigma, mode='constant'),
                           area_u, dask='parallelized', output_dtypes=[float, ])
     filtered = xr.apply_ufunc(lambda x: spatial_filter(x, sigma), dataset,
@@ -98,9 +105,10 @@ def spatial_filter_dataset(dataset, grid_info, sigma: float):
     return filtered / norm
 
 
-def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
+def eddy_forcing(u_v_dataset : xr.Dataset, grid_data: xr.Dataset,
+                 scale: int, method: str = 'mean',
                  nan_or_zero: str = 'zero', scale_mode: str = 'factor',
-                 debug_mode=False):
+                 debug_mode=False) -> xr.Dataset:
     """
     Compute the sub-grid forcing terms.
 
@@ -122,7 +130,7 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         be replaced by nans for consistency.
         The default is 'nan'.
     scale_mode: str, optional
-        'factor' if we set the factor, 'scale' if we set the scale
+        DEPRECIATED, should always be left as 'factor'
     Returns
     -------
     forcing : xarray dataset
@@ -136,9 +144,13 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         print('Using factor mode')
         scale_x = scale
         scale_y = scale
-    scale_filter = (scale_x / 2, scale_y / 2)
+    # The 1.64 comes from selecting the std of the Gaussian filter so 
+    # that a square with size scale_x * scale_y contains approximately
+    # 80% of the measure of the Gaussian filter.
+    scale_filter = (scale_x / 1.64, scale_y / 1.64)
     # High res advection terms
     adv = advections(u_v_dataset, grid_data)
+    # Filtered advections
     filtered_adv = spatial_filter_dataset(adv, grid_data, scale_filter)
     # Filtered u,v field
     u_v_filtered = spatial_filter_dataset(u_v_dataset, grid_data, scale_filter)
@@ -151,7 +163,6 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
     forcing = forcing.merge(u_v_filtered)
     print(forcing)
     # Coarsen
-    print('scale: ', (scale_x, scale_y))
     print('scale factor: ', scale)
     forcing_coarse = forcing.coarsen({'xu_ocean': int(scale_x),
                                       'yu_ocean': int(scale_y)},
@@ -165,14 +176,13 @@ def eddy_forcing(u_v_dataset, grid_data, scale: float, method: str = 'mean',
         forcing_coarse = forcing_coarse.where(forcing_coarse['usurf'] != 0)
     if not debug_mode:
         return forcing_coarse
-    else:
-        u_v_dataset = u_v_dataset.merge(adv)
-        filtered_adv = filtered_adv.rename({'adv_x': 'f_adv_x',
-                                            'adv_y': 'f_adv_y'})
-        adv_filtered = adv_filtered.rename({'adv_x': 'adv_f_x',
-                                            'adv_y': 'adv_f_y'})
-        u_v_filtered = u_v_filtered.rename({'usurf': 'f_usurf',
-                                            'vsurf': 'f_vsurf'})
-        u_v_dataset = xr.merge((u_v_dataset, u_v_filtered, adv, filtered_adv,
-                                adv_filtered, forcing[['S_x', 'S_y']]))
-        return u_v_dataset, forcing_coarse
+    u_v_dataset = u_v_dataset.merge(adv)
+    filtered_adv = filtered_adv.rename({'adv_x': 'f_adv_x',
+                                        'adv_y': 'f_adv_y'})
+    adv_filtered = adv_filtered.rename({'adv_x': 'adv_f_x',
+                                        'adv_y': 'adv_f_y'})
+    u_v_filtered = u_v_filtered.rename({'usurf': 'f_usurf',
+                                        'vsurf': 'f_vsurf'})
+    u_v_dataset = xr.merge((u_v_dataset, u_v_filtered, adv, filtered_adv,
+                            adv_filtered, forcing[['S_x', 'S_y']]))
+    return u_v_dataset, forcing_coarse
