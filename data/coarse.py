@@ -34,8 +34,10 @@ def advections(u_v_field: xr.Dataset, grid_data: xr.Dataset):
     gradient_x = u_v_field.diff(dim='xu_ocean') / dxu
     gradient_y = u_v_field.diff(dim='yu_ocean') / dyu
     # Interpolate back the gradients
-    gradient_x = gradient_x.interp(u_v_field.coords[['xu_ocean', 'yu_ocean']])
-    gradient_y = gradient_y.interp(u_v_field.coords[['xu_ocean', 'yu_ocean']])
+    interp_coords = dict(xu_ocean=u_v_field.coords['xu_ocean'],
+                         yu_ocean=u_v_field.coords['yu_ocean'])
+    gradient_x = gradient_x.interp(interp_coords)
+    gradient_y = gradient_y.interp(interp_coords)
     u, v = u_v_field['usurf'], u_v_field['vsurf']
     adv_x = u * gradient_x['usurf'] + v * gradient_y['usurf']
     adv_y = u * gradient_x['vsurf'] + v * gradient_y['vsurf']
