@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 CATALOG_URL = 'https://raw.githubusercontent.com/pangeo-data/pangeo-datastore\
 /master/intake-catalogs/master.yaml'
 
-DESCRIPTION = 'Read data from the CM2.6 from a particular region and \
+DESCRIPTION = 'Read data from the CM2.6 and \
         apply coarse graining. Stores the resulting dataset into an MLFLOW \
         experiment within a specific run.'
 
@@ -44,7 +44,6 @@ data_location = tempfile.mkdtemp(dir='/scratch/ag7531/temp/')
 
 # Parse the command-line parameters
 parser = argparse.ArgumentParser(description=DESCRIPTION)
-parser.add_argument('scale', type=float, help='scale in kilometers')
 parser.add_argument('bounds', type=float, nargs=4, help='min lat, max_lat,\
                     min_long, max_long')
 parser.add_argument('--global_', type=int, help='True if global data. In this\
@@ -60,16 +59,9 @@ parser.add_argument('--chunk_size', type=str, default='50',
                     help='Chunk size along the time dimension')
 params = parser.parse_args()
 
-# Use a larger patch to compute the eddy forcing then we will crop.
-# This is to mitigate effects due to filtering near the border.
-extra_bounds = copy(params.bounds)
-extra_bounds[0] -= 2 * params.scale / 10
-extra_bounds[2] -= 2 * params.scale / 10
-extra_bounds[1] += 2 * params.scale / 10
-extra_bounds[3] += 2 * params.scale / 10
 
 # Retrieve the patch of data specified in the command-line args
-patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, extra_bounds,
+patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, params.bounds,
                                   params.CO2, 'usurf', 'vsurf')
 
 # Delete chunk information from encoding

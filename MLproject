@@ -7,7 +7,6 @@ entry_points:
     parameters:
       ntimes : {type: float, default: 10000}
       CO2: {type: float, default: 0}
-      scale : float
       lat_min : float
       lat_max : float
       long_min : float
@@ -15,7 +14,7 @@ entry_points:
       factor: {type: float, default: 0}
       chunk_size: {type: string, default: 50}
       global: {type: str, default: 0}
-    command: "python cmip26.py {scale} {lat_min} {lat_max} {long_min} {long_max} --CO2 {CO2} --ntimes {ntimes} --factor {factor} --chunk_size {chunk_size} --global_ {global}" 
+    command: "python cmip26.py {lat_min} {lat_max} {long_min} {long_max} --CO2 {CO2} --ntimes {ntimes} --factor {factor} --chunk_size {chunk_size} --global_ {global}" 
 
   train:
     parameters:
