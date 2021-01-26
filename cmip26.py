@@ -89,7 +89,7 @@ if params.factor != 0 and not debug_mode:
     def func(block):
         return eddy_forcing(block, grid_data, scale=scale_m)
     template = patch_data.coarsen(dict(xu_ocean=scale_m,
-                                       yu_occean=scale_m)).mean()
+                                       yu_ocean=scale_m)).mean()
     forcing = xr.map_blocks(func, patch_data, template=template)
     # forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean',
     #                        scale_mode='factor')
