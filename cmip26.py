@@ -9,19 +9,20 @@ data from cmip2.6 on one of the pangeo data catalogs.
 Command line parameters include region specification.
 Run cmip26 -h to display help.
 """
+from os.path import join
+import os
 
 import argparse
+import xarray as xr
 from dask.diagnostics import ProgressBar
 import mlflow
-from copy import copy
 
 from data.utils import cyclize_dataset
 from data.coarse import eddy_forcing
 from data.pangeo_catalog import get_patch
 import logging
 import tempfile
-from os.path import join
-import os
+
 
 
 # logging config
@@ -76,12 +77,20 @@ if params.global_ == 1:
     patch_data = patch_data.chunk(dict(xu_ocean=-1))
     grid_data = grid_data.chunk(dict(xu_ocean=-1))
 
+# grid data is saved locally, no need for dask
+grid_data = grid_data.compute()
+
 # Calculate eddy-forcing dataset for that particular patch
 debug_mode = os.environ.get('DEBUG_MODE')
 if params.factor != 0 and not debug_mode:
     scale_m = params.factor
-    forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean',
-                           scale_mode='factor')
+    def func(block):
+        return eddy_forcing(block, grid_data, scale=scale_m)
+    template = patch_data.coarsen(dict(xu_ocean=scale_m,
+                                       yu_occean=scale_m)).mean()
+    forcing = xr.map_blocks(func, patch_data, template=template)
+    # forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean',
+    #                        scale_mode='factor')
 elif not debug_mode:
     scale_m = params.scale * 1e3
     forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean')
