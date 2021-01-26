@@ -58,7 +58,7 @@ def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
     uv_data = source.to_dask()
     grid_data = s_grid.to_dask()
     # Following line is necessary to transform non-primary coords into vars
-    grid_data = grid_data.reset_coords()
+    grid_data = grid_data.reset_coords()[['dxu', 'dyu']]
     if bounds is not None:
         uv_data = uv_data.sel(xu_ocean=slice(*bounds[2:]),
                               yu_ocean=slice(*bounds[:2]))

@@ -77,9 +77,11 @@ if params.global_ == 1:
     patch_data = patch_data.chunk(dict(xu_ocean=-1))
     grid_data = grid_data.chunk(dict(xu_ocean=-1))
 
+logger.debug('Getting grid data locally')
 # grid data is saved locally, no need for dask
 grid_data = grid_data.compute()
 
+logger.debug('Mapping blocks')
 # Calculate eddy-forcing dataset for that particular patch
 debug_mode = os.environ.get('DEBUG_MODE')
 if params.factor != 0 and not debug_mode:
