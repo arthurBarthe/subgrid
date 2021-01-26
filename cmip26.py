@@ -91,6 +91,9 @@ if params.factor != 0 and not debug_mode:
     template = patch_data.coarsen(dict(xu_ocean=int(scale_m),
                                        yu_ocean=int(scale_m)),
                                   boundary='trim').mean()
+    template2 = template.copy()
+    template2 = template2.rename(dict(u_ocean='S_x', v_ocean='S_y'))
+    template = xr.merge((template, template2))
     forcing = xr.map_blocks(func, patch_data, template=template)
     # forcing = eddy_forcing(patch_data, grid_data, scale=scale_m, method='mean',
     #                        scale_mode='factor')
