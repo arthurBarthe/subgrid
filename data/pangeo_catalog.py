@@ -62,8 +62,8 @@ def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
     s_grid.storage_options['filecache'] = dict(
         cache_storage=cache_folder)
     # Convert to dask
-    uv_data = uv_data.to_dask()
-    grid_data = grid_data.to_dask()
+    uv_data = source.to_dask()
+    grid_data = s_grid.to_dask()
     # Following line is necessary to transform non-primary coords into vars
     grid_data = grid_data.reset_coords()
     if bounds is not None:
