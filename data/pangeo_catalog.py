@@ -54,11 +54,14 @@ def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
     else:
         raise ValueError('Unrecognized cO2 level. Should be O or 1.')
     s_grid = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_grid
-    uv_data = source.get()
-    grid_data = s_grid.get()
-    # Use caching
-    uv_data.storage_options['cache_folder'] = cache_folder
-    grid_data.storage_options['cache_folder'] = cache_folder
+    # The following lines are for caching
+    source.urlpath = 'filecache::' + source.urlpath
+    s_grid.urlpath = 'filecache::' + source.urlpath
+    source.storage_options['filecache'] = dict(
+        cache_storage=cache_folder)
+    s_grid.storage_options['filecache'] = dict(
+        cache_storage=cache_folder)
+    # Convert to dask
     uv_data = uv_data.to_dask()
     grid_data = grid_data.to_dask()
     # Following line is necessary to transform non-primary coords into vars
