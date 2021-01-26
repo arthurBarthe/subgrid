@@ -64,7 +64,6 @@ params = parser.parse_args()
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, params.bounds,
                                   params.CO2, 'usurf', 'vsurf')
 
-
 logger.debug(patch_data)
 logger.debug(grid_data)
 
