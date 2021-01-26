@@ -44,7 +44,7 @@ def advections(u_v_field: xr.Dataset, grid_data: xr.Dataset):
     result = xr.Dataset({'adv_x': adv_x, 'adv_y': adv_y})
     # TODO check if we can simply prevent the previous operation from adding
     # chunks
-    result = result.chunk(dict(xu_ocean=-1, yu_ocean=-1))
+    #result = result.chunk(dict(xu_ocean=-1, yu_ocean=-1))
     return result
 
 
@@ -130,7 +130,7 @@ def eddy_forcing(u_v_dataset : xr.Dataset, grid_data: xr.Dataset,
         replace them by zeros before applying the procedure.
         In the second case, remaining zeros after applying the procedure will
         be replaced by nans for consistency.
-        The default is 'nan'.
+        The default is 'zero'.
     scale_mode: str, optional
         DEPRECIATED, should always be left as 'factor'
     Returns
