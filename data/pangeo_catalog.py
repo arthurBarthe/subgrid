@@ -56,10 +56,7 @@ def get_patch(catalog_url, ntimes: int = None, bounds: list = None,
     s_grid = catalog.ocean.GFDL_CM2_6.GFDL_CM2_6_grid
     # The following lines are for caching
     source.urlpath = 'filecache::' + source.urlpath
-    s_grid.urlpath = 'filecache::' + source.urlpath
     source.storage_options['filecache'] = dict(
-        cache_storage=cache_folder)
-    s_grid.storage_options['filecache'] = dict(
         cache_storage=cache_folder)
     # Convert to dask
     uv_data = source.to_dask()
