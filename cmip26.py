@@ -64,12 +64,6 @@ params = parser.parse_args()
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, params.bounds,
                                   params.CO2, 'usurf', 'vsurf')
 
-# Delete chunk information from encoding
-for v in patch_data:
-    del patch_data[v].encoding['chunks']
-
-for v in grid_data:
-    del grid_data[v].encoding['chunks']
 
 logger.debug(patch_data)
 logger.debug(grid_data)
@@ -111,12 +105,6 @@ if not debug_mode:
 bounds = params.bounds
 forcing = forcing.sel(xu_ocean=slice(bounds[2], bounds[3]),
                       yu_ocean=slice(bounds[0], bounds[1]))
-
-chunk_sizes = list(map(int, params.chunk_size.split('/')))
-while len(chunk_sizes) < 3:
-    chunk_sizes.append('auto')
-forcing = forcing.chunk(dict(zip(('time', 'xu_ocean', 'yu_ocean'),
-                                 chunk_sizes)))
 
 logger.info('Preparing forcing data')
 logger.debug(forcing)
