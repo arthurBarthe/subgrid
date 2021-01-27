@@ -6,7 +6,7 @@ Created on Tue Feb  4 14:00:45 2020
 """
 import numpy as np
 import mlflow
-from mlflow.tracking import MlflowClient
+from mlflow.tracking import client
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import matplotlib.animation as animation
@@ -147,6 +147,7 @@ def select_run(sort_by=None, cols=None, merge=None, *args, **kargs) -> object:
     return mlflow_runs.loc[id_, :]
 
 def download_data(run_id: str, rescale: bool = True) -> xr.Dataset:
+    client_ = client.MlflowClient()
     data_file_name = client_.download_artifacts(run_id, 'forcing')
     data = xr.open_zarr(data_file_name)
     data = data.rename({'xu_ocean': 'longitude', 'yu_ocean': 'latitude'})
@@ -157,6 +158,7 @@ def download_data(run_id: str, rescale: bool = True) -> xr.Dataset:
     return data
 
 def download_pred(run_id: str, precision_to_std: bool = True) -> xr.Dataset:
+    client_ = client.MlflowClient()
     pred_file_name = client_.download_artifacts(run.run_id, 'test_output_0')
     pred = xr.open_zarr(pred_file_name)
     pred = pred.rename(S_xpred='S_x', S_ypred='S_y')
