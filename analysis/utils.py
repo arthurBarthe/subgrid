@@ -73,8 +73,8 @@ def select_experiment():
         Name of the experiment selected by the user.
 
     """
-    client = client.MlflowClient()
-    list_of_exp = client.list_experiments()
+    client_ = client.MlflowClient()
+    list_of_exp = client_.list_experiments()
     dict_of_exp = {exp.experiment_id: exp.name for exp in list_of_exp}
     for id_, name in dict_of_exp.items():
         print(id_, ': ', name)
