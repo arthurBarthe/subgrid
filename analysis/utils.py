@@ -79,7 +79,7 @@ def select_experiment():
     for id_, name in dict_of_exp.items():
         print(id_, ': ', name)
     selection = input('Select the id of an experiment: ')
-    return dict_of_exp[selection]
+    return selection, dict_of_exp[selection]
 
 
 def select_run(sort_by=None, cols=None, merge=None, *args, **kargs) -> object:
@@ -145,6 +145,53 @@ def select_run(sort_by=None, cols=None, merge=None, *args, **kargs) -> object:
     if id_ < 0:
         return 0
     return mlflow_runs.loc[id_, :]
+
+def download_data(run_id: str, rescale: bool = True) -> xr.Dataset:
+    data_file_name = client_.download_artifacts(run_id, 'forcing')
+    data = xr.open_zarr(data_file_name)
+    data = data.rename({'xu_ocean': 'longitude', 'yu_ocean': 'latitude'})
+    if not rescale:
+        return data
+    data['S_x'] = data['S_x'] * 1e7
+    data['S_y'] = data['S_y'] * 1e7
+    return data
+
+def download_pred(run_id: str, precision_to_std: bool = True) -> xr.Dataset:
+    pred_file_name = client_.download_artifacts(run.run_id, 'test_output_0')
+    pred = xr.open_zarr(pred_file_name)
+    pred = pred.rename(S_xpred='S_x', S_ypred='S_y')
+    if not precision_to_std:
+        return pred
+    pred['S_xscale'] = 1 / pred['S_xscale']
+    pred['S_yscale'] = 1 / pred['S_yscale']
+    return pred
+
+def download_data_pred(run_id_data: str, run_id_pred: str, rescale_data: bool
+= True, precision_to_std_pred: bool = True) -> (xr.Dataset, xr.Dataset):
+    data = download_data(run_id_data, rescale_data)
+    pred = download_pred(run_id_pred, precision_to_std_pred)
+    # Remove times from data which are not in predictions
+    data = data.sel(time=slice(pred.time[0], pred.time[-1]))
+    # Remove latitudes in data which are not in predictions
+    data = data.sel(latitude=slice(pred['latitude'][0], pred['latitude'][-1]))
+
+def plot_time_series(longitude: float, latitude: float, time: slice,
+                     std: bool = True):
+    plt.figure()
+    truth = data['S_x'].sel(longitude=longitude, latitude=latitude,
+                            method='nearest').isel(time=time)
+    pred_mean = pred['S_x'].sel(longitude=longitude, latitude=latitude,
+                                method='nearest').isel(time=time)
+    pred_std = pred['S_xscale'].sel(longitude=longitude, latitude=latitude,
+                                    method='nearest').isel(time=time)
+    plt.plot(truth)
+    plt.plot(pred_mean)
+    if std:
+        plt.plot(pred_mean + 1.96 * pred_std, 'g--', linewidth=0.5)
+        plt.plot(pred_mean - 1.96 * pred_std, 'g--', linewidth=0.5)
+    plt.ylabel(r'$1e^{-7}m/s^2$')
+    _ = plt.xlabel('days')
+
 
 
 class DisplayMode(Enum):
