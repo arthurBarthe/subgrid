@@ -176,6 +176,7 @@ def download_data_pred(run_id_data: str, run_id_pred: str, rescale_data: bool
     data = data.sel(time=slice(pred.time[0], pred.time[-1]))
     # Remove latitudes in data which are not in predictions
     data = data.sel(latitude=slice(pred['latitude'][0], pred['latitude'][-1]))
+    return data, pred
 
 def plot_time_series(longitude: float, latitude: float, time: slice,
                      std: bool = True):
