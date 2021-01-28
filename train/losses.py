@@ -131,6 +131,10 @@ class HeteroskedasticGaussianLossV2(_Loss):
         return 2 * self.n_target_channels
 
     @property
+    def channel_names(self):
+        return ['S_x', 'S_y', 'S_xscale', 'S_yscale']
+
+    @property
     def precision_indices(self):
         return list(range(self.n_target_channels, self.n_required_channels))
 
