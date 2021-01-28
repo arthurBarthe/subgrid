@@ -178,7 +178,7 @@ def download_data_pred(run_id_data: str, run_id_pred: str, rescale_data: bool
     data = data.sel(latitude=slice(pred['latitude'][0], pred['latitude'][-1]))
     return data, pred
 
-def plot_time_series(longitude: float, latitude: float, time: slice,
+def plot_time_series(data, pred, longitude: float, latitude: float, time: slice,
                      std: bool = True):
     plt.figure()
     truth = data['S_x'].sel(longitude=longitude, latitude=latitude,
@@ -588,7 +588,7 @@ class GlobalPlotter:
         mask = mask.where(mask)
         return mask.compute()
 
-def apply_complete_mask(array, uv_plotter):
+def apply_complete_mask(array, pred, uv_plotter):
     mask = uv_plotter.borders
     mask2 = uv_plotter.mask
     mask = mask.interp({k: array.coords[k] for k in ['longitude', 'latitude']})
