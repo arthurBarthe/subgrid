@@ -97,17 +97,18 @@ def download_data_pred(run_id_data: str, run_id_pred: str, rescale_data: bool
 def plot_time_series(data, pred, longitude: float, latitude: float, time: slice,
                      std: bool = True):
     plt.figure()
+    xs = np.arange(time.start, time.stop, time.step)
     truth = data['S_x'].sel(longitude=longitude, latitude=latitude,
                             method='nearest').isel(time=time)
     pred_mean = pred['S_x'].sel(longitude=longitude, latitude=latitude,
                                 method='nearest').isel(time=time)
     pred_std = pred['S_xscale'].sel(longitude=longitude, latitude=latitude,
                                     method='nearest').isel(time=time)
-    plt.plot(truth)
-    plt.plot(pred_mean)
+    plt.plot(xs, truth)
+    plt.plot(xs, pred_mean)
     if std:
-        plt.plot(pred_mean + 1.96 * pred_std, 'g--', linewidth=0.5)
-        plt.plot(pred_mean - 1.96 * pred_std, 'g--', linewidth=0.5)
+        plt.plot(xs, pred_mean + 1.96 * pred_std, 'g--', linewidth=0.5)
+        plt.plot(xs, pred_mean - 1.96 * pred_std, 'g--', linewidth=0.5)
     plt.ylabel(r'$1e^{-7}m/s^2$')
     _ = plt.xlabel('days')
 
