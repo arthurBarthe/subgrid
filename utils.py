@@ -8,6 +8,7 @@ Created on Mon Nov  2 12:50:18 2020
 
 import mlflow
 from mlflow.tracking import client
+import pandas as pd
 
 class TaskInfo:
     def __init__(self, name: str):
