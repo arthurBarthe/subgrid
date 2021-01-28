@@ -588,6 +588,15 @@ class GlobalPlotter:
         mask = mask.where(mask)
         return mask.compute()
 
+def apply_complete_mask(array, uv_plotter):
+    mask = uv_plotter.borders
+    mask2 = uv_plotter.mask
+    mask = mask.interp({k: array.coords[k] for k in ['longitude', 'latitude']})
+    mask2 = mask2.interp({k: array.coords[k] for k in ['longitude', 'latitude']})
+    array = array.where(np.isnan(mask) & (~np.isnan(mask2)))
+    array = array.sel(latitude=slice(pred['latitude'][0], pred['latitude'][-1]))
+    return array
+
 
 
 def plot_training_subdomains(run_id, global_plotter: GlobalPlotter, alpha=0.5,
