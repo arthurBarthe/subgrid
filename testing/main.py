@@ -14,44 +14,35 @@ We allow for different modes of training:
     - training of batch norm layers only
 
 """
+from copy import deepcopy
+from sys import modules
+import os.path
+import tempfile
+import logging
+
 import mlflow
-import torch
-import torch.nn
 from torch.utils.data import DataLoader
-import numpy as np
 import xarray as xr
-from analysis.utils import select_run, select_experiment
+from utils import select_run, select_experiment, TaskInfo
 from train.utils import learning_rates_from_string
 from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
                            Subset_, DatasetWithTransform, ComposeTransforms,
                            MultipleTimeIndices, DatasetPartitioner)
 from train.base import Trainer
 from train.losses import *
-
 from testing.utils import (create_test_dataset, create_large_test_dataset,
                            pickle_artifact, BatchSampler)
 from testing.metrics import MSEMetric, MaxMetric
-
 from models.utils import load_model_cls
 
-import os.path
-
-import tempfile
-import logging
-
 import argparse
-from copy import deepcopy
-from sys import modules
 
 
-import dask
 from dask.diagnostics import ProgressBar
 from other.telegram import send_message
 
 from data.xrtransforms import SeasonalStdizer
 import models.submodels
-
-from utils import TaskInfo
 
 send_message("Starting to run testing!")
 
