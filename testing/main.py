@@ -92,9 +92,7 @@ mlflow.start_run()
 
 # Prompt user to retrieve a trained model based on a run id for the default
 # experiment (folder mlruns/0)
-models_experiment_name = select_experiment()
-models_experiment = mlflow.get_experiment_by_name(models_experiment_name)
-models_experiment_id = models_experiment.experiment_id
+models_experiment_id, _ = select_experiment()
 cols = ['metrics.test loss', 'start_time', 'params.time_indices',
         'params.model_cls_name', 'params.source.run_id', 'params.submodel']
 model_run = select_run(sort_by='start_time', cols=cols,
@@ -130,14 +128,8 @@ submodel = getattr(models.submodels, submodel_name)
 # metrics saved independently of the training criterion
 metrics = {'mse': MSEMetric(), 'Inf Norm': MaxMetric()}
 
-
-# Select the data experiment
-data_experiment_name = select_experiment()
-data_experiment = mlflow.get_experiment_by_name(data_experiment_name)
-data_experiment_id = data_experiment.experiment_id
-
-
 # Prompt user to select the test dataset
+data_experiment_id, _ = select_experiment()
 cols = ['params.lat_min', 'params.lat_max', 'params.factor', 'params.CO2']
 data_run = select_run(cols=cols, experiment_ids=[data_experiment_id, ])
 
