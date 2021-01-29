@@ -9,6 +9,7 @@ Created on Wed Feb 19 12:15:35 2020
 import xarray as xr
 from scipy.ndimage import gaussian_filter
 import numpy as np
+import logging
 
 
 def advections(u_v_field: xr.Dataset, grid_data: xr.Dataset):
@@ -147,10 +148,10 @@ def eddy_forcing(u_v_dataset : xr.Dataset, grid_data: xr.Dataset,
         scale_x = scale
         scale_y = scale
     # Interpolate temperature
-    # interp_coords = dict(xu_ocean=u_v_dataset.coords['xu_ocean'],
-    #                      yu_ocean=u_v_dataset.coords['yu_ocean'])
-    # u_v_dataset['temp'] = u_v_dataset['surface_temperature'].interp(
-    #     interp_coords)
+    interp_coords = dict(xu_ocean=u_v_dataset.coords['xu_ocean'],
+                         yu_ocean=u_v_dataset.coords['yu_ocean'])
+    u_v_dataset['temp'] = u_v_dataset['surface_temperature'].interp(
+        interp_coords)
 
     # The 1.64 comes from selecting the std of the Gaussian filter so 
     # that a square with size scale_x * scale_y contains approximately
@@ -169,7 +170,7 @@ def eddy_forcing(u_v_dataset : xr.Dataset, grid_data: xr.Dataset,
     forcing = forcing.rename({'adv_x': 'S_x', 'adv_y': 'S_y'})
     # Merge filtered u,v, temperature and forcing terms
     forcing = forcing.merge(u_v_filtered)
-    print(forcing)
+    logging.debug(forcing)
     # Coarsen
     print('scale factor: ', scale)
     forcing_coarse = forcing.coarsen({'xu_ocean': int(scale_x),
