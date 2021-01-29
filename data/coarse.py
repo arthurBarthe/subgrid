@@ -146,6 +146,11 @@ def eddy_forcing(u_v_dataset : xr.Dataset, grid_data: xr.Dataset,
         print('Using factor mode')
         scale_x = scale
         scale_y = scale
+    # Interpolate temperature
+    interp_coords = dict(xu_ocean=u_v_dataset.coords['xu_ocean'],
+                         yu_ocean=u_v_dataset.coords['yu_ocean'])
+    u_v_dataset['temp'] = u_v_dataset['surface_temperature'].interp(
+        interp_coords)
     # The 1.64 comes from selecting the std of the Gaussian filter so 
     # that a square with size scale_x * scale_y contains approximately
     # 80% of the measure of the Gaussian filter.
@@ -154,15 +159,16 @@ def eddy_forcing(u_v_dataset : xr.Dataset, grid_data: xr.Dataset,
     adv = advections(u_v_dataset, grid_data)
     # Filtered advections
     filtered_adv = spatial_filter_dataset(adv, grid_data, scale_filter)
-    # Filtered u,v field
+    # Filtered u,v field and temperature
     u_v_filtered = spatial_filter_dataset(u_v_dataset, grid_data, scale_filter)
     # Advection term from filtered velocity field
     adv_filtered = advections(u_v_filtered, grid_data)
     # Forcing
     forcing = adv_filtered - filtered_adv
     forcing = forcing.rename({'adv_x': 'S_x', 'adv_y': 'S_y'})
-    # Merge filtered u,v and forcing terms
+    # Merge filtered u,v, temperature and forcing terms
     forcing = forcing.merge(u_v_filtered)
+    forcing = forcing.merge()
     print(forcing)
     # Coarsen
     print('scale factor: ', scale)
