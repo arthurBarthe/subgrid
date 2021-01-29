@@ -63,7 +63,7 @@ params = parser.parse_args()
 
 # Retrieve the patch of data specified in the command-line args
 patch_data, grid_data = get_patch(CATALOG_URL, params.ntimes, params.bounds,
-                                  params.CO2, 'usurf', 'vsurf', 'surface_temp')
+                                  params.CO2, 'usurf', 'vsurf')
 
 logger.debug(patch_data)
 logger.debug(grid_data)
