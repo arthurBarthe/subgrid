@@ -148,8 +148,8 @@ def eddy_forcing(u_v_dataset : xr.Dataset, grid_data: xr.Dataset,
         scale_x = scale
         scale_y = scale
     # Interpolate temperature
-    interp_coords = dict(xu_ocean=u_v_dataset.coords['xu_ocean'],
-                         yu_ocean=u_v_dataset.coords['yu_ocean'])
+    interp_coords = dict(xt_ocean=u_v_dataset.coords['xu_ocean'],
+                         yt_ocean=u_v_dataset.coords['yu_ocean'])
     u_v_dataset['temp'] = u_v_dataset['surface_temperature'].interp(
         interp_coords)
 
