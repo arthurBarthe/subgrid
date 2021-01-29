@@ -77,7 +77,9 @@ def download_pred(run_id: str, precision_to_std: bool = True) -> xr.Dataset:
     client_ = client.MlflowClient()
     pred_file_name = client_.download_artifacts(run_id, 'test_output_0')
     pred = xr.open_zarr(pred_file_name)
-    pred = pred.rename(S_xpred='S_x', S_ypred='S_y')
+    # For compatibility with old version
+    if 'S_xpred' in pred.keys():
+        pred = pred.rename(S_xpred='S_x', S_ypred='S_y')
     if not precision_to_std:
         return pred
     pred['S_xscale'] = 1 / pred['S_xscale']
