@@ -109,7 +109,6 @@ learning_rate = learning_rates[0] * lr_ratio
 client = mlflow.tracking.MlflowClient()
 model_file = client.download_artifacts(model_run.run_id,
                                        'models/trained_model.pth')
-transformation = pickle_artifact(model_run.run_id, 'models/transformation')
 
 # TODO temporary fix for backward compatibility
 if not isinstance(submodel_name, str):
