@@ -117,7 +117,7 @@ for update in updates:
                     for line in output_file:
                         send_message(line, chat_id)
                     with open('.jobs_on_queue', 'w') as f:
-                        f.writelines([job_id + ':' + chat_id,])
+                        f.writelines([job_id + ':' + str(chat_id),])
             else:
                 send_message('Did not understand your request, sorry.', chat_id)
         else:
@@ -136,8 +136,7 @@ with open('.jobs_on_queue') as f:
     new_lines = []
     for line in lines:
         job_id, chat_id = line.split(':')
-        exit_code, output_file = get_output_file(int(job_id),
-                                                 chat_id)
+        exit_code, output_file = get_output_file(int(job_id), chat_id)
         if exit_code == 0:
             print(f'output file content: {output_file}')
             for line in output_file:
