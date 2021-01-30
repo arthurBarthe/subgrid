@@ -20,10 +20,6 @@ class VarianceMode(Enum):
     precision = 1
 
 
-class LikelihoodBasedLoss(ABC, _Loss):
-
-
-
 
 # DEPRECIATED
 class HeteroskedasticGaussianLoss(_Loss):
