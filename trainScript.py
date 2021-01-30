@@ -308,6 +308,8 @@ net.cpu()
 full_path = os.path.join(data_location, models_directory, model_name)
 torch.save(net.state_dict(), full_path)
 net.cuda(device)
+with TaskInfo('Saving trained model'):
+    mlflow.log_artifact(os.path.join(data_location, models_directory))
 
 # DEBUT TEST ------------------------------------------------------------------
 
