@@ -128,8 +128,6 @@ class Trainer:
             if print_every(loss_text, self.print_loss_every, i_batch):
                 # Every time we print we reset the running average
                 running_loss_.reset()
-                # Temporary fix for student loss
-                print(self.net.extra_parameter)
             # Backpropagate
             loss.backward()
             if clip:
