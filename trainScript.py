@@ -68,7 +68,7 @@ parser.add_argument('--learning_rate', type=learning_rates_from_string,
 parser.add_argument('--train_split', type=float, default=0.8,
                     help='Between 0 and 1')
 parser.add_argument('--test_split', type=float, default=0.8,
-                    hep='Between 0 and 1, greater than train_split.')
+                    help='Between 0 and 1, greater than train_split.')
 parser.add_argument('--time_indices', type=negative_int, nargs='*')
 parser.add_argument('--printevery', type=int, default=20)
 parser.add_argument('--weight_decay', type=float, default=0.05,
