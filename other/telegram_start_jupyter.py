@@ -31,22 +31,27 @@ def start_jupyter():
     return r
 
 
-def get_output_file(job_id: int, chat_id: str):
+def get_output_file(job_id: int, chat_id: str, verbose: str = True):
     file_name = ''.join(('slurm-', str(job_id), '.out'))
     file_path = join('/home/ag7531', file_name)
     n = 0
     while True:
         n += 1
-        if n >= 6:
-            return 'Output file not found...'
+        if n >= 2:
+            return (1, ['Output file not found...',
+                        'This might be due to the job being stuck on the queue.',
+                        'We will send you a text if the job does start at some '
+                        'point.'])
         try:
-            send_message('Looking for output file ' + file_path, chat_id)
+            if verbose:
+                send_message('Looking for output file ' + file_path, chat_id)
             with open(file_path) as f:
-                send_message('Found the file!', chat_id)
+                if verbose:
+                    send_message('Found the file!', chat_id)
                 lines = f.readlines()
                 for line in lines:
                     if '127.0.0.1' in line:
-                        return lines
+                        return (0, lines)
         except FileNotFoundError:
             pass
         time.sleep(20)
@@ -99,11 +104,20 @@ for update in updates:
                 r = start_jupyter()
                 s = r.stdout.decode()
                 send_message(s, chat_id)
-                output_file = get_output_file(int(s.split()[-1]), chat_id)
-                print(f'output file content: {output_file}')
-                for line in output_file:
-                    send_message(line, chat_id)
-                send_message('Done!', chat_id)
+                job_id = s.split()[-1]
+                exit_code, output_file = get_output_file(int(job_id),
+                                                         chat_id)
+                if exit_code == 0:
+                    print(f'output file content: {output_file}')
+                    for line in output_file:
+                        send_message(line, chat_id)
+                    send_message('Done!', chat_id)
+                else:
+                    print('Output file not found')
+                    for line in output_file:
+                        send_message(line, chat_id)
+                    with open('.jobs_on_queue', 'w') as f:
+                        f.writelines([job_id + ':' + chat_id,])
             else:
                 send_message('Did not understand your request, sorry.', chat_id)
         else:
@@ -115,3 +129,20 @@ for update in updates:
             else:
                 send_message('You are not registered as a user yet.', chat_id)
                 send_message('Please reply with the password', chat_id)
+
+# Check jobs on the queue
+with open('.jobs_on_queue') as f:
+    lines = f.readlines()
+    new_lines = []
+    for line in lines:
+        job_id, chat_id = line.split(':')
+        exit_code, output_file = get_output_file(int(job_id),
+                                                 chat_id)
+        if exit_code == 0:
+            print(f'output file content: {output_file}')
+            for line in output_file:
+                send_message(line, chat_id)
+            send_message('Done!', chat_id)
+        else:
+            new_lines.append(line)
+    f.writelines(new_lines)
