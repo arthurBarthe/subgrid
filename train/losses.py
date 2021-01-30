@@ -11,12 +11,18 @@ mean and precision.
 import torch
 from torch.nn.modules.loss import _Loss
 from enum import Enum
+from abc import ABC
 import numpy as np
 
 
 class VarianceMode(Enum):
     variance = 0
     precision = 1
+
+
+class LikelihoodBasedLoss(ABC, _Loss):
+
+
 
 
 # DEPRECIATED
@@ -296,13 +302,6 @@ class TrimodalGaussianLoss(MultimodalLoss):
     def __init__(self, n_target_channels: int):
         super().__init__(3, n_target_channels,
                          base_loss_cls=HeteroskedasticGaussianLossV2)
-
-
-class TrimodalGaussianLossV2(MultimodalLoss):
-    def __init__(self, n_target_channels: int):
-        super().__init__(3, n_target_channels,
-                         base_loss_cls=HeteroskedasticGaussianLossV2,
-                         base_loss_params=[dict(bias=0.), dict(bias=0.)])
 
 
 class PentamodalGaussianLoss(MultimodalLoss):

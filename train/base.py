@@ -172,7 +172,8 @@ class Trainer:
                 # Compute loss
                 loss = self.criterion(Y_hat, Y)
                 running_loss.update(loss.item(), X.size(0))
-                # Compute metrics
+                # Compute metrics based on a single predicted value.
+                # For heteroskedastic loss the prediction is the mean
                 Y_hat = self.criterion.predict(Y_hat)
                 for metric in self.metrics.values():
                     metric.update(Y_hat, Y)

@@ -3,39 +3,26 @@
 Created on Wed Dec 11 16:13:28 2019
 
 @author: Arthur
-TODO:
-    - tune Adam + keep momemtum
-    - when concatenating datasets, weights depending on sizes
-    - make one file per working training procedure
-    - for concat datasets print test loss for each dataset
-    - try to add as an input the squared components
-    - rerun the data processing.
-    - make Unet tunable
-    - multiple time-indexing
-    - loss usbsampling
 """
-# This is required to avoid some issue with matplotlib when running on NYU's
-# prince server
 import os
 import numpy as np
 import mlflow
 import os.path
+import tempfile
+
 
 from torch.utils.data import DataLoader, Subset
-
 import torch.optim as optim
 from torch.optim.lr_scheduler import MultiStepLR
 import torch.nn
 import torch.nn.functional as F
 
-
-# Import our Dataset class and neural network
+# These imports are used to create the training datasets
 from data.datasets import (DatasetWithTransform, DatasetTransformer,
                            RawDataFromXrDataset, ConcatDataset_,
                            Subset_, ComposeTransforms, MultipleTimeIndices)
-import data.datasets
 
-# Import some utils functions
+# Some utils functions
 from train.utils import (DEVICE_TYPE, learning_rates_from_string,
                          run_ids_from_string, list_from_string)
 from data.utils import load_training_datasets, load_data_from_run
@@ -44,9 +31,8 @@ from testing.metrics import MSEMetric, MaxMetric
 from train.base import Trainer
 import train.losses
 import models.transforms
-# import to parse CLI arguments
+
 import argparse
-import tempfile
 import importlib
 import pickle
 
@@ -71,28 +57,40 @@ description = 'Trains a model on a chosen dataset from the store. Allows \
     to set training parameters via the CLI.'
 parser = argparse.ArgumentParser(description=description)
 parser.add_argument('exp_id', type=int,
-                    help='Experiment id of the source dataset')
+                    help='Experiment id of the source dataset containing the '\
+                    'training data.')
 parser.add_argument('run_id', type=str,
                     help='Run id of the source dataset')
 parser.add_argument('--batchsize', type=int, default=8)
 parser.add_argument('--n_epochs', type=int, default=100)
 parser.add_argument('--learning_rate', type=learning_rates_from_string,
                     default={'0\1e-3'})
-parser.add_argument('--train_split', type=float, default=0.8)
-parser.add_argument('--test_split', type=float, default=0.8)
+parser.add_argument('--train_split', type=float, default=0.8,
+                    help='Between 0 and 1')
+parser.add_argument('--test_split', type=float, default=0.8,
+                    hep='Between 0 and 1, greater than train_split.')
 parser.add_argument('--time_indices', type=negative_int, nargs='*')
 parser.add_argument('--printevery', type=int, default=20)
 parser.add_argument('--weight_decay', type=float, default=0.05,
-                    help="Controls the weight decay on the linear layer")
-parser.add_argument('--model_module_name', type=str, default='models.models1')
-parser.add_argument('--model_cls_name', type=str, default='FullyCNN')
+                    help="Depreciated. Controls the weight decay on the linear "
+                         "layer")
+parser.add_argument('--model_module_name', type=str, default='models.models1',
+                    help='Name of the module containing the nn model')
+parser.add_argument('--model_cls_name', type=str, default='FullyCNN',
+                    help='Name of the class defining the nn model')
 parser.add_argument('--loss_cls_name', type=str,
-                    default='HeteroskedasticGaussianLossV2')
+                    default='HeteroskedasticGaussianLossV2',
+                    help='Name of the loss function used for training.')
 parser.add_argument('--transformation_cls_name', type=str,
-                    default='SquareTransform')
+                    default='SquareTransform',
+                    help='Name of the transformation applied to outputs ' \
+                    'required to be positive. Should be defined in ' \
+                    'models.transforms.')
 parser.add_argument('--submodel', type=str, default='transform1')
-parser.add_argument('--features_transform_cls_name', type=str, default='None')
-parser.add_argument('--targets_transform_cls_name', type=str, default='None')
+parser.add_argument('--features_transform_cls_name', type=str, default='None',
+                    help='Depreciated')
+parser.add_argument('--targets_transform_cls_name', type=str, default='None',
+                    help='Depreciated')
 params = parser.parse_args()
 
 # Log the experiment_id and run_id of the source dataset
@@ -191,8 +189,8 @@ for xr_dataset in xr_datasets:
     targets_transform = ComposeTransforms()
     transform = DatasetTransformer(features_transform, targets_transform)
     dataset = DatasetWithTransform(dataset, transform)
-    dataset = MultipleTimeIndices(dataset)
-    dataset.time_indices = [0, ]
+    # dataset = MultipleTimeIndices(dataset)
+    # dataset.time_indices = [0, ]
     train_dataset = Subset_(dataset, np.arange(train_index))
     test_dataset = Subset_(dataset, np.arange(test_index, len(dataset)))
     train_datasets.append(train_dataset)
@@ -265,14 +263,8 @@ for dataset in datasets:
 # To GPU
 net.to(device)
 
-# metrics saved independently of the training criterion
-metrics = {'mse': MSEMetric(), 'Inf Norm': MaxMetric()}
-for metric in metrics.values():
-    metric.inv_transform = lambda x: test_dataset.inverse_transform_target(x)
-
-params = list(net.parameters())
-
 # Optimizer and learning rate scheduler
+params = list(net.parameters())
 optimizer = optim.Adam(params, lr=learning_rates[0], weight_decay=weight_decay)
 lr_scheduler = MultiStepLR(optimizer, list(learning_rates.keys())[1:],
                            gamma=0.1)
@@ -281,7 +273,10 @@ trainer = Trainer(net, device)
 trainer.criterion = criterion
 trainer.print_loss_every = print_loss_every
 
+# metrics saved independently of the training criterion.
+metrics = {'R2': MSEMetric(), 'Inf Norm': MaxMetric()}
 for metric_name, metric in metrics.items():
+    metric.inv_transform = lambda x: test_dataset.inverse_transform_target(x)
     trainer.register_metric(metric_name, metric)
 
 for i_epoch in range(n_epochs):
@@ -303,8 +298,8 @@ for i_epoch in range(n_epochs):
     mlflow.log_metric('train loss', train_loss, i_epoch)
     mlflow.log_metric('test loss', test_loss, i_epoch)
     mlflow.log_metrics(metrics_results)
-# log the epoch
-mlflow.log_param('n_epochs', i_epoch + 1)
+# Update the logged number of actual training epochs
+mlflow.log_param('n_epochs_actual', i_epoch + 1)
 
 # FIN TRAINING ----------------------------------------------------------------
 
@@ -313,16 +308,6 @@ net.cpu()
 full_path = os.path.join(data_location, models_directory, model_name)
 torch.save(net.state_dict(), full_path)
 net.cuda(device)
-
-# Save other parts of the model
-# TODO this should not be necessary
-print('Saving other parts of the model')
-full_path = os.path.join(data_location, models_directory, 'transformation')
-with open(full_path, 'wb') as f:
-    pickle.dump(transformation, f)
-mlflow.log_artifact(os.path.join(data_location, models_directory))
-
-
 
 # DEBUT TEST ------------------------------------------------------------------
 
