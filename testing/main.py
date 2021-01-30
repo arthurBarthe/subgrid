@@ -193,7 +193,7 @@ logging.info('Creating the neural network model')
 model_cls = load_model_cls(model_module_name, model_cls_name)
 net = model_cls(dataset.n_features, criterion.n_required_channels)
 # Temporary fix
-net.transformation = SoftPlusTransform()
+net.final_transformation = SoftPlusTransform()
 
 # Load parameters of pre-trained model
 logging.info('Loading the neural net parameters')
