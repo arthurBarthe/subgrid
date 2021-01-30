@@ -30,7 +30,7 @@ from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
                            MultipleTimeIndices, DatasetPartitioner)
 from train.base import Trainer
 from train.losses import *
-from testing.utils import create_large_test_dataset, BatchSampler
+from testing.utils import create_large_test_dataset, BatchSampler, pickle_artifact
 from testing.metrics import MSEMetric, MaxMetric
 from models.utils import load_model_cls
 from models.transforms import SoftPlusTransform
@@ -192,12 +192,11 @@ except AttributeError as e:
 logging.info('Creating the neural network model')
 model_cls = load_model_cls(model_module_name, model_cls_name)
 net = model_cls(dataset.n_features, criterion.n_required_channels)
-# Temporary fix
-net.final_transformation = SoftPlusTransform()
+transformation = pickle_artifact(model_run.run_id, 'models/transformation')
+net.final_transformation = transformation
 
 # Load parameters of pre-trained model
 logging.info('Loading the neural net parameters')
-net.cpu()
 net.load_state_dict(torch.load(model_file))
 print(net)
 
