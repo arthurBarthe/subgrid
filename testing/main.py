@@ -30,10 +30,10 @@ from data.datasets import (RawDataFromXrDataset, DatasetTransformer,
                            MultipleTimeIndices, DatasetPartitioner)
 from train.base import Trainer
 from train.losses import *
-from testing.utils import (create_test_dataset, create_large_test_dataset,
-                           pickle_artifact, BatchSampler)
+from testing.utils import create_large_test_dataset, BatchSampler
 from testing.metrics import MSEMetric, MaxMetric
 from models.utils import load_model_cls
+from models.transforms import SoftPlusTransform
 
 import argparse
 
@@ -45,12 +45,6 @@ from data.xrtransforms import SeasonalStdizer
 import models.submodels
 
 send_message("Starting to run testing!")
-
-
-# Set dast temporary directory
-# If something fails try this first
-#dask.config.set(temporary_directory='/scratch/ag7531/dasktemp')
-
 
 # Parse arguments
 parser = argparse.ArgumentParser()
@@ -198,6 +192,8 @@ except AttributeError as e:
 logging.info('Creating the neural network model')
 model_cls = load_model_cls(model_module_name, model_cls_name)
 net = model_cls(dataset.n_features, criterion.n_required_channels)
+# Temporary fix
+net.transformation = SoftPlusTransform()
 
 # Load parameters of pre-trained model
 logging.info('Loading the neural net parameters')
