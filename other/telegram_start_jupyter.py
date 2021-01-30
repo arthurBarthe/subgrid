@@ -18,8 +18,6 @@ from os.path import join
 import hashlib
 
 token = '1391843927:AAEGeze6Pd2LbhtnZ3-__kTGN3lnurvaE0E'
-chat_id = '1330475894'
-
 
 def get_updates():
     r = requests.get('https://api.telegram.org/bot' + token + '/getupdates')
@@ -33,7 +31,7 @@ def start_jupyter():
     return r
 
 
-def get_output_file(job_id: int):
+def get_output_file(job_id: int, chat_id: str):
     file_name = ''.join(('slurm-', str(job_id), '.out'))
     file_path = join('/home/ag7531', file_name)
     n = 0
@@ -42,9 +40,9 @@ def get_output_file(job_id: int):
         if n >= 6:
             return 'Output file not found...'
         try:
-            send_message('Looking for output file ' + file_path)
+            send_message('Looking for output file ' + file_path, chat_id)
             with open(file_path) as f:
-                send_message('Found the file!')
+                send_message('Found the file!', chat_id)
                 lines = f.readlines()
                 for line in lines:
                     if '127.0.0.1' in line:
@@ -94,25 +92,26 @@ for update in updates:
             f.write(str(update_id))
         # Check user
         user_id = int(update['message']['from']['id'])
+        chat_id = update['message']['chat']['id']
         if check_user(user_id):
             if update['message']['text'] == 'start jupyter':
-                send_message('Trying to start jupyter...')
+                send_message('Trying to start jupyter...', chat_id)
                 r = start_jupyter()
                 s = r.stdout.decode()
-                send_message(s)
-                output_file = get_output_file(int(s.split()[-1]))
+                send_message(s, chat_id)
+                output_file = get_output_file(int(s.split()[-1]), chat_id)
                 print(f'output file content: {output_file}')
                 for line in output_file:
-                    send_message(line)
-                send_message('Done!')
+                    send_message(line, chat_id)
+                send_message('Done!', chat_id)
             else:
-                send_message('Did not understand')
+                send_message('Did not understand your request, sorry.', chat_id)
         else:
             message = update['message']['text']
             hash_m = hashlib.sha256(message.encode()).hexdigest()
             if  hash_m == '141398e3d78065d224cc535a984d7aa000a0429b1ead2687f16a81e05c8f5f41':
                 register_new_user(user_id)
-                send_message('Thanks, you are now registered.')
+                send_message('Thanks, you are now registered.', chat_id)
             else:
-                send_message('You are not registered as a user yet.')
-                send_message('Please reply with the password')
+                send_message('You are not registered as a user yet.', chat_id)
+                send_message('Please reply with the password', chat_id)
