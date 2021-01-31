@@ -201,6 +201,7 @@ net.load_state_dict(torch.load(model_file))
 print(net)
 
 # Adding transforms required by the model
+net.cpu()
 dataset.add_transforms_from_model(net)
 
 print('Size of training data: {}'.format(len(train_dataset)))
