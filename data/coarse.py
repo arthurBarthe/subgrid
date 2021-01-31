@@ -153,10 +153,7 @@ def eddy_forcing(u_v_dataset : xr.Dataset, grid_data: xr.Dataset,
     # u_v_dataset['temp'] = u_v_dataset['surface_temperature'].interp(
     #     interp_coords)
 
-    # The 1.64 comes from selecting the std of the Gaussian filter so 
-    # that a square with size scale_x * scale_y contains approximately
-    # 80% of the measure of the Gaussian filter.
-    scale_filter = (scale_x / 1.64, scale_y / 1.64)
+    scale_filter = (scale_x / 2, scale_y / 2)
     # High res advection terms
     adv = advections(u_v_dataset, grid_data)
     # Filtered advections
