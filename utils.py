@@ -9,6 +9,7 @@ Created on Mon Nov  2 12:50:18 2020
 import mlflow
 from mlflow.tracking import client
 import pandas as pd
+import pickle
 
 class TaskInfo:
     def __init__(self, name: str):
@@ -104,3 +105,9 @@ def select_run(sort_by=None, cols=None, merge=None, *args, **kargs) -> object:
     if id_ < 0:
         return 0
     return mlflow_runs.loc[id_, :]
+
+def pickle_artifact(run_id: str, path: str):
+    client = mlflow.tracking.MlflowClient()
+    file = client.download_artifacts(run_id, path)
+    f = open(file, 'rb')
+    return pickle.load(f)
